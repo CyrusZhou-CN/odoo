@@ -35,7 +35,7 @@ jobs:
             echo "Processing branch: $branch"
             if git show-ref --verify --quiet "refs/heads/$branch"; then
               git checkout "$branch"
-              git pull upstream "$branch"  # 拉取最新的上游分支内容
+              git pull --rebase upstream "$branch"  # 拉取最新的上游分支内容,使用 rebase 策略
             else
               git checkout -b "$branch" "upstream/$branch"  # 创建新分支并切换到该分支
             fi
