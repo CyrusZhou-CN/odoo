@@ -3,7 +3,7 @@
 # 	* sale_management
 # 
 # Translators:
-# Nikola Iliev, 2023
+# KeyVillage, 2023
 # Ivan Goychev <igoychev.projects@gmail.com>, 2023
 # aleksandar ivanov, 2023
 # Albena Mincheva <albena_vicheva@abv.bg>, 2023
@@ -13,6 +13,8 @@
 # Maria Boyadjieva <marabo2000@gmail.com>, 2023
 # Kaloyan Naumov <kaloyan@lumnus.net>, 2023
 # Martin Trigaux, 2023
+# Camille Dantinne <cmd@odoo.com>, 2023
+# Rumena Georgieva <rumena.georgieva@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
@@ -20,8 +22,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:23+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Martin Trigaux, 2023\n"
-"Language-Team: Bulgarian (https://www.transifex.com/odoo/teams/41243/bg/)\n"
+"Last-Translator: Rumena Georgieva <rumena.georgieva@gmail.com>, 2024\n"
+"Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -62,7 +64,7 @@ msgstr "Добави бележка"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Add a product"
-msgstr ""
+msgstr "Добавяне на нов продукт"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -77,7 +79,7 @@ msgstr ""
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Add to cart"
-msgstr ""
+msgstr "Добави в количката"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
@@ -199,7 +201,7 @@ msgstr "Публикация"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 msgid "Disc.%"
-msgstr ""
+msgstr "Отстъпка.%"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__discount
@@ -217,7 +219,7 @@ msgstr "Име за показване"
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__display_type
 msgid "Display Type"
-msgstr ""
+msgstr "Начин на показване"
 
 #. module: sale_management
 #: code:addons/sale_management/models/digest.py:0
@@ -338,7 +340,7 @@ msgstr "Онлайн плащане"
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__require_signature
 msgid "Online Signature"
-msgstr ""
+msgstr "Онлайн подписване"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -584,7 +586,7 @@ msgstr "Единична цена"
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "Unit Price:"
-msgstr ""
+msgstr "Ед. цена:"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__uom_id

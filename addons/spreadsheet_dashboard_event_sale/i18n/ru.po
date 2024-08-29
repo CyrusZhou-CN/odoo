@@ -7,15 +7,16 @@
 # Martin Trigaux, 2022
 # ILMIR <karamov@it-projects.info>, 2022
 # Alena Vlasova, 2023
+# alenafairy, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-27 15:12+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-29 09:44+0000\n"
-"Last-Translator: Alena Vlasova, 2023\n"
-"Language-Team: Russian (https://www.transifex.com/odoo/teams/41243/ru/)\n"
+"Last-Translator: alenafairy, 2023\n"
+"Language-Team: Russian (https://app.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -23,7 +24,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
@@ -31,7 +32,7 @@ msgid "Attendees"
 msgstr "Участники"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
@@ -39,42 +40,42 @@ msgid "Current"
 msgstr "Текущий"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Date"
 msgstr "Дата"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Event by Organizer"
-msgstr ""
+msgstr "Событие по организатору"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Event by Tags"
-msgstr ""
+msgstr "Событие по тегам"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Event by Template"
-msgstr ""
+msgstr "Событие по шаблону"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Event by Venue"
-msgstr ""
+msgstr "Событие по месту проведения"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
@@ -86,21 +87,21 @@ msgid "Events"
 msgstr "События"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Events Status"
-msgstr ""
+msgstr "Статус событий"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "KPI"
 msgstr "KPI"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
@@ -108,7 +109,7 @@ msgid "Organizer"
 msgstr "Организатор"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
@@ -116,14 +117,14 @@ msgid "Previous"
 msgstr "Назад"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Registration Status"
-msgstr ""
+msgstr "Статус регистрации"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
@@ -131,21 +132,21 @@ msgid "Revenue"
 msgstr "Доход"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Tag"
 msgstr "Тег"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Tags"
 msgstr "Теги"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
@@ -153,35 +154,35 @@ msgid "Template"
 msgstr "Шаблон"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Top Organizers"
-msgstr ""
+msgstr "Ведущие организаторы"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Top Tags"
-msgstr ""
+msgstr "Топ теги"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Top Templates"
-msgstr ""
+msgstr "Топ шаблоны"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "Top Venues"
-msgstr ""
+msgstr "Лучшие места проведения"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
@@ -189,52 +190,52 @@ msgid "Venue"
 msgstr "Место проведения"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "attendees - current"
-msgstr ""
+msgstr "участники - текущие"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "attendees - previous"
-msgstr ""
+msgstr "участники - предыдущие"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "events - current"
-msgstr ""
+msgstr "события - текущие"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "events - previous"
-msgstr ""
+msgstr "события - предыдущие"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "since last period"
-msgstr ""
+msgstr "с прошлого периода"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "untaxed revenue - current"
-msgstr ""
+msgstr "необлагаемый доход - текущий"
 
 #. module: spreadsheet_dashboard_event_sale
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_event_sale/data/files/events_dashboard.json:0
 #, python-format
 msgid "untaxed revenue - previous"
-msgstr ""
+msgstr "необлагаемый доход - предыдущий"

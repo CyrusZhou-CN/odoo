@@ -4,15 +4,16 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Malaz Abuidris <msea@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:56+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
-"Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2023\n"
+"Language-Team: Arabic (https://app.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -20,21 +21,21 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
 #, python-format
 msgid " clicks"
 msgstr "نقرات"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
 #, python-format
 msgid " countries"
 msgstr "الدول"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
 #, python-format
 msgid "# of clicks"
@@ -83,16 +84,19 @@ msgid ""
 "the context of your link. It might be an event you want to promote or a "
 "special promotion.\"/>"
 msgstr ""
+"حملة <i class=\"fa fa-info-circle\" data-bs-toggle=\"tooltip\" data-bs-"
+"placement=\"top\" role=\"img\" aria-label=\"Tooltip info\" title=\"يحدد سياق"
+" رابطك. قد يكون فعالية ترغب في الترويج لها أو عرضاً خاصاً. \"/>"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #, python-format
 msgid "Copied"
 msgstr "تم النسخ "
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #, python-format
@@ -100,7 +104,7 @@ msgid "Copy"
 msgstr "نسخ"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #: model_terms:ir.ui.view,arch_db:website_links.graphs
@@ -109,7 +113,7 @@ msgid "Edit code"
 msgstr "تحرير الكود "
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #, python-format
 msgid "Generating link..."
@@ -121,7 +125,7 @@ msgid "Get tracked link"
 msgstr "احصل على رابط متتبع "
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #, python-format
 msgid "Icon"
@@ -153,6 +157,10 @@ msgid ""
 "the medium used to share your link. It might be an email, or a Facebook Ads "
 "for instance.\"/>"
 msgstr ""
+"الوسط <i class=\"fa fa-info-circle\" data-bs-toggle=\"tooltip\" data-bs-"
+"placement=\"top\" role=\"img\" aria-label=\"Tooltip info\" title=\"يحدد "
+"الوسط المستخدم لمشاركة رابطك. قد يكون بريداً إلكترونياً أو إعلاناً على "
+"Facebook على سبيل المثال. \"/>"
 
 #. module: website_links
 #: model_terms:ir.ui.view,arch_db:website_links.create_shorten_url
@@ -165,7 +173,7 @@ msgid "Newest"
 msgstr "الأحدث"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
 #, python-format
 msgid "No data"
@@ -193,6 +201,9 @@ msgid ""
 "the source from which your traffic will come from, Facebook or Twitter for "
 "instance.\"/>"
 msgstr ""
+"المصدر <i class=\"fa fa-info-circle\" data-bs-toggle=\"tooltip\" data-bs-"
+"placement=\"top\" role=\"img\" aria-label=\"Tooltip info\" title=\"يحدد مصدر"
+" الزيارات، من Facebook أو Twitter على سبيل المثال. \"/> "
 
 #. module: website_links
 #: model_terms:ir.ui.view,arch_db:website_links.graphs
@@ -201,14 +212,14 @@ msgid "Statistics"
 msgstr "الإحصائيات"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #, python-format
 msgid "Stats"
 msgstr "الإحصائيات"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #: code:addons/website_links/static/src/js/website_links_code_editor.js:0
 #, python-format
@@ -216,7 +227,7 @@ msgid "The code cannot be left empty"
 msgstr "لا يمكن ترك الكود فارغاً"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
@@ -225,7 +236,7 @@ msgid "There is no data to show"
 msgstr "لا توجد بيانات لعرضها"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #: code:addons/website_links/static/src/js/website_links_code_editor.js:0
 #, python-format
@@ -247,27 +258,28 @@ msgid "URL"
 msgstr "رابط URL "
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #, python-format
 msgid "Unable to get recent links"
 msgstr "تعذر الحصول على الروابط الحديثة "
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links_charts.js:0
 #, python-format
 msgid "Undefined"
 msgstr "غير محدد"
 
 #. module: website_links
+#. odoo-python
 #: code:addons/website_links/models/link_tracker.py:0
 #, python-format
 msgid "Visit Webpage Statistics"
 msgstr "مشاهدة إحصائيات صفحة الويب"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #, python-format
 msgid "You don't have any recent links."
@@ -279,7 +291,7 @@ msgid "Your tracked links"
 msgstr "روابطك المتتبعة "
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #: model_terms:ir.ui.view,arch_db:website_links.graphs
 #, python-format
@@ -287,7 +299,7 @@ msgid "cancel"
 msgstr "إلغاء"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #, python-format
 msgid "clicks"
@@ -299,14 +311,14 @@ msgid "copy"
 msgstr "نسخ"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #, python-format
 msgid "e.g. Newsletter, Social Network, .."
 msgstr "على سبيل المثال النشرة الإخبارية، الشبكة الاجتماعية، .."
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #, python-format
 msgid "e.g. Promotion of June, Winter Newsletter, .."
@@ -315,7 +327,7 @@ msgstr ""
 "الشتوية، .."
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/js/website_links.js:0
 #, python-format
 msgid "e.g. Search Engine, Website page, .."
@@ -327,7 +339,7 @@ msgid "e.g. https://www.odoo.com/contactus"
 msgstr "على سبيل المثال https://www.odoo.com/contactus"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #: model_terms:ir.ui.view,arch_db:website_links.graphs
 #, python-format
@@ -335,7 +347,7 @@ msgid "ok"
 msgstr "حسناً"
 
 #. module: website_links
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_links/static/src/xml/recent_link.xml:0
 #: model_terms:ir.ui.view,arch_db:website_links.graphs
 #, python-format

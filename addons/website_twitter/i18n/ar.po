@@ -4,16 +4,16 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Malaz Abuidris <msea@odoo.com>, 2022
+# Malaz Abuidris <msea@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:57+0000\n"
-"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
-"Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2023\n"
+"Language-Team: Arabic (https://app.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -23,7 +23,7 @@ msgstr ""
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid ", <strong>create a project</strong> with the following information:"
-msgstr ""
+msgstr "، <strong>أنشئ مشروعاً</strong> بالمعلومات التالية: "
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -31,6 +31,8 @@ msgid ""
 ", click on <strong>Elevated</strong> then on <strong>Apply</strong> and "
 "finally complete the form."
 msgstr ""
+"، اضغط على <strong>إضافية</strong> ثم <strong>تطبيق</strong> ثم أكمل "
+"الاستمارة. "
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -44,12 +46,12 @@ msgstr ""
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "<span class=\"o_form_label\">Twitter Roller</span>"
-msgstr ""
+msgstr "<span class=\"o_form_label\">شريط تمرير Twitter</span> "
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "<strong>App Name: </strong> choose a unique name"
-msgstr ""
+msgstr "<strong>اسم التطبيق: </strong> اختر اسماً فريداً من نوعه "
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -64,7 +66,7 @@ msgstr "<strong>الاسم: </strong> تكامل أودو مع Twitter "
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "<strong>Use Case: </strong> Embedding Tweets in a website"
-msgstr ""
+msgstr "<strong>حالة استخدام: </strong> تضمين التغريدات في موقع إلكتروني "
 
 #. module: website_twitter
 #: model:ir.model.fields,field_description:website_twitter.field_res_config_settings__twitter_api_key
@@ -79,6 +81,7 @@ msgid "API secret"
 msgstr "سر الواجهة البرمجية للتطبيق "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -97,6 +100,7 @@ msgstr "تهيئة الإعدادات "
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Copy/Paste the API Key and API Key Secret values into the above fields"
 msgstr ""
+"نسخ/لصق مفتاح الواجهة البرمجية وقيم سر الواجهة البرمجية في الحقول أعلاه "
 
 #. module: website_twitter
 #: model:ir.model.fields,field_description:website_twitter.field_website_twitter_tweet__create_uid
@@ -122,7 +126,7 @@ msgstr "المفضلات من"
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Get Elevated access by going to"
-msgstr ""
+msgstr "احصل على صلاحيات الوصول الإضافية عن طريق الذهاب إلى "
 
 #. module: website_twitter
 #: model:ir.model.fields,field_description:website_twitter.field_website__twitter_screen_name
@@ -130,6 +134,7 @@ msgid "Get favorites from this screen name"
 msgstr "الحصول على مفضلات اسم الظهور هذا"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "HTTP Error: Something is misconfigured"
@@ -146,6 +151,7 @@ msgid "ID"
 msgstr "المُعرف"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "Internet connection refused: We failed to reach a twitter server."
@@ -169,7 +175,7 @@ msgstr "آخر تحديث في"
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Log in or create an account on"
-msgstr ""
+msgstr "قم بتسجيل الدخول أو أنشئ حساباً في "
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -182,8 +188,11 @@ msgid ""
 "Once connected, and if not already done, complete the Twitter portal access "
 "process on"
 msgstr ""
+"عندما تكون متصلاً، وإذا لم تنتهِ بعد، قم بإكمال عملية الوصول إلى بوابة تويتر"
+" في "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/controllers/main.py:0
 #, python-format
 msgid ""
@@ -194,6 +203,7 @@ msgstr ""
 "بالضرورة أن يكون لك) "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/controllers/main.py:0
 #, python-format
 msgid "Please set the Twitter API Key and Secret in the Website Settings."
@@ -202,13 +212,14 @@ msgstr ""
 "الإلكتروني. "
 
 #. module: website_twitter
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_twitter/static/src/js/website.twitter.editor.js:0
 #, python-format
 msgid "Reload"
 msgstr "إعادة تحميل"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -231,6 +242,7 @@ msgstr ""
 "الواجهة البرمجية/سر Twitter. "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -239,6 +251,7 @@ msgstr ""
 "خوادم Twitter تعمل، لكنها محملة بالكثير من الطلبات. حاول مرة أخرى لاحقاً. "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -249,6 +262,7 @@ msgstr ""
 "أخرى لاحقاً. "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -259,6 +273,7 @@ msgstr ""
 "الواجهة البرمجية لـ Twitter ورمزها السري. "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -269,6 +284,7 @@ msgstr ""
 "المُصادقة عليها وينتج عنها هذه الرسالة."
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "There was no new data to return."
@@ -324,7 +340,7 @@ msgstr ""
 " "
 
 #. module: website_twitter
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_twitter/static/src/xml/website.twitter.xml:0
 #, python-format
 msgid "Twitter Configuration"
@@ -333,9 +349,15 @@ msgstr "تهيئة Twitter "
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Twitter Portal"
-msgstr ""
+msgstr "بوابة تويتر "
 
 #. module: website_twitter
+#: model_terms:ir.ui.view,arch_db:website_twitter.website_twitter_snippet
+msgid "Twitter Scroller"
+msgstr "شريط تمرير Twitter "
+
+#. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -346,12 +368,14 @@ msgstr ""
 "Twitter! "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "Twitter is down or being upgraded."
 msgstr "Twitter معطل أو قيد التحديث. "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -372,6 +396,7 @@ msgid "Twitter tutorial"
 msgstr "درس تدريبي عن Twitter "
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/controllers/main.py:0
 #, python-format
 msgid ""
@@ -382,7 +407,7 @@ msgstr ""
 "أو اختيار اسم ظهور مختلف. "
 
 #. module: website_twitter
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_twitter/static/src/xml/website.twitter.xml:0
 #, python-format
 msgid "Twitter's user"
@@ -391,7 +416,6 @@ msgstr "مستخدم Twitter "
 #. module: website_twitter
 #: model:ir.actions.server,name:website_twitter.ir_cron_twitter_actions_ir_actions_server
 #: model:ir.cron,cron_name:website_twitter.ir_cron_twitter_actions
-#: model:ir.cron,name:website_twitter.ir_cron_twitter_actions
 msgid "Twitter: Fetch new favorites"
 msgstr "Twitter: البحث عن مفضلات جديدة "
 
@@ -409,14 +433,14 @@ msgstr "Twitter الموقع الإلكتروني "
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "https://developer.twitter.com/"
-msgstr ""
+msgstr "https://developer.twitter.com/"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "https://developer.twitter.com/en/portal/products"
-msgstr ""
+msgstr "https://developer.twitter.com/en/portal/products"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "https://developer.twitter.com/portal/"
-msgstr ""
+msgstr "https://developer.twitter.com/portal/"

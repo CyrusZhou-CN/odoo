@@ -7,12 +7,12 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:24+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
 "PO-Revision-Date: 2022-09-22 05:56+0000\n"
 "Last-Translator: Niyas Raphy, 2023\n"
-"Language-Team: Malayalam (https://www.transifex.com/odoo/teams/41243/ml/)\n"
+"Language-Team: Malayalam (https://app.transifex.com/odoo/teams/41243/ml/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -20,6 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: website_hr_recruitment
+#. odoo-python
 #: code:addons/website_hr_recruitment/models/hr_recruitment.py:0
 #, python-format
 msgid "%s's Application"
@@ -32,7 +33,6 @@ msgstr ""
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "<br/><i class=\"fa fa-phone\" role=\"img\" aria-label=\"Phone\" title=\"Phone\"/>"
 msgstr ""
 
@@ -43,7 +43,6 @@ msgstr ""
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "<i class=\"fa fa-envelope\" role=\"img\" aria-label=\"Email\" title=\"Email\"/>"
 msgstr ""
 
@@ -81,6 +80,13 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.hr_job_website_inherit
 msgid "<span class=\"bg-odoo\">Published</span>"
+msgstr ""
+
+#. module: website_hr_recruitment
+#: model_terms:ir.ui.view,arch_db:website_hr_recruitment.apply
+msgid ""
+"<span class=\"d-none text-muted\" style=\"margin-left: 200px; font-size: "
+"0.8rem\">The resume is optional if you have a Linkedin profile</span>"
 msgstr ""
 
 #. module: website_hr_recruitment
@@ -152,13 +158,12 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.apply
 msgid ""
-"<span class=\"text-muted\" style=\"margin-left: 200px; font-size: "
-"0.8rem\">The resume is optional if you have a Linkedin profile</span>"
+"<span class=\"text-muted\" style=\"font-size: 0.8rem\">Optional if you "
+"provided a Linkedin profile</span>"
 msgstr ""
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid ""
 "<span>\n"
 "                                            We usually reply between one and three days.<br/>\n"
@@ -217,7 +222,7 @@ msgid "Applicant"
 msgstr ""
 
 #. module: website_hr_recruitment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js:0
 #, python-format
 msgid "Applied Job"
@@ -269,7 +274,6 @@ msgstr ""
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "Congratulations!"
 msgstr ""
 
@@ -280,7 +284,6 @@ msgstr ""
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "Continue To Our Website"
 msgstr ""
 
@@ -306,7 +309,7 @@ msgid "Customer Relationship"
 msgstr ""
 
 #. module: website_hr_recruitment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js:0
 #: model:ir.model,name:website_hr_recruitment.model_hr_department
 #, python-format
@@ -361,7 +364,7 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
 msgid "Google Adwords experience"
-msgstr ""
+msgstr "ഗൂഗിൾ ആഡ്‌വേർഡ്‌സ് എക്സ്പീരിയൻസ് "
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
@@ -380,7 +383,6 @@ msgstr ""
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "In the meantime,"
 msgstr ""
 
@@ -393,7 +395,7 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.apply
 msgid "Job Application Form"
-msgstr ""
+msgstr "ജോലി അപേക്ഷാ ഫോം"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.detail
@@ -403,7 +405,7 @@ msgstr "ജോലിയുടെ വിശദാംശങ്ങൾ"
 #. module: website_hr_recruitment
 #: model:ir.actions.act_window,name:website_hr_recruitment.action_job_pages_list
 msgid "Job Pages"
-msgstr ""
+msgstr "ജോബ് പേജ്"
 
 #. module: website_hr_recruitment
 #: model:ir.model,name:website_hr_recruitment.model_hr_job
@@ -411,24 +413,26 @@ msgid "Job Position"
 msgstr "ഉദ്യോഗ സ്ഥാനം"
 
 #. module: website_hr_recruitment
+#. odoo-python
 #: code:addons/website_hr_recruitment/controllers/main.py:0
 #, python-format
 msgid "Job Title"
 msgstr "ഉദ്യോഗ സ്ഥാനം"
 
 #. module: website_hr_recruitment
+#. odoo-python
 #: code:addons/website_hr_recruitment/models/website.py:0
 #: model:ir.ui.menu,name:website_hr_recruitment.menu_job_pages
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.apply
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.detail
 #, python-format
 msgid "Jobs"
-msgstr ""
+msgstr "ജോബ്"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.snippet_options
 msgid "Jobs Page"
-msgstr ""
+msgstr "ജോബ് പേജ്"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.index
@@ -449,8 +453,14 @@ msgid "Lead the entire sales cycle"
 msgstr ""
 
 #. module: website_hr_recruitment
+#. odoo-javascript
+#: code:addons/website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js:0
+#, python-format
+msgid "LinkedIn Profile"
+msgstr ""
+
+#. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "Look around on our website:"
 msgstr ""
 
@@ -467,7 +477,7 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
 msgid "Negotiate and contract"
-msgstr ""
+msgstr "ചർച്ചകൾ നടത്തുക, കരാർ ചെയ്യുക"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
@@ -537,6 +547,13 @@ msgid "Personal Evolution"
 msgstr "വ്യക്തിഗത പരിണാമം"
 
 #. module: website_hr_recruitment
+#. odoo-javascript
+#: code:addons/website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js:0
+#, python-format
+msgid "Phone Number"
+msgstr ""
+
+#. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
 msgid "Play any sport with colleagues, <br/>the bill is covered."
 msgstr ""
@@ -561,6 +578,11 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
 msgid "Real responsibilities and challenges in a fast evolving company"
+msgstr ""
+
+#. module: website_hr_recruitment
+#: model_terms:ir.ui.view,arch_db:website_hr_recruitment.apply
+msgid "Remote"
 msgstr ""
 
 #. module: website_hr_recruitment
@@ -594,9 +616,16 @@ msgid "Set if the application is published on the website of the company."
 msgstr ""
 
 #. module: website_hr_recruitment
+#. odoo-javascript
+#: code:addons/website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js:0
+#, python-format
+msgid "Short Introduction"
+msgstr ""
+
+#. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.snippet_options
 msgid "Sidebar"
-msgstr ""
+msgstr "സൈഡ്‌ബാർ"
 
 #. module: website_hr_recruitment
 #: model:ir.model,name:website_hr_recruitment.model_hr_recruitment_source
@@ -616,11 +645,18 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
 msgid "Technical Expertise"
-msgstr ""
+msgstr "സാങ്കേതിക വൈദഗ്ധ്യം"
 
 #. module: website_hr_recruitment
 #: model:ir.model.fields,help:website_hr_recruitment.field_hr_job__website_url
 msgid "The full URL to access the document through the website."
+msgstr "വെബ്‌സൈറ്റ് വഴി ഡോക്യുമെന്റ് ആക്‌സസ് ചെയ്യാനുള്ള പൂർണ്ണ URL."
+
+#. module: website_hr_recruitment
+#. odoo-python
+#: code:addons/website_hr_recruitment/models/hr_recruitment.py:0
+#, python-format
+msgid "The job offer has been closed."
 msgstr ""
 
 #. module: website_hr_recruitment
@@ -659,7 +695,7 @@ msgstr "വെബ്‌സൈറ്റ് "
 #. module: website_hr_recruitment
 #: model:ir.actions.act_url,name:website_hr_recruitment.action_open_website
 msgid "Website Recruitment Form"
-msgstr ""
+msgstr "വെബ്സൈറ്റ് റിക്രൂട്ട്മെന്റ് ഫോം"
 
 #. module: website_hr_recruitment
 #: model:ir.model.fields,field_description:website_hr_recruitment.field_hr_job__website_url
@@ -669,37 +705,37 @@ msgstr "വെബ്സൈറ്റ് URL"
 #. module: website_hr_recruitment
 #: model:ir.model.fields,field_description:website_hr_recruitment.field_hr_job__website_description
 msgid "Website description"
-msgstr ""
+msgstr "വെബ്സൈറ്റ് വിവരണം"
 
 #. module: website_hr_recruitment
 #: model:ir.model.fields,field_description:website_hr_recruitment.field_hr_job__website_meta_description
 msgid "Website meta description"
-msgstr ""
+msgstr "വെബ്‌സൈറ്റ് മെറ്റാ വിവരണം"
 
 #. module: website_hr_recruitment
 #: model:ir.model.fields,field_description:website_hr_recruitment.field_hr_job__website_meta_keywords
 msgid "Website meta keywords"
-msgstr ""
+msgstr "വെബ്‌സൈറ്റ് മെറ്റാ കീവേഡുകൾ"
 
 #. module: website_hr_recruitment
 #: model:ir.model.fields,field_description:website_hr_recruitment.field_hr_job__website_meta_title
 msgid "Website meta title"
-msgstr ""
+msgstr "വെബ്‌സൈറ്റ് മെറ്റാ ശീർഷകം"
 
 #. module: website_hr_recruitment
 #: model:ir.model.fields,field_description:website_hr_recruitment.field_hr_job__website_meta_og_img
 msgid "Website opengraph image"
-msgstr ""
+msgstr "വെബ്‌സൈറ്റ് ഓപ്പൺഗ്രാഫ് ചിത്രം"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
 msgid "What We Offer"
-msgstr ""
+msgstr "ഞങ്ങൾ ഓഫർ ചെയ്യുന്നത്"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.default_website_description
 msgid "What's great in the job?"
-msgstr ""
+msgstr "ജോലിയിൽ എന്താണ് മികച്ചത്?"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.view_hr_job_form_inherit_website
@@ -707,18 +743,32 @@ msgid ""
 "You can write here a short description of your Job Description that will be "
 "displayed on the main Jobs' list page."
 msgstr ""
+"നിങ്ങളുടെ ജോലി വിവരണത്തിന്റെ ഒരു ചെറിയ വിവരണം നിങ്ങൾക്ക് ഇവിടെ എഴുതാം, അത് "
+"പ്രധാന ജോലികളുടെ ലിസ്റ്റ് പേജിൽ പ്രദർശിപ്പിക്കും."
+
+#. module: website_hr_recruitment
+#. odoo-javascript
+#: code:addons/website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js:0
+#, python-format
+msgid "Your Email"
+msgstr "നിങ്ങളുടെ ഇമെയിൽ"
+
+#. module: website_hr_recruitment
+#. odoo-javascript
+#: code:addons/website_hr_recruitment/static/src/js/website_hr_recruitment_editor.js:0
+#, python-format
+msgid "Your Name"
+msgstr "നിങ്ങളുടെ പേര്"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "Your application has been posted successfully."
-msgstr ""
+msgstr "നിങ്ങളുടെ അപേക്ഷ വിജയകരമായി പോസ്റ്റ് ചെയ്തു."
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.thankyou_ir_ui_view
-#: model_terms:website.page,arch_db:website_hr_recruitment.thankyou
 msgid "Your application has been sent to:"
-msgstr ""
+msgstr "നിങ്ങളുടെ അപേക്ഷ ഇതിലേക്ക് അയച്ചു:"
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.apply
@@ -734,7 +784,7 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.index
 msgid "for job opportunities."
-msgstr ""
+msgstr "ജോലി അവസരങ്ങൾക്കായി."
 
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.index
@@ -749,4 +799,4 @@ msgstr ""
 #. module: website_hr_recruitment
 #: model_terms:ir.ui.view,arch_db:website_hr_recruitment.index
 msgid "unpublished"
-msgstr ""
+msgstr "പ്രസിദ്ധീകരിക്കാത്തത്"

@@ -4,15 +4,17 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Marianna Ciofani, 2023
+# Sergio Zanchetta <primes2h@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:56+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
-"Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
+"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2024\n"
+"Language-Team: Italian (https://app.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -25,6 +27,8 @@ msgid ""
 "<i class=\"fa fa-exclamation-triangle me-2\" role=\"img\" aria-label=\"Error\" title=\"Error\"/>\n"
 "                    <span class=\"o_wbooth_registration_error_message\"/>"
 msgstr ""
+"<i class=\"fa fa-exclamation-triangle me-2\" role=\"img\" aria-label=\"Errore\" title=\"Errore\"/>\n"
+"                    <span class=\"o_wbooth_registration_error_message\"/>"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
@@ -41,6 +45,8 @@ msgid ""
 "<i class=\"fa fa-gear me-1\" role=\"img\" aria-label=\"Configure\" "
 "title=\"Configure event booths\"/><em>Configure Booths</em>"
 msgstr ""
+"<i class=\"fa fa-gear me-1\" role=\"img\" aria-label=\"Configure\" "
+"title=\"Configure event booths\"/><em>Configura stand</em>"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
@@ -48,6 +54,8 @@ msgid ""
 "<span class=\"alert alert-info\">This event is finished. It's no longer "
 "possible to book a booth.</span>"
 msgstr ""
+"<span class=\"alert alert-info\">Questo evento è terminato. Non è più "
+"possibile prenotare uno stand.</span>"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
@@ -80,7 +88,7 @@ msgstr ""
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration_details
 msgid "<strong>Contact Details</strong>"
-msgstr "<strong>Dettagli di contatto:</strong>"
+msgstr "<strong>Dettagli contatto</strong>"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration_details
@@ -98,18 +106,18 @@ msgid "Booth Register"
 msgstr "Registro di stand"
 
 #. module: website_event_booth
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_event_booth/static/src/xml/event_booth_registration_templates.xml:0
 #, python-format
 msgid "Booth Registration completed!"
 msgstr "Registrazione stand confermata!"
 
 #. module: website_event_booth
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_event_booth/static/src/js/booth_register.js:0
 #, python-format
 msgid "Booth registration failed."
-msgstr ""
+msgstr "Registrazione stand non riuscita."
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
@@ -152,6 +160,7 @@ msgid "Exhibition Map"
 msgstr "Mappa della mostra"
 
 #. module: website_event_booth
+#. odoo-python
 #: code:addons/website_event_booth/models/event_event.py:0
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
 #, python-format
@@ -174,7 +183,7 @@ msgid "Phone"
 msgstr "Telefono"
 
 #. module: website_event_booth
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_event_booth/static/src/js/booth_register.js:0
 #, python-format
 msgid "Please fill out the form correctly."
@@ -186,11 +195,11 @@ msgid "Sorry, all the booths are sold out."
 msgstr "Ci dispiace, tutti gli stand sono esauriti."
 
 #. module: website_event_booth
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_event_booth/static/src/js/booth_register.js:0
 #, python-format
 msgid "The booth category doesn't exist."
-msgstr ""
+msgstr "La categoria stand non esiste."
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
@@ -200,7 +209,7 @@ msgstr "Questo evento non è aperto alla registrazione degli espositori,"
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
 msgid "View Floor Plan"
-msgstr ""
+msgstr "Mostra planimetria"
 
 #. module: website_event_booth
 #: model:ir.model,name:website_event_booth.model_website_event_menu
@@ -210,7 +219,7 @@ msgstr "Menù eventi sito web"
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
 msgid "check our"
-msgstr ""
+msgstr "controlla il nostro"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
@@ -230,4 +239,4 @@ msgstr "Elenco degli eventi futuri"
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
 msgid "you can"
-msgstr ""
+msgstr "puoi"

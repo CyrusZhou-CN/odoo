@@ -3,16 +3,17 @@
 # 	* utm
 # 
 # Translators:
+# Rafeeq Salam, 2023
 # Niyas Raphy, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:26+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:55+0000\n"
 "Last-Translator: Niyas Raphy, 2023\n"
-"Language-Team: Malayalam (https://www.transifex.com/odoo/teams/41243/ml/)\n"
+"Language-Team: Malayalam (https://app.transifex.com/odoo/teams/41243/ml/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -20,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: utm
+#. odoo-python
 #: code:addons/utm/models/utm_source.py:0
 #, python-format
 msgid "%(content)s (%(model_description)s created on %(create_date)s)"
@@ -36,14 +38,14 @@ msgid "Allows us to filter relevant Campaigns"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Approval-based Flow"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Approved"
@@ -52,7 +54,7 @@ msgstr ""
 #. module: utm
 #: model_terms:ir.ui.view,arch_db:utm.utm_medium_view_search
 msgid "Archived"
-msgstr ""
+msgstr "ആർക്കൈവ് ചെയ്തു"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.action_view_utm_tag
@@ -60,7 +62,7 @@ msgid "Assign tags to your campaigns to organize, filter and track them."
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Audience-driven Flow"
@@ -79,25 +81,25 @@ msgstr "ക്യാമ്പയിൻ"
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__name
 msgid "Campaign Identifier"
-msgstr ""
+msgstr "ക്യാമ്പയിൻ ഐഡന്റിഫയർ"
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__title
 #: model_terms:ir.ui.view,arch_db:utm.utm_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:utm.utm_campaign_view_form_quick_create
 msgid "Campaign Name"
-msgstr ""
+msgstr "ക്യാമ്പയിൻ പേര്"
 
 #. module: utm
 #: model:ir.model,name:utm.model_utm_stage
 msgid "Campaign Stage"
-msgstr ""
+msgstr "ക്യാമ്പയിൻ സ്റ്റേജ്"
 
 #. module: utm
 #: model:ir.actions.act_window,name:utm.action_view_utm_tag
 #: model_terms:ir.ui.view,arch_db:utm.utm_tag_view_tree
 msgid "Campaign Tags"
-msgstr ""
+msgstr "ക്യാമ്പയിൻ ടാഗുകൾ"
 
 #. module: utm
 #: model:ir.actions.act_window,name:utm.utm_campaign_action
@@ -119,7 +121,7 @@ msgid "Christmas Special"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Collect ideas, design creative content and publish it once reviewed."
@@ -129,29 +131,29 @@ msgstr ""
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__color
 #: model:ir.model.fields,field_description:utm.field_utm_tag__color
 msgid "Color Index"
-msgstr ""
+msgstr "കളർ ഇൻഡക്സ് "
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Copywriting"
-msgstr ""
+msgstr "കോപ്പിറൈറ്റിംഗ്"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.utm_medium_action
 msgid "Create a Medium"
-msgstr ""
+msgstr "ഒരു മീഡിയം ഉണ്ടാക്കുക"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.action_view_utm_tag
 msgid "Create a Tag"
-msgstr ""
+msgstr "ഒരു ടാഗ് സൃഷ്ടിക്കുക"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.utm_campaign_action
 msgid "Create a campaign"
-msgstr ""
+msgstr "ഒരു കാമ്പെയ്‌ൻ സൃഷ്‌ടിക്കുക"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.action_view_utm_stage
@@ -174,10 +176,10 @@ msgstr "ഉണ്ടാക്കിയത്"
 #: model:ir.model.fields,field_description:utm.field_utm_stage__create_date
 #: model:ir.model.fields,field_description:utm.field_utm_tag__create_date
 msgid "Created on"
-msgstr ""
+msgstr "സൃഷ്ടിച്ചത്"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Creative Flow"
@@ -189,27 +191,27 @@ msgid "Delete"
 msgstr "ഡിലീറ്റ്"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Deploy"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Deployed"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: model:utm.stage,name:utm.campaign_stage_2
 #, python-format
 msgid "Design"
-msgstr ""
+msgstr "ഡിസൈൻ"
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__display_name
@@ -221,7 +223,7 @@ msgid "Display Name"
 msgstr "ഡിസ്പ്ലേ നെയിം"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
@@ -237,7 +239,7 @@ msgstr ""
 #. module: utm
 #: model_terms:ir.ui.view,arch_db:utm.utm_campaign_view_kanban
 msgid "Edit"
-msgstr ""
+msgstr "എഡിറ്റ്"
 
 #. module: utm
 #: model:utm.campaign,title:utm.utm_campaign_email_campaign_products
@@ -250,21 +252,21 @@ msgid "Email Campaign - Services"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Event-driven Flow"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Gather Data"
-msgstr ""
+msgstr "ഡാറ്റ ശേഖരിക്കുക"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid ""
@@ -292,7 +294,7 @@ msgid "ID"
 msgstr "ഐഡി"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
@@ -315,7 +317,7 @@ msgstr "അവസാനം അപ്ഡേറ്റ് ചെയ്തത്"
 #: model:ir.model.fields,field_description:utm.field_utm_stage__write_uid
 #: model:ir.model.fields,field_description:utm.field_utm_tag__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "അവസാനം അപ്ഡേറ്റ് ചെയ്തത്"
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__write_date
@@ -327,19 +329,19 @@ msgid "Last Updated on"
 msgstr "അവസാനം അപ്ഡേറ്റ് ചെയ്തത്"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Later"
-msgstr ""
+msgstr "പിന്നീട്"
 
 #. module: utm
 #: model:ir.ui.menu,name:utm.menu_link_tracker_root
 msgid "Link Tracker"
-msgstr ""
+msgstr "ലിങ്ക് ട്രാക്കർ"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "List-Building"
@@ -378,7 +380,7 @@ msgstr "പേര്"
 #. module: utm
 #: model:utm.stage,name:utm.default_utm_stage
 msgid "New"
-msgstr ""
+msgstr "പുതിയ"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.utm_source_action
@@ -386,21 +388,21 @@ msgid "No Sources yet!"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Pre-Launch"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Prepare Campaigns and get them approved before making them go live."
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid ""
@@ -409,7 +411,7 @@ msgid ""
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Report"
@@ -422,15 +424,15 @@ msgid "Responsible"
 msgstr "ഉത്തരവാദിയായ"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Review"
-msgstr ""
+msgstr "അവലോകനം"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Running"
@@ -452,7 +454,7 @@ msgid "Search UTM Medium"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
@@ -460,13 +462,13 @@ msgid "Send"
 msgstr "അയക്കുക"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #: model:utm.stage,name:utm.campaign_stage_3
 #, python-format
 msgid "Sent"
-msgstr ""
+msgstr "സെൻറ് "
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_stage__sequence
@@ -474,14 +476,14 @@ msgid "Sequence"
 msgstr "സീക്വൻസ് "
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Soft-Launch"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Soft-Launch Flow"
@@ -493,7 +495,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:utm.utm_source_view_form
 #: model_terms:ir.ui.view,arch_db:utm.utm_source_view_tree
 msgid "Source"
-msgstr ""
+msgstr "ഉറവിടം"
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_source__name
@@ -510,13 +512,13 @@ msgstr "സോഴ്സ്സ് "
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__stage_id
 #: model_terms:ir.ui.view,arch_db:utm.view_utm_campaign_view_search
 msgid "Stage"
-msgstr ""
+msgstr "സ്റ്റേജ്"
 
 #. module: utm
 #: model_terms:ir.ui.view,arch_db:utm.utm_stage_view_search
 #: model_terms:ir.ui.view,arch_db:utm.utm_stage_view_tree
 msgid "Stages"
-msgstr ""
+msgstr "സ്റ്റേജ്സ്"
 
 #. module: utm
 #: model_terms:ir.actions.act_window,help:utm.action_view_utm_stage
@@ -535,7 +537,7 @@ msgstr ""
 #. module: utm
 #: model:ir.model.constraint,message:utm.constraint_utm_tag_name_uniq
 msgid "Tag name already exists !"
-msgstr ""
+msgstr "ടാഗ് നാമം ഇതിനകം നിലവിലുണ്ട്!"
 
 #. module: utm
 #: model:ir.model.fields,field_description:utm.field_utm_campaign__tag_ids
@@ -543,6 +545,7 @@ msgid "Tags"
 msgstr "ടാഗുകൾ"
 
 #. module: utm
+#. odoo-python
 #: code:addons/utm/models/utm_medium.py:0
 #, python-format
 msgid ""
@@ -558,14 +561,14 @@ msgid "The name must be unique"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "This Month"
 msgstr "ഈ മാസം"
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "This Week"
@@ -591,14 +594,14 @@ msgid ""
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "To be Approved"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid ""
@@ -668,7 +671,7 @@ msgid "UTMs"
 msgstr ""
 
 #. module: utm
-#. openerp-web
+#. odoo-javascript
 #: code:addons/utm/static/src/js/utm_campaign_kanban_examples.js:0
 #, python-format
 msgid "Use This For My Campaigns"

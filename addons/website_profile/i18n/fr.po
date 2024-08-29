@@ -6,15 +6,16 @@
 # Martin Trigaux, 2022
 # Cécile Collart <cco@odoo.com>, 2022
 # Jolien De Paepe, 2023
+# Manon Rondou, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:26+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:57+0000\n"
-"Last-Translator: Jolien De Paepe, 2023\n"
-"Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
+"Last-Translator: Manon Rondou, 2024\n"
+"Language-Team: French (https://app.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -64,22 +65,27 @@ msgstr "<i class=\"fa fa-arrow-right\"/> Tous les badges"
 msgid "<i class=\"fa fa-pencil fa-1g float-sm-none float-md-start\" title=\"Edit\"/>"
 msgstr ""
 "<i class=\"fa fa-pencil fa-1g float-sm-none float-md-start\" "
-"title=\"Éditer\"/>"
+"title=\"Modifier\"/>"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_header
 msgid "<i class=\"fa fa-pencil me-1\"/>EDIT"
-msgstr "<i class=\"fa fa-pencil me-1\"/>ÉDITER"
+msgstr "<i class=\"fa fa-pencil me-1\"/>MODIFIER"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_header
 msgid "<i class=\"fa fa-pencil me-2\"/>EDIT PROFILE"
-msgstr "<i class=\"fa fa-pencil me-2\"/>ÉDITER LE PROFIL"
+msgstr "<i class=\"fa fa-pencil me-2\"/>MODIFIER LE PROFIL"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.badge_content
 msgid "<i class=\"text-muted\"> awarded users</i>"
 msgstr "<i class=\"text-muted\"> utilisateurs récompensés</i>"
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<option value=\"\">Country...</option>"
+msgstr "<option value=\"\">Pays...</option>"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
@@ -114,7 +120,7 @@ msgstr "<span class=\"fw-bold\">Pays</span>"
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "<span class=\"fw-bold\">Email</span>"
-msgstr "<span class=\"fw-bold\">Email</span>"
+msgstr "<span class=\"fw-bold\">E-mail</span>"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
@@ -157,7 +163,7 @@ msgid ""
 "<span id=\"email_validated_message\">Congratulations! Your email has just "
 "been validated.</span>"
 msgstr ""
-"<span id=\"email_validated_message\">Félicitations ! Votre email vient "
+"<span id=\"email_validated_message\">Félicitations ! Votre e-mail vient "
 "d'être validé.</span>"
 
 #. module: website_profile
@@ -182,12 +188,12 @@ msgid ""
 "                        </span>\n"
 "                    </td>\n"
 "                    <td valign=\"middle\" align=\"right\">\n"
-"                        <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
+"                        <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "                <tr>\n"
 "                    <td colspan=\"2\" style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -200,7 +206,7 @@ msgid ""
 "                <tr>\n"
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                        <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                            Hello <t t-out=\"object.name or ''\">Marc Demo</t>,<br/><br/>\n"
+"                            Hello <t t-out=\"object.name or ''\">Marc Demo</t>,<br><br>\n"
 "                            You have been invited to validate your email in order to get access to \"<t t-out=\"object.company_id.name or ''\">YourCompany</t>\" website.\n"
 "                            To validate your email, please click on the following link:\n"
 "                            <div style=\"margin: 16px 0px 16px 0px;\">\n"
@@ -214,7 +220,7 @@ msgid ""
 "                </tr>\n"
 "                <tr>\n"
 "                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -265,16 +271,16 @@ msgstr ""
 "                <tr>\n"
 "                    <td valign=\"middle\">\n"
 "                        <span style=\"font-size: 20px; font-weight: bold;\">\n"
-"                            Validation du profil de <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
+"                            Validation du profil de <t t-out=\"object.company_id.name or ''\">YourCompany</t> \n"
 "                        </span>\n"
 "                    </td>\n"
 "                    <td valign=\"middle\" align=\"right\">\n"
-"                        <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
+"                        <img t-attf-src=\"/logo.png?company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "                <tr>\n"
 "                    <td colspan=\"2\" style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -287,9 +293,9 @@ msgstr ""
 "                <tr>\n"
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                        <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                            Bonjour <t t-out=\"object.name or ''\">Marc Demo</t>,<br/><br/>\n"
-"                            Nous vous avons invité à valider votre email pour avoir accès au site web de \"<t t-out=\"object.company_id.name or ''\">YourCompany</t>\".\n"
-"                            Pour valider votre email, veuillez cliquer sur le lien suivant :\n"
+"                            Bonjour <t t-out=\"object.name or ''\">Marc Demo</t>,<br><br>\n"
+"                            Nous vous avons invité à valider votre e-mail afin d'avoir accès au site web de \"<t t-out=\"object.company_id.name or ''\">YourCompany</t>\".\n"
+"                            Pour valider votre e-mail, cliquez sur le lien suivant :\n"
 "                            <div style=\"margin: 16px 0px 16px 0px;\">\n"
 "                                <a t-att-href=\"ctx.get('token_url')\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                                    Valider mon compte\n"
@@ -301,7 +307,7 @@ msgstr ""
 "                </tr>\n"
 "                <tr>\n"
 "                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\">\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -317,8 +323,8 @@ msgstr ""
 "                    </td>\n"
 "                    <td valign=\"middle\" align=\"right\" style=\"opacity: 0.7;\">\n"
 "                        <t t-out=\"user.company_id.phone or ''\">+1 650-123-4567</t>\n"
-"                        <t t-if=\"user.company_id.email\">\n"
-"                            | <a t-attf-href=\"'mailto:%s' % {{ user.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"user.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                        <t t-if=\"user.company_id.e-mail\">\n"
+"                            | <a t-attf-href=\"'mailto:%s' % {{ user.company_id.e-mail }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"user.company_id.e-mail or ''\">info@yourcompany.com</a>\n"
 "                        </t>\n"
 "                        <t t-if=\"user.company_id.website\">\n"
 "                            | <a t-attf-href=\"{{ user.company_id.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"user.company_id.website or ''\">http://www.example.com</a>\n"
@@ -345,7 +351,7 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
 msgid "<u>Correct your email address</u>"
-msgstr "<u>Corriger votre adresse email</u>"
+msgstr "<u>Corriger votre adresse e-mail</u>"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
@@ -413,23 +419,18 @@ msgstr "Fermer"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
-msgid "Country..."
-msgstr "Pays..."
-
-#. module: website_profile
-#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "Edit"
-msgstr "Éditer"
+msgstr "Modifier"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "Edit Profile"
-msgstr "Éditer le profil"
+msgstr "Modifier le profil"
 
 #. module: website_profile
 #: model:mail.template,name:website_profile.validation_email
 msgid "Forum: Email Verification"
-msgstr "Forum : Vérification par email"
+msgstr "Forum : Vérification par e-mail"
 
 #. module: website_profile
 #: model:ir.model,name:website_profile.model_gamification_badge
@@ -507,8 +508,8 @@ msgid ""
 "Please enter a valid email address in order to receive notifications from "
 "answers or comments."
 msgstr ""
-"Veuillez saisir une adresse email valide afin de recevoir les notifications "
-"suite à des réponses ou commentaires."
+"Veuillez saisir une adresse e-mail valide afin de recevoir les notifications"
+" suite à des réponses ou commentaires."
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
@@ -529,11 +530,6 @@ msgstr "Retourner au site web."
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
 msgid "Search"
 msgstr "Rechercher"
-
-#. module: website_profile
-#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
-msgid "Search courses"
-msgstr "Rechercher des cours"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
@@ -594,7 +590,7 @@ msgstr "Utilisateurs"
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
 msgid "Verification Email sent to"
-msgstr "Email de vérification envoyé à"
+msgstr "E-mail de vérification envoyé à"
 
 #. module: website_profile
 #: model:ir.model.fields,field_description:website_profile.field_gamification_badge__website_published
@@ -648,7 +644,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
 msgid "Your account does not have an email set up. Please set it up on"
 msgstr ""
-"Aucun email n'a été configuré pour votre compte. Merci de le configurer sur"
+"Aucun e-mail n'a été configuré pour votre compte. Merci de le configurer sur"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
@@ -679,7 +675,7 @@ msgstr "cette semaine"
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
 msgid "to receive a verification email"
-msgstr "pour recevoir un email de vérification"
+msgstr "pour recevoir un e-mail de vérification"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.profile_next_rank_card

@@ -4,15 +4,16 @@
 # 
 # Translators:
 # Niyas Raphy, 2023
+# Nikhil Krishnan, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-27 15:12+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-29 09:44+0000\n"
-"Last-Translator: Niyas Raphy, 2023\n"
-"Language-Team: Malayalam (https://www.transifex.com/odoo/teams/41243/ml/)\n"
+"Last-Translator: Nikhil Krishnan, 2023\n"
+"Language-Team: Malayalam (https://app.transifex.com/odoo/teams/41243/ml/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -20,22 +21,22 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "Attendees"
-msgstr ""
+msgstr "പങ്കെടുക്കുന്നവർ"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "Attendees by Course"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
@@ -43,7 +44,7 @@ msgid "Content"
 msgstr "ഉള്ളടക്കം"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
@@ -51,7 +52,7 @@ msgid "Courses"
 msgstr "കോഴ്സുകൾ"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
@@ -59,14 +60,14 @@ msgid "Current"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "Period"
 msgstr "പീരീഡ്"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
@@ -74,86 +75,86 @@ msgid "Previous"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "Rating"
-msgstr ""
+msgstr "റേറ്റിംഗ്"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "Revenue"
-msgstr ""
+msgstr "വരുമാനം"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "Revenues"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "Views by Course"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "attendees - current"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "attendees - previous"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "content"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "courses"
-msgstr ""
+msgstr "കോഴ്സുകൾ"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "rating"
-msgstr ""
+msgstr "റേറ്റിംഗ്"
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "revenue - current"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format
 msgid "revenue - previous"
 msgstr ""
 
 #. module: spreadsheet_dashboard_website_sale_slides
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #: code:addons/spreadsheet_dashboard_website_sale_slides/data/files/elearning_dashboard.json:0
 #, python-format

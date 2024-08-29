@@ -10,18 +10,19 @@
 # Martin Trigaux, 2022
 # abc Def <hdogan1974@gmail.com>, 2022
 # Saban Yildiz <sabany@projetgrup.com>, 2022
-# Umur Akın <umura@projetgrup.com>, 2022
 # Murat Kaplan <muratk@projetgrup.com>, 2022
 # Buket Şeker <buket_skr@hotmail.com>, 2022
+# Tugay Hatıl <tugayh@projetgrup.com>, 2023
+# Umur Akın <umura@projetgrup.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:02+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:57+0000\n"
-"Last-Translator: Buket Şeker <buket_skr@hotmail.com>, 2022\n"
-"Language-Team: Turkish (https://www.transifex.com/odoo/teams/41243/tr/)\n"
+"Last-Translator: Umur Akın <umura@projetgrup.com>, 2023\n"
+"Language-Team: Turkish (https://app.transifex.com/odoo/teams/41243/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -31,7 +32,7 @@ msgstr ""
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid ", <strong>create a project</strong> with the following information:"
-msgstr ""
+msgstr ", aşağıdaki bilgilerle <strong>bir proje oluşturun</strong>:"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -39,6 +40,8 @@ msgid ""
 ", click on <strong>Elevated</strong> then on <strong>Apply</strong> and "
 "finally complete the form."
 msgstr ""
+", <strong>Yükseltilmiş'e</strong> ve ardından <strong>Uygula'ya</strong> "
+"tıklayın ve son olarak formu doldurun."
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -52,12 +55,12 @@ msgstr ""
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "<span class=\"o_form_label\">Twitter Roller</span>"
-msgstr ""
+msgstr "<span class=\"o_form_label\">Twitter Roller</span>"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "<strong>App Name: </strong> choose a unique name"
-msgstr ""
+msgstr "<strong>Uygulama Adı: </strong> benzersiz bir ad seçin"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -72,7 +75,7 @@ msgstr "<strong>İsim: </strong>Odoo Twitter Enterasyonu"
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "<strong>Use Case: </strong> Embedding Tweets in a website"
-msgstr ""
+msgstr "<strong>Kullanım Örneği:</strong> Tweetleri bir web sitesine gömme"
 
 #. module: website_twitter
 #: model:ir.model.fields,field_description:website_twitter.field_res_config_settings__twitter_api_key
@@ -87,6 +90,7 @@ msgid "API secret"
 msgstr "API parolası"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -105,6 +109,8 @@ msgstr "Yapılandırma Ayarları"
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Copy/Paste the API Key and API Key Secret values into the above fields"
 msgstr ""
+"API Anahtarı ve API Anahtarı Gizli değerlerini yukarıdaki alanlara "
+"kopyalayın/yapıştırın"
 
 #. module: website_twitter
 #: model:ir.model.fields,field_description:website_twitter.field_website_twitter_tweet__create_uid
@@ -130,7 +136,7 @@ msgstr "Favoriler"
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Get Elevated access by going to"
-msgstr ""
+msgstr "Şuraya giderek Yükseltilmiş erişim elde edin:"
 
 #. module: website_twitter
 #: model:ir.model.fields,field_description:website_twitter.field_website__twitter_screen_name
@@ -138,6 +144,7 @@ msgid "Get favorites from this screen name"
 msgstr "Bu ekran adınsan favorileri alın"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "HTTP Error: Something is misconfigured"
@@ -154,10 +161,11 @@ msgid "ID"
 msgstr "ID"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "Internet connection refused: We failed to reach a twitter server."
-msgstr ""
+msgstr "İnternet bağlantısı reddedildi: Bir twitter sunucusuna ulaşamadık."
 
 #. module: website_twitter
 #: model:ir.model.fields,field_description:website_twitter.field_website_twitter_tweet____last_update
@@ -177,7 +185,7 @@ msgstr "Son Güncelleme"
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Log in or create an account on"
-msgstr ""
+msgstr "Giriş yapın veya bir hesap oluşturun"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
@@ -190,8 +198,11 @@ msgid ""
 "Once connected, and if not already done, complete the Twitter portal access "
 "process on"
 msgstr ""
+"Bağlandıktan sonra ve henüz yapılmadıysa, Twitter portalı erişim sürecini şu"
+" adresten tamamlayın:"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/controllers/main.py:0
 #, python-format
 msgid ""
@@ -202,19 +213,21 @@ msgstr ""
 " aynı olması gerekmez)"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/controllers/main.py:0
 #, python-format
 msgid "Please set the Twitter API Key and Secret in the Website Settings."
 msgstr "Websitesi Ayarlar Twitter API Key ve Gizli ayarlayın."
 
 #. module: website_twitter
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_twitter/static/src/js/website.twitter.editor.js:0
 #, python-format
 msgid "Reload"
 msgstr "Yeninden Yükle"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -238,6 +251,7 @@ msgstr ""
 "Secret ile eşleşmesine gerek yoktur."
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -247,6 +261,7 @@ msgstr ""
 "deneyin."
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -257,6 +272,7 @@ msgstr ""
 "istekte bulunulmadı. Daha sonra tekrar deneyin."
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -267,6 +283,7 @@ msgstr ""
 "verilmemektedir. Lütfen Twitter API Key ve Parolanızı kontrol edin."
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -277,6 +294,7 @@ msgstr ""
 "talepleri geçersiz kabul edilir ve bu yanıtı verecektir."
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "There was no new data to return."
@@ -328,7 +346,7 @@ msgid "Twitter API secret you can get it from https://apps.twitter.com/"
 msgstr "Twitter API parolasını buradan alabilirsin: https://apps.twitter.com/"
 
 #. module: website_twitter
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_twitter/static/src/xml/website.twitter.xml:0
 #, python-format
 msgid "Twitter Configuration"
@@ -337,23 +355,33 @@ msgstr "Twitter yapılandırma"
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "Twitter Portal"
-msgstr ""
+msgstr "Twitter Portal"
 
 #. module: website_twitter
+#: model_terms:ir.ui.view,arch_db:website_twitter.website_twitter_snippet
+msgid "Twitter Scroller"
+msgstr "Twitter Kaydırıcı"
+
+#. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
 "Twitter authorization error! Please double-check your Twitter API Key and "
 "Secret!"
 msgstr ""
+"Twitter yetkilendirme hatası! Lütfen Twitter API Anahtarınızı ve Sırrınızı "
+"tekrar kontrol edin!"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid "Twitter is down or being upgraded."
 msgstr "Twitter çalışmıyor yada güncelleniyor."
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -374,6 +402,7 @@ msgid "Twitter tutorial"
 msgstr "Twitter öğretici"
 
 #. module: website_twitter
+#. odoo-python
 #: code:addons/website_twitter/controllers/main.py:0
 #, python-format
 msgid ""
@@ -384,7 +413,7 @@ msgstr ""
 "fazla favori ekleyin ya da farklı bir ad seçin."
 
 #. module: website_twitter
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_twitter/static/src/xml/website.twitter.xml:0
 #, python-format
 msgid "Twitter's user"
@@ -393,7 +422,6 @@ msgstr "Twitter Kullanıcısı"
 #. module: website_twitter
 #: model:ir.actions.server,name:website_twitter.ir_cron_twitter_actions_ir_actions_server
 #: model:ir.cron,cron_name:website_twitter.ir_cron_twitter_actions
-#: model:ir.cron,name:website_twitter.ir_cron_twitter_actions
 msgid "Twitter: Fetch new favorites"
 msgstr "Twitter: Yeni favoriler getir"
 
@@ -411,14 +439,14 @@ msgstr "Website Twitter"
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "https://developer.twitter.com/"
-msgstr ""
+msgstr "https://developer.twitter.com/"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "https://developer.twitter.com/en/portal/products"
-msgstr ""
+msgstr "https://developer.twitter.com/en/portal/products"
 
 #. module: website_twitter
 #: model_terms:ir.ui.view,arch_db:website_twitter.res_config_settings_view_form
 msgid "https://developer.twitter.com/portal/"
-msgstr ""
+msgstr "https://developer.twitter.com/portal/"

@@ -9,12 +9,12 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~15.4\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-09 14:06+0000\n"
+"POT-Creation-Date: 2024-02-06 13:32+0000\n"
 "PO-Revision-Date: 2022-09-22 05:56+0000\n"
 "Last-Translator: Jolien De Paepe, 2023\n"
-"Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
+"Language-Team: French (https://app.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -57,7 +57,7 @@ msgid "Chat Rooms"
 msgstr "Salles de discussion"
 
 #. module: website_jitsi
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_jitsi/static/src/xml/chat_room_modal.xml:0
 #, python-format
 msgid "Close"
@@ -76,7 +76,7 @@ msgstr "Créé le"
 #. module: website_jitsi
 #: model:ir.model.fields,field_description:website_jitsi.field_chat_room__display_name
 msgid "Display Name"
-msgstr "Afficher le nom"
+msgstr "Nom d'affichage"
 
 #. module: website_jitsi
 #: model:ir.model.fields,field_description:website_jitsi.field_chat_room__is_full
@@ -130,7 +130,7 @@ msgid "Last activity"
 msgstr "Dernière activité"
 
 #. module: website_jitsi
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_jitsi/static/src/xml/chat_room_modal.xml:0
 #, python-format
 msgid "Loading your room..."

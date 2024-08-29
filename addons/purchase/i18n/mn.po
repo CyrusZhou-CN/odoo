@@ -14,7 +14,7 @@
 # Munkhbaatar g <muuguu17@gmail.com>, 2022
 # Cheemee Bumtsend <cheemeesun@gmail.com>, 2022
 # Onii Onii <onii0223@yahoo.com>, 2022
-# Батмөнх Ганбат <batmunkh2522@gmail.com>, 2022
+# Batmunkh Ganbat <batmunkh2522@gmail.com>, 2022
 # Bayarkhuu Bataa, 2022
 # Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2022
 # Батболд <batbold.ts@gmail.com>, 2022
@@ -22,15 +22,16 @@
 # Martin Trigaux, 2022
 # hish, 2022
 # Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2023
+# Torbat Jargalsaikhan, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-02 10:33+0000\n"
+"POT-Creation-Date: 2024-02-06 13:31+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2023\n"
-"Language-Team: Mongolian (https://www.transifex.com/odoo/teams/41243/mn/)\n"
+"Last-Translator: Torbat Jargalsaikhan, 2023\n"
+"Language-Team: Mongolian (https://app.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -124,24 +125,24 @@ msgid ""
 "        <t t-if=\"object.partner_id.parent_id\">\n"
 "            (<t t-out=\"object.partner_id.parent_id.name or ''\">Azure Interior</t>)\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Here is a reminder that the delivery of the purchase order <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">P00015</span>\n"
 "        <t t-if=\"object.partner_ref\">\n"
 "            <span style=\"font-weight:bold;\">(<t t-out=\"object.partner_ref or ''\">REF_XXX</t>)</span>\n"
 "        </t>\n"
 "        is expected for \n"
 "        <t t-if=\"object.date_planned\">\n"
-"            <span style=\"font-weight:bold;\" t-out=\"format_date(object.date_planned) or ''\">05/05/2021</span>.\n"
+"            <span style=\"font-weight:bold;\" t-out=\"format_date(object.get_localized_date_planned()) or ''\">05/05/2021</span>.\n"
 "        </t>\n"
 "         <t t-else=\"\">\n"
 "            <span style=\"font-weight:bold;\">undefined</span>.\n"
 "        </t>\n"
 "        Could you please confirm it will be delivered on time?\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"            <br><br>\n"
+"            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "    </p>\n"
 "</div>"
 msgstr ""
@@ -155,24 +156,24 @@ msgid ""
 "        <t t-if=\"object.partner_id.parent_id\">\n"
 "            (<t t-out=\"object.partner_id.parent_id.name or ''\">Azure Interior</t>)\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Here is in attachment a purchase order <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">P00015</span>\n"
 "        <t t-if=\"object.partner_ref\">\n"
 "            with reference: <t t-out=\"object.partner_ref or ''\">REF_XXX</t>\n"
 "        </t>\n"
 "        amounting in <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 10.00</span>\n"
 "        from <t t-out=\"object.company_id.name or ''\">YourCompany</t>. \n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        <t t-if=\"object.date_planned\">\n"
-"            The receipt is expected for <span style=\"font-weight:bold;\" t-out=\"format_date(object.date_planned) or ''\">05/05/2021</span>.\n"
-"            <br/><br/>\n"
+"            The receipt is expected for <span style=\"font-weight:bold;\" t-out=\"format_date(object.get_localized_date_planned()) or ''\">05/05/2021</span>.\n"
+"            <br><br>\n"
 "            Could you please acknowledge the receipt of this order?\n"
 "        </t>\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"            <br><br>\n"
+"            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "    </p>\n"
 "</div>"
 msgstr ""
@@ -186,19 +187,19 @@ msgid ""
 "        <t t-if=\"object.partner_id.parent_id\">\n"
 "            (<t t-out=\"object.partner_id.parent_id.name or ''\">Azure Interior</t>)\n"
 "        </t>\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Here is in attachment a request for quotation <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">P00015</span>\n"
 "        <t t-if=\"object.partner_ref\">\n"
 "            with reference: <t t-out=\"object.partner_ref or ''\">REF_XXX</t>\n"
 "        </t>\n"
 "        from <t t-out=\"object.company_id.name or ''\">YourCompany</t>.\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        If you have any questions, please do not hesitate to contact us.\n"
-"        <br/><br/>\n"
+"        <br><br>\n"
 "        Best regards,\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"            <br><br>\n"
+"            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
 "        </t>\n"
 "    </p>\n"
 "</div>"
@@ -225,6 +226,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<i class=\"fa fa-fw fa-check\"/> <b>Paid</b>"
 msgstr "<i class=\"fa fa-fw fa-check\"/> <b>Төлөгдсөн</b>"
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
+msgid "<i class=\"fa fa-fw fa-check\"/> <b>Reversed</b>"
+msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -323,8 +329,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid ""
 "<span groups=\"account.group_show_line_subtotals_tax_excluded\">Amount</span>\n"
-"                              <span groups=\"account.group_show_line_subtotals_tax_included\">Total Price</span>"
+"                                <span groups=\"account.group_show_line_subtotals_tax_included\">Total Price</span>"
 msgstr ""
+"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Дүн</span>\n"
+"                                <span groups=\"account.group_show_line_subtotals_tax_included\">Нийт үнэ</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_partner_property_form
@@ -413,7 +421,7 @@ msgstr "<strong>Тоо</strong>"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<strong>Receipt Date:</strong>"
-msgstr ""
+msgstr "<strong>Хүлээн авсан огноо\\:</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -657,6 +665,11 @@ msgid "Analytic Account"
 msgstr "Шинжилгээний данс"
 
 #. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr "Шинжилгээний хуваарилалт хайх"
+
+#. module: purchase
 #: model:ir.model,name:purchase.model_account_analytic_applicability
 msgid "Analytic Plan's Applicabilities"
 msgstr ""
@@ -718,7 +731,6 @@ msgid "Automatically remind the receipt date to your vendors"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,help:purchase.field_purchase_order__receipt_reminder_email
 #: model:ir.model.fields,help:purchase.field_res_partner__receipt_reminder_email
 #: model:ir.model.fields,help:purchase.field_res_users__receipt_reminder_email
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -1623,7 +1635,7 @@ msgstr "Хамгийн шинэ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Календар дээрх дараагийн Үйл ажиллагаа"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__activity_date_deadline
@@ -1703,7 +1715,6 @@ msgid "Number of Actions"
 msgstr "Үйлдлийн тоо"
 
 #. module: purchase
-#: model:ir.model.fields,help:purchase.field_purchase_order__reminder_date_before_receipt
 #: model:ir.model.fields,help:purchase.field_res_partner__reminder_date_before_receipt
 #: model:ir.model.fields,help:purchase.field_res_users__reminder_date_before_receipt
 msgid "Number of days to send reminder email before the promised receipt date"
@@ -1716,8 +1727,8 @@ msgstr "Алдааны тоо"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__message_needaction_counter
-msgid "Number of messages which requires an action"
-msgstr "Үйлдэл шаардсан зурвасын тоо"
+msgid "Number of messages requiring action"
+msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__message_has_error_counter

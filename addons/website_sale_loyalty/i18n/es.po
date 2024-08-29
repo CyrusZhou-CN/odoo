@@ -5,6 +5,9 @@
 # Translators:
 # Martin Trigaux, 2022
 # Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022
+# David Vidal <david.vidal@tecnativa.com>, 2023
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2023
+# Wil Odoo, 2024
 # 
 msgid ""
 msgstr ""
@@ -12,8 +15,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 10:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:57+0000\n"
-"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022\n"
-"Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
+"Last-Translator: Wil Odoo, 2024\n"
+"Language-Team: Spanish (https://app.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -50,7 +53,7 @@ msgstr "Reclamación"
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Costs"
-msgstr "Costos"
+msgstr "Costes"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.layout
@@ -66,7 +69,7 @@ msgstr "Cupón"
 #: model:ir.model,name:website_sale_loyalty.model_coupon_share
 msgid "Create links that apply a coupon and redirect to a specific page"
 msgstr ""
-"Crear enlaces que apliquen un cupón y redireccionen a una página específica"
+"Cree enlaces que apliquen un cupón y redireccionen a una página específica"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__create_uid
@@ -126,7 +129,7 @@ msgstr "Tarjeta de regalo o código de descuento..."
 #. module: website_sale_loyalty
 #: model:ir.ui.menu,name:website_sale_loyalty.menu_gift_ewallet_type_config
 msgid "Gift cards & eWallet"
-msgstr "Tarjetas de regalo y cartera electrónica"
+msgstr "Tarjetas de regalo y monedero electrónico"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__id
@@ -156,7 +159,7 @@ msgstr "Última actualización el"
 #. module: website_sale_loyalty
 #: model:ir.ui.menu,name:website_sale_loyalty.menu_loyalty
 msgid "Loyalty"
-msgstr "Lealtad"
+msgstr "Fidelidad"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_card
@@ -166,22 +169,22 @@ msgstr "Cupón de fidelidad"
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_program
 msgid "Loyalty Program"
-msgstr "Programa de Lealtad"
+msgstr "Programa de fidelización"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.res_config_settings_view_form_inherit_website_sale_loyalty
 msgid "Loyalty Programs"
-msgstr "Programas de Lealtad"
+msgstr "Programas de fidelización"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_rule
 msgid "Loyalty Rule"
-msgstr "Regla de Lealtad"
+msgstr "Regla de fidelidad"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Pay with eWallet"
-msgstr "Pagar con cartera electrónica"
+msgstr "Pagar con monedero electrónico"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__program_id
@@ -202,12 +205,12 @@ msgstr "Código promocional"
 #: code:addons/website_sale_loyalty/wizard/sale_coupon_share.py:0
 #, python-format
 msgid "Provide either a coupon or a program."
-msgstr "Proporcionar un cupón o un programa."
+msgstr "Proporcione un cupón o un programa."
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__redirect
 msgid "Redirect"
-msgstr "Redirigir"
+msgstr "Redireccionar"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,help:website_sale_loyalty.field_coupon_share__program_website_id
@@ -295,14 +298,14 @@ msgstr ""
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "You have"
-msgstr "Tienes"
+msgstr "Tiene"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "You have successfully applied the following code:"
-msgstr "Aplicó con éxito el siguiente código:"
+msgstr "Ha aplicado satisfactoriamente el siguiente código:"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "in your ewallet"
-msgstr "en su cartera electrónica"
+msgstr "en su monedero electrónico"
