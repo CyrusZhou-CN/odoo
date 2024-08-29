@@ -1,34 +1,48 @@
-name: Upstream Sync
-
-permissions:
-    contents: write
+name: Sync All Branches
 
 on:
-    schedule:
-        - cron: "0 0 * * *"
-    workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"  # 每天 UTC 时间 0:00 触发一次
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
-    sync_with_upstream:
-        name: Sync with Upstream
-        runs-on: ubuntu-latest
-        if: ${{ github.event.repository.fork }}
+  sync:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout target repo
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v3
+        with:
+          ref: main  # 确保检出正确的分支（可以是主分支）
 
-            - name: Sync Upstream
-              uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
-              with:
-                  target_repo_token: ${{ secrets.GH_TOKEN  }}
-                  upstream_sync_repo: odoo/odoo
-                  upstream_sync_branch: '*'
-                  target_sync_branch: '*'
-                  test_mode: false
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
 
-            - name: Check for Failure
-              if: failure()
-              run: |
-                  echo "[Error] Due to a change in the workflow file of the upstream repository, GitHub has automatically suspended the scheduled automatic update. You need to manually sync your fork."
-                  exit 1
+      - name: Fetch all branches from upstream
+        run: |
+          git remote add upstream https://github.com/odoo/odoo.git
+          git fetch upstream
+
+      - name: Sync branches
+        run: |
+          for branch in $(git branch -r | grep 'upstream/' | grep -v '\->' | sed 's/upstream\///'); do
+            echo "Processing branch: $branch"
+            if git show-ref --verify --quiet "refs/heads/$branch"; then
+              git checkout "$branch"
+              git pull upstream "$branch"  # 拉取最新的上游分支内容
+            else
+              git checkout -b "$branch" "upstream/$branch"  # 创建新分支并切换到该分支
+            fi
+            git push origin "$branch"  # 推送到你的仓库
+          done
+
+      - name: Push tags
+        run: |
+          git fetch --tags
+          git push --tags
+
+      - name: Cleanup
+        run: |
+          git gc --prune=now
