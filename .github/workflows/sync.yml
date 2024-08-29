@@ -13,16 +13,20 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v3
         with:
-          ref: main  # 确保检出正确的分支（可以是主分支）
+          repository: CyrusZhou-CN/odoo
+          ssh-key: ${{ secrets.GH_TOKEN }}  # 使用 SSH 密钥进行认证
 
       - name: Setup Git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+      - name: Add upstream remote
+        run: |
+          git remote add upstream git@github.com:odoo/odoo.git
+
       - name: Fetch all branches from upstream
         run: |
-          git remote add upstream https://github.com/odoo/odoo.git
           git fetch upstream
 
       - name: Sync branches
