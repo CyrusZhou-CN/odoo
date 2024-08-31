@@ -84,12 +84,13 @@ var FormController = BasicController.extend({
      * @todo make record creation a basic controller feature
      * @param {string} [parentID] if given, the parentID will be used as parent
      *                            for the new record.
+     * @param {Object} [additionalContext]
      * @returns {Promise}
      */
-    createRecord: async function (parentID) {
+    createRecord: async function (parentID, additionalContext) {
         const record = this.model.get(this.handle, { raw: true });
         const handle = await this.model.load({
-            context: record.getContext(),
+            context: record.getContext({ additionalContext: additionalContext}),
             fields: record.fields,
             fieldsInfo: record.fieldsInfo,
             modelName: this.modelName,
@@ -468,7 +469,7 @@ var FormController = BasicController.extend({
         var attrs = ev.data.attrs;
         if (attrs.confirm) {
             def = new Promise(function (resolve, reject) {
-                Dialog.confirm(this, attrs.confirm, {
+                Dialog.confirm(self, attrs.confirm, {
                     confirm_callback: saveAndExecuteAction,
                 }).on("closed", null, resolve);
             });
@@ -514,7 +515,10 @@ var FormController = BasicController.extend({
      * @private
      */
     _onDiscard: function () {
-        this._discardChanges();
+        this._disableButtons();
+        this._discardChanges()
+            .then(this._enableButtons.bind(this))
+            .guardedCatch(this._enableButtons.bind(this));
     },
     /**
      * Called when the user clicks on 'Duplicate Record' in the action menus
@@ -533,9 +537,13 @@ var FormController = BasicController.extend({
      * @private
      */
     _onEdit: function () {
+        this._disableButtons();
         // wait for potential pending changes to be saved (done with widgets
         // allowing to edit in readonly)
-        this.mutex.getUnlockedDef().then(this._setMode.bind(this, 'edit'));
+        this.mutex.getUnlockedDef()
+            .then(this._setMode.bind(this, 'edit'))
+            .then(this._enableButtons.bind(this))
+            .guardedCatch(this._enableButtons.bind(this));
     },
     /**
      * This method is called when someone tries to freeze the order, most likely

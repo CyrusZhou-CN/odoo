@@ -125,6 +125,7 @@ class ViewCustom(models.Model):
     _name = 'ir.ui.view.custom'
     _description = 'Custom View'
     _order = 'create_date desc'  # search(limit=1) should return the last customization
+    _allow_sudo_commands = False
 
     ref_id = fields.Many2one('ir.ui.view', string='Original View', index=True, required=True, ondelete='cascade')
     user_id = fields.Many2one('res.users', string='User', index=True, required=True, ondelete='cascade')
@@ -202,6 +203,7 @@ class View(models.Model):
     _name = 'ir.ui.view'
     _description = 'View'
     _order = "priority,name,id"
+    _allow_sudo_commands = False
 
     name = fields.Char(string='View Name', required=True)
     model = fields.Char(index=True)
@@ -249,6 +251,13 @@ different model than this one), then this view's inheritance specs
 (<xpath/>) are applied, and the result is used as if it were this view's
 actual arch.
 """)
+
+    # The "active" field is not updated during updates if <template> is used
+    # instead of <record> to define the view in XML, see _tag_template. For
+    # qweb views, you should not rely on the active field being updated anyway
+    # as those views, if used in frontend layouts, can be duplicated (see COW)
+    # and will thus always require upgrade scripts if you really want to change
+    # the default value of their "active" field.
     active = fields.Boolean(default=True,
                             help="""If this view is inherited,
 * if True, the view always extends its parent
@@ -692,7 +701,14 @@ actual arch.
     def inherit_branding(self, specs_tree):
         for node in specs_tree.iterchildren(tag=etree.Element):
             xpath = node.getroottree().getpath(node)
-            if node.tag == 'data' or node.tag == 'xpath' or node.get('position') or node.get('t-field'):
+            if node.tag == 'data' or node.tag == 'xpath' or node.get('position'):
+                self.inherit_branding(node)
+            elif node.get('t-field'):
+                # Note: 'data-oe-field-xpath' and not 'data-oe-xpath' as this
+                # was introduced as a fix. To avoid breaking customizations and
+                # to make a minimal diff fix, a separated attribute was used.
+                # TODO Try to use a common attribute in master (14.1).
+                node.set('data-oe-field-xpath', xpath)
                 self.inherit_branding(node)
             else:
                 node.set('data-oe-id', str(self.id))
@@ -804,7 +820,6 @@ actual arch.
         return dict(view_data, arch=etree.tostring(arch, encoding='unicode'))
 
     def _apply_groups(self, node, name_manager, node_info):
-        #pylint: disable=unused-argument
         """ Apply group restrictions: elements with a 'groups' attribute should
         be made invisible to people who are not members.
         """
@@ -898,7 +913,7 @@ actual arch.
         Model = self.env[model].sudo(False)
         is_base_model = self.env.context.get('base_model_name', model) == model
 
-        if node.tag in ('kanban', 'tree', 'form', 'activity'):
+        if node.tag in ('kanban', 'tree', 'form', 'activity', 'calendar'):
             for action, operation in (('create', 'create'), ('delete', 'unlink'), ('edit', 'write')):
                 if (not node.get(action) and
                         not Model.check_access_rights(operation, raise_exception=False) or
@@ -937,7 +952,7 @@ actual arch.
                 # the node has been removed, stop processing here
                 return
 
-        elif tag in {item[0] for item in type(self.env['ir.ui.view']).type.selection}:
+        elif tag in {item[0] for item in self.env['ir.ui.view']._fields['type'].selection}:
             node_info['editable'] = False
 
         if name_manager.validate:
@@ -1112,7 +1127,7 @@ actual arch.
             elif not name:
                 self.handle_view_error(_("Button must have a name"))
             elif type_ == 'object':
-                func = getattr(type(name_manager.Model), name, None)
+                func = getattr(name_manager.Model, name, None)
                 if not func:
                     msg = _(
                         "%(action_name)s is not a valid action on %(model_name)s",
@@ -1128,7 +1143,7 @@ actual arch.
                     )
                     self.handle_view_error(msg)
                 try:
-                    inspect.signature(func).bind(self=name_manager.Model)
+                    inspect.signature(func).bind()
                 except TypeError:
                     msg = "%s on %s has parameters and cannot be called from a button"
                     self.handle_view_error(msg % (name, name_manager.Model._name), raise_exception=False)
@@ -1572,7 +1587,8 @@ actual arch.
 
     @api.model
     def read_template(self, xml_id):
-        """ Return a template content based on external id
+        """ This method is deprecated
+        Return a template content based on external id
         Read access on ir.ui.view required
         """
         template_id = self.get_view_id(xml_id)
@@ -1622,15 +1638,27 @@ actual arch.
                 if not attrs.intersection(descendant.attrib):
                     continue
                 self._pop_view_branding(descendant)
-            # TODO: find a better name and check if we have a string to boolean helper
+
+            # Remove the processing instructions indicating where nodes were
+            # removed (see apply_inheritance_specs)
+            for descendant in e.iterdescendants(tag=etree.ProcessingInstruction):
+                if descendant.target == 'apply-inheritance-specs-node-removal':
+                    descendant.getparent().remove(descendant)
             return
 
         node_path = e.get('data-oe-xpath')
         if node_path is None:
             node_path = "%s/%s[%d]" % (parent_xpath, e.tag, index_map[e.tag])
-        if branding and not (e.get('data-oe-model') or e.get('t-field')):
-            e.attrib.update(branding)
-            e.set('data-oe-xpath', node_path)
+        if branding:
+            if e.get('t-field'):
+                # Note: 'data-oe-field-xpath' and not 'data-oe-xpath' as this
+                # was introduced as a fix. To avoid breaking customizations and
+                # to make a minimal diff fix, a separated attribute was used.
+                # TODO Try to use a common attribute in master (14.1).
+                e.set('data-oe-field-xpath', node_path)
+            elif not e.get('data-oe-model'):
+                e.attrib.update(branding)
+                e.set('data-oe-xpath', node_path)
         if not e.get('data-oe-model'):
             return
 
@@ -1648,16 +1676,18 @@ actual arch.
                 # TODO: collections.Counter if remove p2.6 compat
                 # running index by tag type, for XPath query generation
                 indexes = collections.defaultdict(lambda: 0)
-                for child in e.iterchildren(tag=etree.Element):
-                    if child.get('data-oe-xpath'):
+                for child in e.iterchildren(etree.Element, etree.ProcessingInstruction):
+                    if child.get('data-oe-xpath') or child.get('data-oe-field-xpath'):
                         # injected by view inheritance, skip otherwise
                         # generated xpath is incorrect
-                        # Also, if a node is known to have been replaced during applying xpath
-                        # increment its index to compute an accurate xpath for susequent nodes
-                        replaced_node_tag = child.attrib.pop('meta-oe-xpath-replacing', None)
-                        if replaced_node_tag:
-                            indexes[replaced_node_tag] += 1
                         self.distribute_branding(child)
+                    elif child.tag is etree.ProcessingInstruction:
+                        # If a node is known to have been replaced during
+                        # applying an inheritance, increment its index to
+                        # compute an accurate xpath for subsequent nodes
+                        if child.target == 'apply-inheritance-specs-node-removal':
+                            indexes[child.text] += 1
+                            e.remove(child)
                     else:
                         indexes[child.tag] += 1
                         self.distribute_branding(
@@ -1676,6 +1706,9 @@ actual arch.
         return any(
             (attr in ('data-oe-model', 'groups') or (attr.startswith('t-')))
             for attr in node.attrib
+        ) or (
+            node.tag is etree.ProcessingInstruction
+            and node.target == 'apply-inheritance-specs-node-removal'
         )
 
     @tools.ormcache('self.id')
@@ -1811,14 +1844,31 @@ actual arch.
             noupdate behavior on views having an ir.model.data.
         """
         if self.type == 'qweb':
-            # Update also specific views
             for cow_view in self._get_specific_views():
                 authorized_vals = {}
                 for key in values:
-                    if cow_view[key] == self[key]:
+                    if key != 'inherit_id' and cow_view[key] == self[key]:
                         authorized_vals[key] = values[key]
-                cow_view.write(authorized_vals)
+                # if inherit_id update, replicate change on cow view but
+                # only if that cow view inherit_id wasn't manually changed
+                inherit_id = values.get('inherit_id')
+                if inherit_id and self.inherit_id.id != inherit_id and \
+                   cow_view.inherit_id.key == self.inherit_id.key:
+                    self._load_records_write_on_cow(cow_view, inherit_id, authorized_vals)
+                else:
+                    cow_view.with_context(no_cow=True).write(authorized_vals)
         super(View, self)._load_records_write(values)
+
+    def _load_records_write_on_cow(self, cow_view, inherit_id, values):
+        # for modules updated before `website`, we need to
+        # store the change to replay later on cow views
+        if not hasattr(self.pool, 'website_views_to_adapt'):
+            self.pool.website_views_to_adapt = []
+        self.pool.website_views_to_adapt.append((
+            cow_view.id,
+            inherit_id,
+            values,
+        ))
 
 
 class ResetViewArchWizard(models.TransientModel):
@@ -1873,10 +1923,10 @@ class ResetViewArchWizard(models.TransientModel):
                 diff_to = view.view_id.arch_prev
                 diff_to_name = _("Previous Arch")
             elif view.reset_mode == 'other_view':
-                diff_to = view.compare_view_id.arch
+                diff_to = view.compare_view_id.with_context(lang=None).arch
                 diff_to_name = get_table_name(view.compare_view_id)
             elif view.reset_mode == 'hard' and view.view_id.arch_fs:
-                diff_to = view.view_id.with_context(read_arch_from_file=True).arch
+                diff_to = view.view_id.with_context(read_arch_from_file=True, lang=None).arch
                 diff_to_name = _("File Arch")
 
             view.arch_to_compare = diff_to
@@ -1885,11 +1935,12 @@ class ResetViewArchWizard(models.TransientModel):
                 view.arch_diff = False
                 view.has_diff = False
             else:
+                view_arch = view.view_id.with_context(lang=None).arch
                 view.arch_diff = get_diff(
-                    (view.view_id.arch, get_table_name(view.view_id) if view.reset_mode == 'other_view' else _("Current Arch")),
+                    (view_arch, get_table_name(view.view_id) if view.reset_mode == 'other_view' else _("Current Arch")),
                     (diff_to, diff_to_name),
                 )
-                view.has_diff = view.view_id.arch != diff_to
+                view.has_diff = view_arch != diff_to
 
     def reset_view_button(self):
         self.ensure_one()

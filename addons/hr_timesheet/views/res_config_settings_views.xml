@@ -46,7 +46,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6 o_setting_box" id="synchronize_web_mobile_setting">
+                        <div class="col-12 col-lg-6 o_setting_box" id="synchronize_web_mobile_setting" invisible="1">
                             <div class="o_setting_left_pane">
                                 <field name="module_project_timesheet_synchro" widget="upgrade_boolean"/>
                             </div>
@@ -115,7 +115,7 @@
         <field name="res_model">res.config.settings</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
-        <field name="context">{'module' : 'hr_timesheet'}</field>
+        <field name="context">{'module' : 'hr_timesheet', 'bin_size': False}</field>
     </record>
 
     <menuitem id="hr_timesheet_config_settings_menu_action" name="Settings" parent="hr_timesheet_menu_configuration"

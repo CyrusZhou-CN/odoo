@@ -5,28 +5,29 @@
 # Translators:
 # Vitor Fernandes <vmlf01@gmail.com>, 2020
 # Pedro Castro Silva <pedrocs@exo.pt>, 2020
-# Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2020
 # Diogo Fonseca <dsf@thinkopensolutions.pt>, 2020
 # Martin Trigaux, 2020
 # Dawilson Daio <dawilsondaio@gmail.com>, 2020
 # Ricardo Martins <ricardo.nbs.martins@gmail.com>, 2020
-# Manuela Silva <manuelarodsilva@gmail.com>, 2020
 # Nuno Silva <nuno.silva@arxi.pt>, 2020
 # Pedro Filipe <pedro2.10@hotmail.com>, 2020
+# Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2022
+# Manuela Silva <mmsrs@sky.com>, 2023
+# Peter Lawrence Romão <peterromao@yahoo.co.uk>, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-02 14:12+0000\n"
+"POT-Creation-Date: 2020-11-27 14:13+0000\n"
 "PO-Revision-Date: 2020-09-07 08:20+0000\n"
-"Last-Translator: Pedro Filipe <pedro2.10@hotmail.com>, 2020\n"
-"Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
+"Last-Translator: Peter Lawrence Romão <peterromao@yahoo.co.uk>, 2024\n"
+"Language-Team: Portuguese (https://app.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: pt\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: web_editor
 #. openerp-web
@@ -48,13 +49,6 @@ msgstr ""
 #, python-format
 msgid "%spx"
 msgstr ""
-
-#. module: web_editor
-#. openerp-web
-#: code:addons/web_editor/static/src/xml/ace.xml:0
-#, python-format
-msgid "&times;"
-msgstr "&times;"
 
 #. module: web_editor
 #. openerp-web
@@ -155,7 +149,7 @@ msgstr "Adicionar"
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Add URL"
-msgstr ""
+msgstr "Adicionar URL"
 
 #. module: web_editor
 #. openerp-web
@@ -193,7 +187,7 @@ msgstr ""
 
 #. module: web_editor
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_background_options
-msgid "Airy"
+msgid "Airy & Zigs"
 msgstr ""
 
 #. module: web_editor
@@ -251,8 +245,7 @@ msgstr "Aplicar"
 #. openerp-web
 #: code:addons/web_editor/static/src/js/editor/snippets.editor.js:0
 #, python-format
-msgid ""
-"Are you sure you want to delete the snippet: ${$snippet.attr('name')} ?"
+msgid "Are you sure you want to delete the snippet: %s ?"
 msgstr ""
 
 #. module: web_editor
@@ -329,7 +322,7 @@ msgstr "Bloquear"
 
 #. module: web_editor
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_background_options
-msgid "Blocks"
+msgid "Blocks & Rainy"
 msgstr ""
 
 #. module: web_editor
@@ -366,6 +359,7 @@ msgstr "Botão"
 #. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/js/editor/snippets.editor.js:0
+#: code:addons/web_editor/static/src/js/editor/snippets.options.js:0
 #, python-format
 msgid "Cancel"
 msgstr "Cancelar"
@@ -706,7 +700,7 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Fill"
-msgstr ""
+msgstr "Preencher"
 
 #. module: web_editor
 #. openerp-web
@@ -791,6 +785,13 @@ msgstr ""
 #: code:addons/web_editor/static/src/js/editor/rte.summernote.js:0
 #, python-format
 msgid "Font Size"
+msgstr ""
+
+#. module: web_editor
+#. openerp-web
+#: code:addons/web_editor/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "For technical reasons, this block cannot be dropped here"
 msgstr ""
 
 #. module: web_editor
@@ -1077,6 +1078,12 @@ msgid "Install"
 msgstr "Instalar"
 
 #. module: web_editor
+#: code:addons/web_editor/models/ir_ui_view.py:0
+#, python-format
+msgid "Invalid field value for %s: %s"
+msgstr ""
+
+#. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/js/editor/snippets.editor.js:0
 #, python-format
@@ -1189,7 +1196,7 @@ msgstr ""
 #: code:addons/web_editor/static/src/js/wysiwyg/widgets/link_dialog.js:0
 #, python-format
 msgid "Link"
-msgstr "Associar"
+msgstr "Hiperligação"
 
 #. module: web_editor
 #. openerp-web
@@ -1325,6 +1332,13 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/ace.xml:0
 #, python-format
 msgid "Only Page SCSS Files"
+msgstr ""
+
+#. module: web_editor
+#. openerp-web
+#: code:addons/web_editor/static/src/js/editor/snippets.options.js:0
+#, python-format
+msgid "Only PNG and JPEG images support quality options and image filtering"
 msgstr ""
 
 #. module: web_editor
@@ -1477,6 +1491,16 @@ msgid ""
 "this image's quality, please first download it from the original source and "
 "upload it in Odoo."
 msgstr ""
+"As opções de qualidade não estão disponíveis para imagens externas. Se "
+"pretender mudar a qualidade desta imagem, primeiro terá que a descarregar da"
+" fonte original e depois carregá-la para o Odoo."
+
+#. module: web_editor
+#. openerp-web
+#: code:addons/web_editor/static/src/js/editor/snippets.options.js:0
+#, python-format
+msgid "Quality options unavailable"
+msgstr ""
 
 #. module: web_editor
 #. openerp-web
@@ -1488,7 +1512,7 @@ msgstr "Cotação"
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb
 msgid "Qweb"
-msgstr ""
+msgstr "Qweb"
 
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb_field
@@ -1563,11 +1587,6 @@ msgstr ""
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb_field_qweb
 msgid "Qweb Field qweb"
-msgstr ""
-
-#. module: web_editor
-#: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_background_options
-msgid "Rainy"
 msgstr ""
 
 #. module: web_editor
@@ -1745,6 +1764,13 @@ msgstr ""
 #: code:addons/web_editor/static/src/js/editor/snippets.editor.js:0
 #, python-format
 msgid "Save and Install"
+msgstr ""
+
+#. module: web_editor
+#. openerp-web
+#: code:addons/web_editor/static/src/js/editor/snippets.options.js:0
+#, python-format
+msgid "Save and Reload"
 msgstr ""
 
 #. module: web_editor
@@ -2052,6 +2078,9 @@ msgid ""
 "This type of image is not supported for cropping.<br/>If you want to crop "
 "it, please first download it from the original source and upload it in Odoo."
 msgstr ""
+"Este tipo de imagem não pode ser recortada.<br/>Se a quiser recortar, terá "
+"primeiro que a descarregar da fonte original e depois carregá-la para o "
+"Odoo."
 
 #. module: web_editor
 #. openerp-web
@@ -2067,6 +2096,15 @@ msgstr "Título"
 msgid ""
 "To make changes, drop this block and use the new options in the last "
 "version."
+msgstr ""
+
+#. module: web_editor
+#. openerp-web
+#: code:addons/web_editor/static/src/js/editor/snippets.options.js:0
+#, python-format
+msgid ""
+"To save a snippet, we need to save all your previous modifications and "
+"reload the page."
 msgstr ""
 
 #. module: web_editor
@@ -2169,14 +2207,14 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Upload a document"
-msgstr ""
+msgstr "Carregar um documento"
 
 #. module: web_editor
 #. openerp-web
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Upload an image"
-msgstr "Enviar uma imagem"
+msgstr "Carregar uma imagem"
 
 #. module: web_editor
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_image_optimization_widgets
@@ -2301,6 +2339,8 @@ msgid ""
 "You can upload documents with the button located in the top left of the "
 "screen."
 msgstr ""
+"Pode carregar documentos com o botão localizado no canto superior esquerdo "
+"do ecrã."
 
 #. module: web_editor
 #. openerp-web
@@ -2309,6 +2349,8 @@ msgstr ""
 msgid ""
 "You can upload images with the button located in the top left of the screen."
 msgstr ""
+"Pode carregar imagens usando o botão localizado no canto superior esquerdo "
+"do ecrã."
 
 #. module: web_editor
 #: code:addons/web_editor/controllers/main.py:0
@@ -2328,11 +2370,6 @@ msgstr ""
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 #, python-format
 msgid "Youtube"
-msgstr ""
-
-#. module: web_editor
-#: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_background_options
-msgid "Zigs"
 msgstr ""
 
 #. module: web_editor
@@ -2369,6 +2406,16 @@ msgstr ""
 #. module: web_editor
 #: model_terms:ir.ui.view,arch_db:web_editor.snippet_options_image_optimization_widgets
 msgid "darken"
+msgstr ""
+
+#. module: web_editor
+#. openerp-web
+#: code:addons/web_editor/static/src/js/editor/snippets.options.js:0
+#, python-format
+msgid ""
+"Due to technical limitations, you can only change optimization settings on "
+"this image by choosing it again in the media-dialog or reuploading it "
+"(double click on the image)"
 msgstr ""
 
 #. module: web_editor

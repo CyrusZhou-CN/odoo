@@ -432,8 +432,9 @@ DebugManager.include({
         var self = this;
         var dialog = new Dialog(this, { title: _t("Fields View Get") });
         dialog.opened().then(function () {
+            const arch = self._controller.renderer.arch || self._controller.renderer.props.arch;
             $('<pre>').text(utils.json_node_to_xml(
-                self._controller.renderer.arch, true)
+                arch, true)
             ).appendTo(dialog.$el);
         });
         dialog.open();
@@ -728,11 +729,14 @@ if (config.isDebug()) {
          */
         current_action_updated: function (action, controller) {
             this._super.apply(this, arguments);
+            this.update_debug_manager(action, controller);
+        },
+        update_debug_manager: function(action, controller) {
             var debugManager = _.find(this.menu.systray_menu.widgets, function(item) {
                 return item instanceof DebugManager;
             });
             debugManager.update('action', action, controller && controller.widget);
-        },
+        }
     });
 
     ActionManager.include({

@@ -16,7 +16,7 @@ class LeaveReportCalendar(models.Model):
     start_datetime = fields.Datetime(string='From', readonly=True)
     stop_datetime = fields.Datetime(string='To', readonly=True)
     tz = fields.Selection(_tz_get, string="Timezone", readonly=True)
-    duration = fields.Float(string='Duration', readonly=True)
+    duration = fields.Float(string='Duration', readonly=True, store=False)
     employee_id = fields.Many2one('hr.employee', readonly=True)
     company_id = fields.Many2one('res.company', readonly=True)
     state = fields.Selection([
@@ -38,14 +38,20 @@ class LeaveReportCalendar(models.Model):
             hl.date_to AS stop_datetime,
             hl.employee_id AS employee_id,
             hl.state AS state,
-            em.company_id AS company_id
+            em.company_id AS company_id,
+            CASE
+                WHEN hl.holiday_type = 'employee' THEN rr.tz
+                ELSE %s
+            END AS tz
         FROM hr_leave hl
             LEFT JOIN hr_employee em
                 ON em.id = hl.employee_id
+            LEFT JOIN resource_resource rr
+                ON rr.id = em.resource_id
         WHERE 
             hl.state IN ('confirm', 'validate', 'validate1')
         ORDER BY id);
-        """)
+        """, [self.env.company.resource_calendar_id.tz or self.env.user.tz or 'UTC'])
 
     def _read(self, fields):
         res = super()._read(fields)

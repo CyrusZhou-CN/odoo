@@ -308,7 +308,7 @@
                     </script>
                 </t>
             </head>
-            <body class="container" t-att-onload="subst_needed and 'subst()'">
+            <body class="container" t-att-data-report-id="report_xml_id" t-att-onload="subst_needed and 'subst()'">
                 <t t-raw="body"/>
             </body>
         </html>
@@ -359,7 +359,7 @@
         <div t-attf-class="o_company_#{company.id}_layout footer o_background_footer">
             <div class="text-center">
                 <ul class="list-inline">
-                    <li t-if="company.phone" class="list-inline-item"><i class="fa fa-phone" role="img" aria-label="Phone" title="Phone"/> <span t-field="company.phone"/></li>
+                    <li t-if="company.phone" class="list-inline-item"><i class="fa fa-phone" role="img" aria-label="Phone" title="Phone"/> <span class="o_force_ltr" t-field="company.phone"/></li>
                     <li t-if="company.email" class="list-inline-item"><i class="fa fa-at" role="img" aria-label="Email" title="Email"/> <span t-field="company.email"/></li>
                     <li t-if="company.website" class="list-inline-item"><i class="fa fa-globe" role="img" aria-label="Website" title="Website"/> <span t-field="company.website"/></li>
                     <li t-if="company.vat" class="list-inline-item"><i class="fa fa-building-o" role="img" aria-label="Fiscal number"/><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
@@ -370,6 +370,9 @@
                     <span class="page"/>
                     of
                     <span class="topage"/>
+                </div>
+                <div t-if="report_type == 'pdf' and display_name_in_footer" class="text-muted">
+                    <span t-field="o.name"/>
                 </div>
             </div>
         </div>
@@ -404,7 +407,7 @@
         <div t-attf-class="footer o_boxed_footer o_company_#{company.id}_layout">
             <div class="text-center">
                 <ul class="list-inline">
-                    <li t-if="company.phone" class="list-inline-item"><span t-field="company.phone"/></li>
+                    <li t-if="company.phone" class="list-inline-item"><span class="o_force_ltr" t-field="company.phone"/></li>
                     <li t-if="company.email" class="list-inline-item"><span t-field="company.email"/></li>
                     <li t-if="company.website" class="list-inline-item"><span t-field="company.website"/></li>
                     <li t-if="company.vat" class="list-inline-item"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
@@ -412,6 +415,9 @@
                 <div t-field="company.report_footer"/>
                 <div t-if="report_type == 'pdf'">
                     Page: <span class="page"/> / <span class="topage"/>
+                </div>
+                <div t-if="report_type == 'pdf' and display_name_in_footer" class="text-muted">
+                    <span t-field="o.name"/>
                 </div>
             </div>
         </div>
@@ -428,7 +434,7 @@
                     <ul class="list-unstyled">
                         <strong><li t-if="company.name"><span t-field="company.name"/></li></strong>
                         <li t-if="company.vat"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
-                        <li t-if="company.phone">Tel: <span t-field="company.phone"/></li>
+                        <li t-if="company.phone">Tel: <span class="o_force_ltr" t-field="company.phone"/></li>
                         <li t-if="company.email"><span t-field="company.email"/></li>
                         <li t-if="company.website"><span t-field="company.website"/></li>
                     </ul>
@@ -498,7 +504,7 @@
                 <ul class="list-inline mb4">
                     <!-- using the list-inline-item class from bootstrap causes weird behaviours in pdf report
                          adding d-inline class fixes the problem-->
-                    <li t-if="company.phone" class="list-inline-item d-inline"><span t-field="company.phone"/></li>
+                    <li t-if="company.phone" class="list-inline-item d-inline"><span class="o_force_ltr" t-field="company.phone"/></li>
                     <li t-if="company.email" class="list-inline-item d-inline"><span t-field="company.email"/></li>
                     <li t-if="company.website" class="list-inline-item d-inline"><span t-field="company.website"/></li>
                     <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
@@ -510,6 +516,9 @@
 
                 <div t-if="report_type == 'pdf'" class="text-muted">
                     Page: <span class="page"/> / <span class="topage"/>
+                </div>
+                <div t-if="report_type == 'pdf' and display_name_in_footer" class="text-muted">
+                    <span t-field="o.name"/>
                 </div>
             </div>
         </div>
@@ -525,7 +534,7 @@
             <t t-if="company_id">
                 <t t-set="company" t-value="company_id"/>
             </t>
-            <t t-elif="o and 'company_id' in o">
+            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
                 <t t-set="company" t-value="o.company_id.sudo()"/>
             </t>
             <t t-else="else">
@@ -533,7 +542,7 @@
             </t>
         </t>
 
-        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.key}}"><t t-raw="0"/></t>
+        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.sudo().key}}"><t t-raw="0"/></t>
         <t t-else="else" t-call="web.external_layout_standard"><t t-raw="0"/></t>
 
     </template>
@@ -546,7 +555,7 @@
             <t t-if="company_id">
                 <t t-set="company" t-value="company_id"/>
             </t>
-            <t t-elif="o and 'company_id' in o">
+            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
                 <t t-set="company" t-value="o.company_id.sudo()"/>
             </t>
             <t t-else="else">

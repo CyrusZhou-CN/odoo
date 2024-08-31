@@ -44,7 +44,7 @@ var M2ODialog = Dialog.extend({
         this.name = name;
         this.value = value;
         this._super(parent, {
-            title: _t(`New ${this.name}`),
+            title: _.str.sprintf(_t("New %s"), this.name),
             size: 'medium',
             buttons: [{
                 text: _t('Create'),
@@ -387,6 +387,7 @@ var FieldMany2One = AbstractField.extend({
             res_model: this.field.relation,
             domain: this.record.getDomain({fieldName: this.name}),
             context: _.extend({}, this.record.getContext(this.recordParams), context || {}),
+            _createContext: this._createContext.bind(this),
             dynamicFilters: dynamicFilters || [],
             title: (view === 'search' ? _t("Search: ") : _t("Create: ")) + this.string,
             initial_ids: ids,
@@ -575,7 +576,14 @@ var FieldMany2One = AbstractField.extend({
             domain.push(['id', 'not in', blackListedIds]);
         }
 
-        const nameSearch = this._rpc({
+        if (this.lastNameSearch) {
+            this.lastNameSearch.catch((reason) => {
+                // the last rpc name_search will be aborted, so we want to ignore its rejection
+                reason.event.preventDefault();
+            })
+            this.lastNameSearch.abort(false)
+        }
+        this.lastNameSearch = this._rpc({
             model: this.field.relation,
             method: "name_search",
             kwargs: {
@@ -586,7 +594,7 @@ var FieldMany2One = AbstractField.extend({
                 context,
             }
         });
-        const results = await this.orderer.add(nameSearch);
+        const results = await this.orderer.add(this.lastNameSearch);
 
         // Format results to fit the options dropdown
         let values = results.map((result) => {
@@ -1182,8 +1190,14 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
         // re-evaluate available actions
         const oldCanCreate = this.canCreate;
         const oldCanDelete = this.canDelete;
+        const oldCanLink = this.canLink;
+        const oldCanUnlink = this.canUnlink;
         this._computeAvailableActions(record);
-        const actionsChanged = this.canCreate !== oldCanCreate || this.canDelete !== oldCanDelete;
+        const actionsChanged =
+            this.canCreate !== oldCanCreate ||
+            this.canDelete !== oldCanDelete ||
+            this.canLink !== oldCanLink ||
+            this.canUnlink !== oldCanUnlink;
 
         // If 'fieldChanged' is false, it means that the reset was triggered by
         // the 'resetOnAnyFieldChange' mechanism. If it is the case, if neither
@@ -1192,6 +1206,7 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
         if (!fieldChanged && !actionsChanged) {
             var newEval = this._evalColumnInvisibleFields();
             if (_.isEqual(this.currentColInvisibleFields, newEval)) {
+                this._reset(record, ev); // update the internal state, but do not re-render
                 return Promise.resolve();
             }
         } else if (ev && ev.target === this && ev.data.changes && this.view.arch.tag === 'tree') {
@@ -1210,12 +1225,7 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
                 return this.renderer.confirmUpdate(state, command.id, fieldNames, ev.initialEvent);
             }
         }
-        return this._super.apply(this, arguments).then(() => {
-            if (this.view) {
-                this._renderButtons();
-                this._updateControlPanel();
-            }
-        });
+        return this._super.apply(this, arguments);
     },
 
     /**
@@ -1263,6 +1273,12 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
             true;
         this.canDelete = 'delete' in this.nodeOptions ?
             new Domain(this.nodeOptions.delete, evalContext).compute(evalContext) :
+            true;
+        this.canLink = 'link' in this.nodeOptions ?
+            new Domain(this.nodeOptions.link, evalContext).compute(evalContext) :
+            true;
+        this.canUnlink = 'unlink' in this.nodeOptions ?
+            new Domain(this.nodeOptions.unlink, evalContext).compute(evalContext) :
             true;
     },
     /**
@@ -1313,8 +1329,8 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
      */
     _hasCreateLine: function () {
         return !this.isReadonly && (
-            (this.activeActions.create && this.canCreate) ||
-            (this.isMany2Many)
+            (!this.isMany2Many && this.activeActions.create && this.canCreate) ||
+            (this.isMany2Many && this.canLink)
         );
     },
     /**
@@ -1323,8 +1339,8 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
      */
     _hasTrashIcon: function () {
         return !this.isReadonly && (
-            (this.activeActions.delete && this.canDelete) ||
-            (this.isMany2Many)
+            (!this.isMany2Many && this.activeActions.delete && this.canDelete) ||
+            (this.isMany2Many && this.canUnlink)
         );
     },
     /**
@@ -1348,7 +1364,7 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
                 columnInvisibleFields: this.currentColInvisibleFields,
                 keepWidths: true,
             }).then(() => {
-                this._updateControlPanel({ size: this.value.count });
+                return this._updateControlPanel({ size: this.value.count });
             });
         }
         var arch = this.view.arch;
@@ -1460,9 +1476,16 @@ var FieldX2Many = AbstractField.extend(WidgetAdapterMixin, {
      */
     _updateControlPanel: function (pagingState) {
         if (this._controlPanelWrapper) {
+            this._renderButtons();
+            const pagerProps = Object.assign(this.pagingState, pagingState, {
+                // sometimes, we temporarily want to increase the pager limit
+                // (for instance, when we add a new record on a page that already
+                // contains the maximum number of records)
+                limit: Math.max(this.value.limit, this.value.data.length),
+            });
             const newProps = {
                 cp_content: { $buttons: this.$buttons },
-                pager: Object.assign(this.pagingState, pagingState),
+                pager: pagerProps,
             };
             return this._controlPanelWrapper.update(newProps);
         }
@@ -1851,19 +1874,9 @@ var FieldOne2Many = FieldX2Many.extend({
                     var index = 0;
                     if (self.editable !== 'top') {
                         index = self.value.data.length - 1;
-                        // we consider that a new record, created in the bottom,
-                        // does not count as a record worth mentioning in the
-                        // pager, at least not until the line has been saved.
-                        // We prevent the pager from increasing its size, which
-                        // means that the pager is not displayed when we just
-                        // reach the limit.  For example, if limit is 3, if we
-                        // have 3 records, and we click on add, we will see the
-                        // 4 records on the same page, but we do not want a
-                        // pager.
-                        self._updateControlPanel({ size: self.value.count - 1 });
                     }
                     var newID = self.value.data[index].id;
-                    self.renderer.editRecord(newID);
+                    return self.renderer.editRecord(newID);
                 }
             }
         });
@@ -1904,6 +1917,9 @@ var FieldOne2Many = FieldX2Many.extend({
         }
     },
     /**
+     * Trigger the event to open a dialog containing the corresponding Form view for the current record.
+     * If the options 'no_open' is specified, the dialog will not be opened.
+     *
      * @private
      * @param {Object} params
      * @param {Object} [params.context] We allow additional context, this is
@@ -1915,6 +1931,11 @@ var FieldOne2Many = FieldX2Many.extend({
             this.recordParams,
             { additionalContext: params.context }
         ));
+
+        if (this.nodeOptions.no_open) {
+            return;
+        }
+
         this.trigger_up('open_one2many_record', _.extend(params, {
             domain: this.record.getDomain(this.recordParams),
             context: context,
@@ -2070,6 +2091,20 @@ var FieldMany2Many = FieldX2Many.extend({
                 }
             }
         }).open();
+    },
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * @override
+     * @private
+     */
+    _getButtonsRenderingContext() {
+        const renderingContext = this._super(...arguments);
+        renderingContext.noCreate = !this.canLink;
+        return renderingContext;
     },
 
     //--------------------------------------------------------------------------
@@ -2714,6 +2749,9 @@ var FieldMany2ManyCheckBoxes = AbstractField.extend({
     }),
     specialData: "_fetchSpecialRelation",
     supportedFieldTypes: ['many2many'],
+    // set an arbitrary high limit to ensure that all data returned by the server
+    // are processed by the BasicModel (otherwise it would be 40)
+    limit: 100000,
     init: function () {
         this._super.apply(this, arguments);
         this.m2mValues = this.record.specialData[this.name];
@@ -2766,9 +2804,20 @@ var FieldMany2ManyCheckBoxes = AbstractField.extend({
      * @private
      */
     _onChange: function () {
+        // Get the list of selected ids
         var ids = _.map(this.$('input:checked'), function (input) {
             return $(input).data("record-id");
         });
+        // The number of displayed checkboxes is limited to 100 (name_search
+        // limit, server-side), to prevent extreme cases where thousands of
+        // records are fetched/displayed. If not all values are displayed, it may
+        // happen that some values that are in the relation aren't available in the
+        // widget. In this case, when the user (un)selects a value, we don't
+        // want to remove those non displayed values from the relation. For that
+        // reason, we manually add those values to the list of ids.
+        const displayedIds = this.m2mValues.map(v => v[0]);
+        const idsInRelation = this.value.res_ids;
+        ids = ids.concat(idsInRelation.filter(a => !displayedIds.includes(a)));
         this._setValue({
             operation: 'REPLACE_WITH',
             ids: ids,
@@ -3051,14 +3100,6 @@ var FieldRadio = FieldSelection.extend({
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
-
-    /**
-     * @override
-     * @returns {jQuery}
-     */
-    getFocusableElement: function () {
-        return this.mode === 'edit' && this.$input || this.$el;
-    },
 
     /**
      * @override

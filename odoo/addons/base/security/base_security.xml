@@ -20,7 +20,7 @@
             the multi-company rule because it might interfere with the user's company rule
             and make some users unselectable in relational fields. This means that partners
             of internal users are always visible, not matter the company setting. -->
-            <field name="domain_force">['|', '|', ('partner_share', '=', False), ('company_id', 'in', company_ids), ('company_id', '=', False)]</field>
+            <field name="domain_force">['|', ('partner_share', '=', False), ('company_id', 'in', company_ids + [False])]</field>
         </record>
 
         <record model="ir.rule" id="res_partner_portal_public_rule">
@@ -59,13 +59,13 @@
         <record id="res_partner_bank_rule" model="ir.rule">
             <field name="name">Partner bank company rule</field>
             <field name="model_id" ref="model_res_partner_bank"/>
-            <field name="domain_force">['|', ('company_id', 'in', company_ids), ('company_id', '=', False)]</field>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
         </record>
 
         <record id="res_currency_rate_rule" model="ir.rule">
             <field name="name">multi-company currency rate rule</field>
             <field name="model_id" ref="model_res_currency_rate"/>
-            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
         </record>
 
         <record id="change_password_rule" model="ir.rule">
@@ -85,9 +85,9 @@
                 (4, ref('base.group_user')),
             ]"/>
             <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
         </record>
         <!-- Relex previous rule for group_private_addresses -->
         <record id="res_partner_rule_private_group" model="ir.rule">
@@ -100,9 +100,9 @@
                 (4, ref('base.group_private_addresses'))
             ]"/>
             <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
         </record>
 
         <!-- Restrict modifications on ir.filters to owner only -->

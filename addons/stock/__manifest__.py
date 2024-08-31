@@ -59,6 +59,7 @@
 
         'views/res_partner_views.xml',
         'views/product_strategy_views.xml',
+        'views/product_views.xml',
         'views/stock_production_lot_views.xml',
         'views/stock_picking_views.xml',
         'views/stock_scrap_views.xml',
@@ -69,7 +70,6 @@
         'views/stock_move_line_views.xml',
         'views/stock_move_views.xml',
         'views/stock_orderpoint_views.xml',
-        'views/product_views.xml',
         'views/res_config_settings_views.xml',
         'views/report_stock_traceability.xml',
         'views/stock_template.xml',
@@ -94,4 +94,5 @@
     'auto_install': False,
     'pre_init_hook': 'pre_init_hook',
     'post_init_hook': '_assign_default_mail_template_picking_id',
+    'license': 'LGPL-3',
 }

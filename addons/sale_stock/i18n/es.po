@@ -3,28 +3,13 @@
 # 	* sale_stock
 # 
 # Translators:
-# e2f <projects@e2f.com>, 2020
-# Pedro M. Baeza <pedro.baeza@gmail.com>, 2020
-# Mateo Tibaquirá Palacios <nestormateo@gmail.com>, 2020
-# Jesús Alan Ramos Rodríguez <alan.ramos@jarsa.com.mx>, 2020
-# Christopher Ormaza <chris.ormaza@gmail.com>, 2020
-# Luis M. Ontalba <luis.martinez@tecnativa.com>, 2020
-# Rick Hunter <rick.hunter.ec@gmail.com>, 2020
-# gabriumaa <gabriel.umana@delfixcr.com>, 2020
-# Antonio Trueba, 2020
-# RGB Consulting <odoo@rgbconsulting.com>, 2020
-# Miguel Orueta <mo@landoo.es>, 2020
-# 966ff43e6966712895a590e7320ca288, 2020
-# Pedro S. Lopez <pedroslopez@me.com>, 2020
-# Mariela Moreno <mam@odoo.com>, 2020
-# Jimmy Ramos <jimmybanegas93@gmail.com>, 2020
-# Pilar Marín <pilar@odooperu.pe>, 2020
-# Sabina Batlle <sbb@odoo.com>, 2020
-# Jon Perez <jop@odoo.com>, 2020
-# Mariana Santos Romo <msn@odoo.com>, 2020
 # Erick Herrera <erick.herrera@jarsa.com.mx>, 2020
-# Osiris Román <osiris.roman@yachaytech.edu.ec>, 2020
 # Martin Trigaux, 2020
+# Jesús Alan Ramos Rodríguez <alan.ramos@jarsa.com.mx>, 2021
+# Ernesto Tejeda <ernesto.tejeda87@gmail.com>, 2021
+# marcescu, 2022
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -32,13 +17,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 13:46+0000\n"
 "PO-Revision-Date: 2020-09-07 08:18+0000\n"
-"Last-Translator: Martin Trigaux, 2020\n"
-"Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
+"Last-Translator: Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2023\n"
+"Language-Team: Spanish (https://app.transifex.com/odoo/teams/41243/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_picking
@@ -189,7 +174,7 @@ msgstr "Disponible"
 #: code:addons/sale_stock/static/src/xml/sale_stock.xml:0
 #, python-format
 msgid "Available in stock"
-msgstr ""
+msgstr "Existencias disponibles"
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_stock_rules_report__so_route_ids
@@ -219,7 +204,7 @@ msgstr "Fecha:"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_res_users__property_warehouse_id
 msgid "Default Warehouse"
-msgstr ""
+msgstr "Almacén predeterminado"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.view_order_form_inherit_sale_stock
@@ -229,7 +214,7 @@ msgstr "Entrega"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_cancel__display_delivery_alert
 msgid "Delivery Alert"
-msgstr ""
+msgstr "Alerta de entrega"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__delivery_count
@@ -314,7 +299,7 @@ msgstr "Documentación"
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_report_product_product_replenishment
 msgid "Draft SO"
-msgstr ""
+msgstr "Borrador SO"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__effective_date
@@ -329,7 +314,7 @@ msgstr "Excepción(es) ocurridas en el picking:"
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
 msgid "Exception(s) occurred on the sale order(s):"
-msgstr "Excepción(es) ocurrió en la orden de venta(s):"
+msgstr "Excepción(es) ocurrida(s) en el pedido de venta(s):"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_picking
@@ -357,7 +342,7 @@ msgstr "Esperado:"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__forecast_expected_date
 msgid "Forecast Expected Date"
-msgstr ""
+msgstr "Pronóstico de la fecha prevista"
 
 #. module: sale_stock
 #. openerp-web
@@ -374,7 +359,7 @@ msgstr "Cant. Libre Hoy"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__show_json_popover
 msgid "Has late picking"
-msgstr ""
+msgstr "Tiene una recolección atrasada"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_account_move__id
@@ -458,7 +443,7 @@ msgstr "Es MTO"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__json_popover
 msgid "JSON data for the popover widget"
-msgstr ""
+msgstr "Datos JSON para el widget popover"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_account_move
@@ -554,14 +539,14 @@ msgstr "Avanzar las fechas de entrega previstas por"
 #: code:addons/sale_stock/static/src/xml/sale_stock.xml:0
 #, python-format
 msgid "No enough future availaibility"
-msgstr ""
+msgstr "No hay suficiente disponibilidad futura"
 
 #. module: sale_stock
 #. openerp-web
 #: code:addons/sale_stock/static/src/xml/sale_stock.xml:0
 #, python-format
 msgid "No future availaibility"
-msgstr ""
+msgstr "No hay disponibilidad futura"
 
 #. module: sale_stock
 #. openerp-web
@@ -617,7 +602,7 @@ msgstr "Cant. Por Entregar"
 #: code:addons/sale_stock/static/src/xml/sale_stock.xml:0
 #, python-format
 msgid "Remaining demand available at"
-msgstr ""
+msgstr "La demanda restante está disponible en"
 
 #. module: sale_stock
 #. openerp-web
@@ -678,7 +663,7 @@ msgstr "Pedido de venta"
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_sale_order_cancel
 msgid "Sales Order Cancel"
-msgstr ""
+msgstr "Cancelar pedido de venta"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_sale_order_line
@@ -753,6 +738,8 @@ msgid ""
 "Some products have already been delivered. Returns can be created from the "
 "Delivery Orders."
 msgstr ""
+"Ya se han entregado algunos productos. Se pueden crear las devoluciones "
+"desde las órdenes de entrega."
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_move
@@ -768,7 +755,7 @@ msgstr "Movimientos de stock"
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_report_stock_report_product_product_replenishment
 msgid "Stock Replenishment Report"
-msgstr ""
+msgstr "Informe de reabastecimiento de existencias"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_rule
@@ -783,14 +770,14 @@ msgstr "Informe de reglas de inventario"
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_report_stock_report_stock_rule
 msgid "Stock rule report"
-msgstr "Reporte de Regla de Inventario"
+msgstr "Informe de Regla de Inventario"
 
 #. module: sale_stock
 #. openerp-web
 #: code:addons/sale_stock/static/src/xml/sale_stock.xml:0
 #, python-format
 msgid "The delivery"
-msgstr ""
+msgstr "La entrega"
 
 #. module: sale_stock
 #: code:addons/sale_stock/models/sale_order.py:0
@@ -811,6 +798,8 @@ msgid ""
 "This product is packaged by %(pack_size).2f %(pack_name)s. You should sell "
 "%(quantity).2f %(unit)s."
 msgstr ""
+"Este producto se envasa en %(pack_name)s, en múltiplos de %(pack_size).2f. "
+"Debería vender %(quantity).2f %(unit)s."
 
 #. module: sale_stock
 #. openerp-web
@@ -887,7 +876,7 @@ msgid ""
 "You are decreasing the ordered quantity! Do not forget to manually update "
 "the delivery order if needed."
 msgstr ""
-"¡Está reduciendo la cantidad pedida! No olvide actualizar manualmente el "
+"¡Está reduciendo la cantidad pedida! No olvide actualizar manualmente la "
 "orden de entrega si es necesario."
 
 #. module: sale_stock
@@ -919,7 +908,7 @@ msgstr "de"
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
 msgid "ordered instead of"
-msgstr "ordenado en lugar de"
+msgstr "pedido en lugar de"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_picking
@@ -931,4 +920,4 @@ msgstr "procesado en lugar de"
 #: code:addons/sale_stock/static/src/xml/sale_stock.xml:0
 #, python-format
 msgid "will be late."
-msgstr ""
+msgstr "se retrasará."

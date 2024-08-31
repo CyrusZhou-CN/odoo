@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    'name': 'Webiste Event CRM Questions',
+    'name': 'Website Event CRM Questions',
     'version': '1.0',
     'category': 'Marketing/Events',
     'website': 'https://www.odoo.com/page/events',
@@ -14,4 +14,5 @@
     'data': [],
     'installable': True,
     'auto_install': True,
+    'license': 'LGPL-3',
 }

@@ -25,6 +25,7 @@ class MockModels {
         return {
             'ir.attachment': {
                 fields: {
+                    checksum: { string: 'cheksum', type: 'char' },
                     create_date: { type: 'date' },
                     create_uid: { string: "Created By", type: "many2one", relation: 'res.users' },
                     datas: { string: "File Content (base64)", type: 'binary' },
@@ -68,6 +69,8 @@ class MockModels {
             'mail.channel': {
                 fields: {
                     channel_type: { string: "Channel Type", type: "selection", default: 'channel' },
+                    // Equivalent to members but required due to some RPC giving this field in domain.
+                    channel_partner_ids: { string: "Channel Partner Ids", type: 'many2many', relation: 'res.partner' },
                     // In python this belongs to mail.channel.partner. Here for simplicity.
                     custom_channel_name: { string: "Custom channel name", type: 'char' },
                     fetched_message_id: { string: "Last Fetched", type: 'many2one', relation: 'mail.message' },
@@ -125,7 +128,7 @@ class MockModels {
                     author_id: { string: "Author", type: 'many2one', relation: 'res.partner', default() { return this.currentPartnerId; } },
                     body: { string: "Contents", type: 'html', default: "<p></p>" },
                     channel_ids: { string: "Channels", type: 'many2many', relation: 'mail.channel' },
-                    date: { string: "Date", type: 'datetime' },
+                    date: { string: "Date", type: 'datetime', default() { return moment.utc().format("YYYY-MM-DD HH:mm:ss"); } },
                     email_from: { string: "From", type: 'char' },
                     history_partner_ids: { string: "Partners with History", type: 'many2many', relation: 'res.partner' },
                     id: { string: "Id", type: 'integer' },
@@ -145,6 +148,7 @@ class MockModels {
                     res_model_name: { string: "Res Model Name", type: 'char' },
                     starred_partner_ids: { string: "Favorited By", type: 'many2many', relation: 'res.partner' },
                     subject: { string: "Subject", type: 'char' },
+                    subtype_id: { string: "Subtype id", type: 'many2one', relation: 'mail.message.subtype' },
                     tracking_value_ids: { relation: 'mail.tracking.value', string: "Tracking values", type: 'one2many' },
                 },
                 records: [],
@@ -235,10 +239,11 @@ class MockModels {
             },
             'res.fake': {
                 fields: {
+                    activity_ids: { string: "Activities", type: 'one2many', relation: 'mail.activity' },
                     email_cc: { type: 'char' },
                     partner_ids: {
                         string: "Related partners",
-                        type: 'many2one',
+                        type: 'one2many',
                         relation: 'res.partner'
                     },
                 },

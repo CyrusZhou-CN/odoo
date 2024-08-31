@@ -19,6 +19,8 @@ const dynamicSnippetOptions = options.Class.extend({
      * @override
      */
     onBuilt: function () {
+        // TODO Remove in master.
+        this.$target[0].dataset['snippet'] = 's_dynamic_snippet';
         this._setOptionsDefaultValues();
     },
 
@@ -62,8 +64,9 @@ const dynamicSnippetOptions = options.Class.extend({
      * @override
      * @private
      */
-    _renderCustomXML: function (uiFragment) {
-        return Promise.all([this._renderDynamicFiltersSelector(uiFragment), this._renderDynamicFilterTemplatesSelector(uiFragment)]);
+    _renderCustomXML: async function (uiFragment) {
+        await this._renderDynamicFiltersSelector(uiFragment);
+        await this._renderDynamicFilterTemplatesSelector(uiFragment);
     },
     /**
      * Renders the dynamic filter option selector content into the provided uiFragment.

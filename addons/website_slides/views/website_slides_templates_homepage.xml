@@ -20,6 +20,7 @@
                 </div>
             </section>
             <div class="container mt16 o_wslides_home_nav position-relative">
+                <!-- TODO Remove inline style in master -->
                 <nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background: white!important">
                     <form method="GET" class="form-inline o_wslides_nav_navbar_right order-lg-3" t-attf-action="/slides/all" role="search">
                         <div class="input-group">
@@ -47,8 +48,8 @@
                         <t t-set="redirect_url" t-value="'/slides'"/>
                         <t t-set="send_alert_classes" t-value="'alert alert-danger alert-dismissable mt-4 mb-0'"/>
                         <t t-set="done_alert_classes" t-value="'alert alert-success alert-dismissable mt-4 mb-0'"/>
-                        <t t-set="send_validation_email_message">Click here to send a verification email allowing you to participate to the eLearning.</t>
-                        <t t-set="additional_validated_email_message"> You may now participate to our eLearning.</t>
+                        <t t-set="send_validation_email_message">Click here to send a verification email allowing you to participate at the eLearning.</t>
+                        <t t-set="additional_validated_email_message"> You may now participate in our eLearning.</t>
                     </t>
                 </div>
             </div>
@@ -181,6 +182,7 @@
             </section>
             <div class="container mt16 o_wslides_home_nav position-relative">
                 <!-- Navbar dynamically composed using displayed channel tag groups. -->
+                <!-- TODO Remove inline style in master -->
                 <nav class="navbar navbar-expand-md navbar-light shadow-sm pl-0" style="background: white!important">
                     <div class="navbar-nav border-right">
                         <a class="nav-link nav-item px-3" href="/slides"><i class="fa fa-chevron-left"/></a>
@@ -260,8 +262,8 @@
                 <div class="o_wprofile_email_validation_container mb16 mt16">
                     <t t-call="website_profile.email_validation_banner">
                         <t t-set="redirect_url" t-value="'/slides'"/>
-                        <t t-set="send_validation_email_message">Click here to send a verification email allowing you to participate to the eLearning.</t>
-                        <t t-set="additional_validated_email_message"> You may now participate to our eLearning.</t>
+                        <t t-set="send_validation_email_message">Click here to send a verification email allowing you to participate at the eLearning.</t>
+                        <t t-set="additional_validated_email_message"> You may now participate in our eLearning.</t>
                     </t>
                 </div>
                 <!-- Display tags -->
