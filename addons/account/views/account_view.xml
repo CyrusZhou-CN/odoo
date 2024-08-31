@@ -394,9 +394,9 @@ action = model.setting_init_bank_account_action()
                         <group>
                             <field name="name"/>
                             <field name="applicability"/>
-                            <field name="tax_negate" attrs="{'invisible': [('applicability', '!=', 'taxes')]}"/>
-                            <field name="country_id" attrs="{'invisible': [('applicability', '!=', 'taxes')]}"/>
-                            <field name="tax_report_line_ids" attrs="{'invisible': [('applicability', '!=', 'taxes')]}"/>
+                            <field name="tax_negate" readonly="1" attrs="{'invisible': [('applicability', '!=', 'taxes')]}"/>
+                            <field name="country_id" attrs="{'invisible': [('applicability', '!=', 'taxes')], 'readonly': [('tax_report_line_ids', '!=', [])]}"/>
+                            <field name="tax_report_line_ids" readonly="1" attrs="{'invisible': [('applicability', '!=', 'taxes')]}"/>
                         </group>
                     </sheet>
                 </form>
@@ -673,7 +673,7 @@ action = model.setting_init_bank_account_action()
             <field name="model">account.bank.statement.line</field>
             <field name="priority">8</field>
             <field name="arch" type="xml">
-                <tree string="Statement lines" create="false">
+                <tree string="Statement lines" create="false" default_order="date desc, statement_id desc, sequence desc, id desc">
                     <field name="sequence" readonly="1" invisible="1"/>
                     <field name="statement_id" />
                     <field name="journal_id" invisible="1" />
@@ -828,7 +828,7 @@ action = model.setting_init_bank_account_action()
                                     <field name="amount" class="oe_inline"/>
                                     <span class="o_form_label oe_inline" attrs="{'invisible':[('amount_type','!=','percentage')]}">%</span>
                                 </div>
-                                <field name="journal_id" domain="[('type', '!=', 'general'), ('company_id', '=', company_id)]" widget="selection"
+                                <field name="journal_id" domain="[('type', '=', 'general'), ('company_id', '=', company_id)]" widget="selection"
                                        attrs="{'invisible': [('rule_type', '!=', 'writeoff_button')]}"/>
                             </group>
                         </group>

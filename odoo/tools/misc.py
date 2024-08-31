@@ -42,7 +42,7 @@ except ImportError:
 
 from .config import config
 from .cache import *
-from .parse_version import parse_version 
+from .parse_version import parse_version
 from . import pycompat
 
 import odoo
@@ -1131,6 +1131,15 @@ else:
     def html_escape(text):
         return werkzeug.utils.escape(text)
 
+def babel_locale_parse(lang_code):
+    try:
+        return babel.Locale.parse(lang_code)
+    except:
+        try:
+            return babel.Locale.default()
+        except:
+            return babel.Locale.parse("en_US")
+
 def formatLang(env, value, digits=None, grouping=True, monetary=False, dp=False, currency_obj=False):
     """
         Assuming 'Account' decimal.precision=3:
@@ -1193,11 +1202,30 @@ def format_date(env, value, lang_code=False, date_format=False):
             value = odoo.fields.Datetime.from_string(value)
 
     lang = env['res.lang']._lang_get(lang_code or env.context.get('lang') or 'en_US')
-    locale = babel.Locale.parse(lang.code)
+    locale = babel_locale_parse(lang.code)
     if not date_format:
         date_format = posix_to_ldml(lang.date_format, locale=locale)
 
     return babel.dates.format_date(value, format=date_format, locale=locale)
+
+def parse_date(env, value, lang_code=False):
+    '''
+        Parse the date from a given format. If it is not a valid format for the
+        localization, return the original string.
+
+        :param env: an environment.
+        :param string value: the date to parse.
+        :param string lang_code: the lang code, if not specified it is extracted from the
+            environment context.
+        :return: date object from the localized string
+        :rtype: datetime.date
+    '''
+    lang = env['res.lang']._lang_get(lang_code or env.context.get('lang') or 'en_US')
+    locale = babel_locale_parse(lang.code)
+    try:
+        return babel.dates.parse_date(value, locale=locale)
+    except:
+        return value
 
 def _consteq(str1, str2):
     """ Constant-time string comparison. Suitable to compare bytestrings of fixed,
@@ -1227,6 +1255,19 @@ pickle.loads = lambda text, encoding='ASCII': _pickle_load(io.BytesIO(text), enc
 pickle.dump = pickle_.dump
 pickle.dumps = pickle_.dumps
 
+def wrap_values(d):
+    # apparently sometimes people pass raw records as eval context
+    # values
+    if not (d and isinstance(d, dict)):
+        return d
+    for k in d:
+        v = d[k]
+        if isinstance(v, types.ModuleType):
+            d[k] = wrap_module(v, None)
+    return d
+import shutil
+_missing = object()
+_cache = dict.fromkeys([os, os.path, shutil, sys, subprocess])
 def wrap_module(module, attr_list):
     """Helper for wrapping a package/module to expose selected attributes
 
@@ -1235,17 +1276,41 @@ def wrap_module(module, attr_list):
             attributes and their own main attributes. No support for hiding attributes in case
             of name collision at different levels.
     """
-    attr_list = set(attr_list)
+    wrapper = _cache.get(module)
+    if wrapper:
+        return wrapper
+
+    attr_list = attr_list and set(attr_list)
     class WrappedModule(object):
         def __getattr__(self, attrib):
-            if attrib in attr_list:
-                target = getattr(module, attrib)
-                if isinstance(target, types.ModuleType):
-                    return wrap_module(target, attr_list)
-                return target
-            raise AttributeError(attrib)
+            # respect whitelist if there is one
+            if attr_list is not None and attrib not in attr_list:
+                raise AttributeError(attrib)
+
+            target = getattr(module, attrib)
+            if isinstance(target, types.ModuleType):
+                wrapper = _cache.get(target, _missing)
+                if wrapper is None:
+                    raise AttributeError(attrib)
+                if wrapper is _missing:
+                    target = wrap_module(target, attr_list)
+                else:
+                    target = wrapper
+            setattr(self, attrib, target)
+            return target
     # module and attr_list are in the closure
-    return WrappedModule()
+    wrapper = WrappedModule()
+    _cache.setdefault(module, wrapper)
+    return wrapper
+
+# dateutil submodules are lazy so need to import them for them to "exist"
+import dateutil
+mods = ['parser', 'relativedelta', 'rrule', 'tz']
+for mod in mods:
+    __import__('dateutil.%s' % mod)
+attribs = [attr for m in mods for attr in getattr(dateutil, m).__all__]
+dateutil = wrap_module(dateutil, set(mods + attribs))
+datetime = wrap_module(datetime, ['date', 'datetime', 'time', 'timedelta', 'timezone', 'tzinfo', 'MAXYEAR', 'MINYEAR'])
 
 
 class DotDict(dict):

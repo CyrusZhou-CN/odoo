@@ -59,7 +59,10 @@ class SaleOrder(models.Model):
             'target': 'new',
             'context': {
                 'default_order_id': self.id,
-                'default_carrier_id': self.partner_shipping_id.property_delivery_carrier_id.id,
+                'default_carrier_id': (
+                    self.partner_shipping_id.property_delivery_carrier_id.id
+                    or self.partner_shipping_id.commercial_partner_id.property_delivery_carrier_id.id
+                ),
             }
         }
 
@@ -129,7 +132,7 @@ class SaleOrder(models.Model):
         return u' {pre}{0}{post}'.format(amount, pre=pre, post=post)
 
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines',
-                 'order_line.is_delivery', 'order_line.is_downpayment', 'order_line.product_id.invoice_policy')
+                 'order_line.is_delivery', 'order_line.is_downpayment')
     def _get_invoiced(self):
         super(SaleOrder, self)._get_invoiced()
         for order in self:

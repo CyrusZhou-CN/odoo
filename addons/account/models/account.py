@@ -127,9 +127,8 @@ class AccountTaxReportLine(models.Model):
                 plus_child_tags.write({'name': '+' + vals['tag_name']})
 
             else:
-                # tag_name was set empty, so we remove the tags
-                self._delete_tags_from_taxes(self.mapped('tag_ids.id'))
-                self.write({'tag_ids': [(2, tag.id, 0) for tag in self.mapped('tag_ids')]})
+                # tag_name was set empty, so we remove the tags that are not shared
+                self._remove_tax_used_only_by_self()
 
         if 'country_id' in vals and self.tag_ids:
             # Writing the country of a tax report line should overwrite the country of its tags
@@ -138,16 +137,26 @@ class AccountTaxReportLine(models.Model):
         return rslt
 
     def unlink(self):
-        self._delete_tags_from_taxes(self.mapped('tag_ids.id'))
+        self._remove_tax_used_only_by_self()
         children = self.mapped('children_line_ids')
         if children:
             children.unlink()
         return super(AccountTaxReportLine, self).unlink()
 
+    def _remove_tax_used_only_by_self(self):
+        """ Deletes and removes from taxes and move lines all the
+        tags from the provided tax report lines that are not linked
+        to any other tax report lines.
+        """
+        all_tags = self.mapped('tag_ids')
+        tags_to_unlink = all_tags.filtered(lambda x: not (x.tax_report_line_ids - self))
+        self.write({'tag_ids': [(3, tag.id, 0) for tag in tags_to_unlink]})
+        self._delete_tags_from_taxes(tags_to_unlink.ids)
+
     def _delete_tags_from_taxes(self, tag_ids_to_delete):
         """ Based on a list of tag ids, removes them first from the
         repartition lines they are linked to, then deletes them
-        from the account move lines.
+        from the account move lines, and finally unlink them.
         """
         if not tag_ids_to_delete:
             # Nothing to do, then!
@@ -162,6 +171,8 @@ class AccountTaxReportLine(models.Model):
 
         self.env['account.move.line'].invalidate_cache(fnames=['tag_ids'])
         self.env['account.tax.repartition.line'].invalidate_cache(fnames=['tag_ids'])
+
+        self.env['account.account.tag'].browse(tag_ids_to_delete).unlink()
 
     @api.constrains('formula', 'tag_name')
     def _validate_formula(self):
@@ -731,7 +742,10 @@ class AccountJournal(models.Model):
             # A bank account can belong to a customer/supplier, in which case their partner_id is the customer/supplier.
             # Or they are part of a bank journal and their partner_id must be the company's partner_id.
             if self.bank_account_id.partner_id != self.company_id.partner_id:
-                raise ValidationError(_('The holder of a journal\'s bank account must be the company (%s).') % self.company_id.name)
+                raise ValidationError(_('The holder of the bank account of a "Bank" type journal must be the company (%s).\n'
+                                        'However, the holder of "%s" is "%s".\n'
+                                        'Please select another bank account or change the holder of "%s".'
+                                        ) % (self.company_id.name, self.bank_account_id.acc_number, self.bank_account_id.partner_id.name, self.bank_account_id.acc_number))
 
     @api.onchange('default_debit_account_id')
     def onchange_debit_account_id(self):
@@ -836,7 +850,7 @@ class AccountJournal(models.Model):
                     bank_account = self.env['res.partner.bank'].browse(vals['bank_account_id'])
                     if bank_account.partner_id != company.partner_id:
                         raise UserError(_("The partners of the journal's company and the related bank account mismatch."))
-            if 'alias_name' in vals:
+            if 'alias_name' in vals or 'type' in vals:
                 journal._update_mail_alias(vals)
         result = super(AccountJournal, self).write(vals)
 
@@ -960,7 +974,7 @@ class AccountJournal(models.Model):
         if vals.get('type') in ('sale', 'purchase') and vals.get('refund_sequence') and not vals.get('refund_sequence_id'):
             vals.update({'refund_sequence_id': self.sudo()._create_sequence(vals, refund=True).id})
         journal = super(AccountJournal, self.with_context(mail_create_nolog=True)).create(vals)
-        if 'alias_name' in vals:
+        if 'alias_name' in vals or 'type' in vals:
             journal._update_mail_alias(vals)
 
         # Create the bank_account_id if necessary
@@ -1180,7 +1194,9 @@ class AccountTax(models.Model):
     @api.multi
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
-        default = dict(default or {}, name=_("%s (Copy)") % self.name)
+        default = dict(default or {})
+        if 'name' not in default:
+            default['name'] = _("%s (Copy)") % self.name
         return super(AccountTax, self).copy(default=default)
 
     def name_get(self):
@@ -1280,7 +1296,7 @@ class AccountTax(models.Model):
             return base_amount - (base_amount / (1 + self.amount / 100))
         # base / (1 - tax_amount) = new_base
         if self.amount_type == 'division' and not price_include:
-            return base_amount / (1 - self.amount / 100) - base_amount
+            return base_amount / (1 - self.amount / 100) - base_amount if (1 - self.amount / 100) else 0.0
         # <=> new_base * (1 - tax_amount) = base
         if self.amount_type == 'division' and price_include:
             return base_amount - (base_amount * (self.amount / 100))
@@ -1379,6 +1395,7 @@ class AccountTax(models.Model):
         # 3) Deal with the rounding methods
         if not currency:
             currency = company.currency_id
+
         # By default, for each tax, tax amount will first be computed
         # and rounded at the 'Account' decimal precision for each
         # PO/SO/invoice line and then these rounded amounts will be
@@ -1395,10 +1412,8 @@ class AccountTax(models.Model):
         # precision of the currency.
         # The context key 'round' allows to force the standard behavior.
         round_tax = False if company.tax_calculation_rounding_method == 'round_globally' else True
-        round_total = True
         if 'round' in self.env.context:
             round_tax = bool(self.env.context['round'])
-            round_total = bool(self.env.context['round'])
 
         if not round_tax:
             prec += 5
@@ -1411,7 +1426,7 @@ class AccountTax(models.Model):
         # || tax_3 |   ..   |          |
         # ||  ...  |   ..   |    ..    |
         #    ----------------------------
-        def recompute_base(base_amount, fixed_amount, percent_amount, division_amount, prec):
+        def recompute_base(base_amount, fixed_amount, percent_amount, division_amount):
             # Recompute the new base amount based on included fixed/percent amounts and the current base amount.
             # Example:
             #  tax  |  amount  |   type   |  price_include  |
@@ -1424,9 +1439,35 @@ class AccountTax(models.Model):
 
             # if base_amount = 145, the new base is computed as:
             # (145 - 15) / (1.0 + 30%) * 90% = 130 / 1.3 * 90% = 90
-            return round((base_amount - fixed_amount) / (1.0 + percent_amount / 100.0) * (100 - division_amount) / 100, prec)
+            return (base_amount - fixed_amount) / (1.0 + percent_amount / 100.0) * (100 - division_amount) / 100
 
-        base = round(price_unit * quantity, prec)
+        # The first/last base must absolutely be rounded to work in round globally.
+        # Indeed, the sum of all taxes ('taxes' key in the result dictionary) must be strictly equals to
+        # 'price_included' - 'price_excluded' whatever the rounding method.
+        #
+        # Example using the global rounding without any decimals:
+        # Suppose two invoice lines: 27000 and 10920, both having a 19% price included tax.
+        #
+        #                   Line 1                      Line 2
+        # -----------------------------------------------------------------------
+        # total_included:   27000                       10920
+        # tax:              27000 / 1.19 = 4310.924     10920 / 1.19 = 1743.529
+        # total_excluded:   22689.076                   9176.471
+        #
+        # If the rounding of the total_excluded isn't made at the end, it could lead to some rounding issues
+        # when summing the tax amounts, e.g. on invoices.
+        # In that case:
+        #  - amount_untaxed will be 22689 + 9176 = 31865
+        #  - amount_tax will be 4310.924 + 1743.529 = 6054.453 ~ 6054
+        #  - amount_total will be 31865 + 6054 = 37919 != 37920 = 27000 + 10920
+        #
+        # By performing a rounding at the end to compute the price_excluded amount, the amount_tax will be strictly
+        # equals to 'price_included' - 'price_excluded' after rounding and then:
+        #   Line 1: sum(taxes) = 27000 - 22689 = 4311
+        #   Line 2: sum(taxes) = 10920 - 2176 = 8744
+        #   amount_tax = 4311 + 8744 = 13055
+        #   amount_total = 31865 + 13055 = 37920
+        base = currency.round(price_unit * quantity)
 
         # For the computation of move lines, we could have a negative base value.
         # In this case, compute all with positive values and negate them at the end.
@@ -1448,7 +1489,7 @@ class AccountTax(models.Model):
             sum_repartition_factor = sum(tax_repartition_lines.mapped('factor'))
 
             if tax.include_base_amount:
-                base = recompute_base(base, incl_fixed_amount, incl_percent_amount, incl_division_amount, prec)
+                base = recompute_base(base, incl_fixed_amount, incl_percent_amount, incl_division_amount)
                 incl_fixed_amount = incl_percent_amount = incl_division_amount = 0
                 store_included_tax_total = True
             if self._context.get('handle_price_include', True):
@@ -1461,7 +1502,7 @@ class AccountTax(models.Model):
                 elif tax.amount_type == 'division':
                     incl_division_amount += tax.amount * sum_repartition_factor
                 elif tax.amount_type == 'fixed':
-                    incl_fixed_amount += quantity * tax.amount * sum_repartition_factor
+                    incl_fixed_amount += abs(quantity) * tax.amount * sum_repartition_factor
                 else:
                     # tax.amount_type == other (python)
                     tax_amount = tax._compute_amount(base, price_unit, quantity, product, partner) * sum_repartition_factor
@@ -1478,7 +1519,7 @@ class AccountTax(models.Model):
                     store_included_tax_total = False
             i -= 1
 
-        total_excluded = recompute_base(base, incl_fixed_amount, incl_percent_amount, incl_division_amount, prec)
+        total_excluded = currency.round(recompute_base(base, incl_fixed_amount, incl_percent_amount, incl_division_amount))
 
         # 5) Iterate the taxes in the sequence order to compute missing tax amounts.
         # Start the computation of accumulated amounts at the total_excluded value.
@@ -1567,9 +1608,9 @@ class AccountTax(models.Model):
         return {
             'base_tags': taxes.mapped(is_refund and 'refund_repartition_line_ids' or 'invoice_repartition_line_ids').filtered(lambda x: x.repartition_type == 'base').mapped('tag_ids').ids,
             'taxes': taxes_vals,
-            'total_excluded': sign * (currency.round(total_excluded) if round_total else total_excluded),
-            'total_included': sign * (currency.round(total_included) if round_total else total_included),
-            'total_void': sign * (currency.round(total_void) if round_total else total_void),
+            'total_excluded': sign * total_excluded,
+            'total_included': sign * currency.round(total_included),
+            'total_void': sign * currency.round(total_void),
         }
 
     @api.model
@@ -1600,8 +1641,8 @@ class AccountTaxRepartitionLine(models.Model):
     repartition_type = fields.Selection(string="Based On", selection=[('base', 'Base'), ('tax', 'of tax')], required=True, default='tax', help="Base on which the factor will be applied.")
     account_id = fields.Many2one(string="Account", comodel_name='account.account', help="Account on which to post the tax amount")
     tag_ids = fields.Many2many(string="Tax Grid", comodel_name='account.account.tag', domain=[('applicability', '=', 'taxes')], copy=True)
-    invoice_tax_id = fields.Many2one(comodel_name='account.tax', help="The tax set to apply this repartition on invoices. Mutually exclusive with refund_tax_id")
-    refund_tax_id = fields.Many2one(comodel_name='account.tax', help="The tax set to apply this repartition on refund invoices. Mutually exclusive with invoice_tax_id")
+    invoice_tax_id = fields.Many2one(comodel_name='account.tax', ondelete='cascade', help="The tax set to apply this repartition on invoices. Mutually exclusive with refund_tax_id")
+    refund_tax_id = fields.Many2one(comodel_name='account.tax', ondelete='cascade', help="The tax set to apply this repartition on refund invoices. Mutually exclusive with invoice_tax_id")
     tax_id = fields.Many2one(comodel_name='account.tax', compute='_compute_tax_id')
     country_id = fields.Many2one(string="Country", comodel_name='res.country', related='company_id.country_id',  help="Technical field used to restrict tags domain in form view.")
     company_id = fields.Many2one(string="Company", comodel_name='res.company', required=True, default=lambda x: x.env.user.company_id, help="The company this repartition line belongs to.")

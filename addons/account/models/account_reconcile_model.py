@@ -26,7 +26,7 @@ class AccountReconcileModel(models.Model):
 
     # ===== Conditions =====
     match_journal_ids = fields.Many2many('account.journal', string='Journals',
-        domain="[('type', 'in', ('bank', 'cash'))]",
+        domain="[('type', 'in', ('bank', 'cash')), ('company_id', '=', company_id)]",
         help='The reconciliation model will only be available from the selected journals.')
     match_nature = fields.Selection(selection=[
         ('amount_received', 'Amount Received'),
@@ -69,8 +69,8 @@ class AccountReconcileModel(models.Model):
 
     # ===== Write-Off =====
     # First part fields.
-    account_id = fields.Many2one('account.account', string='Account', ondelete='cascade', domain=[('deprecated', '=', False)])
-    journal_id = fields.Many2one('account.journal', string='Journal', ondelete='cascade', help="This field is ignored in a bank statement reconciliation.")
+    account_id = fields.Many2one('account.account', string='Account', ondelete='cascade', domain="[('deprecated', '=', False), ('company_id', '=', company_id)]")
+    journal_id = fields.Many2one('account.journal', string='Journal', ondelete='cascade', help="This field is ignored in a bank statement reconciliation.", domain="[('company_id', '=', company_id)]")
     label = fields.Char(string='Journal Item Label')
     amount_type = fields.Selection([
         ('fixed', 'Fixed'),
@@ -82,13 +82,12 @@ class AccountReconcileModel(models.Model):
     amount = fields.Float(string='Write-off Amount', digits=0, required=True, default=100.0, help="Fixed amount will count as a debit if it is negative, as a credit if it is positive.")
     tax_ids = fields.Many2many('account.tax', string='Taxes', ondelete='restrict')
     analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', ondelete='set null')
-    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags',
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags', domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]",
                                         relation='account_reconcile_model_analytic_tag_rel')
-
     # Second part fields.
     has_second_line = fields.Boolean(string='Add a second line', default=False)
-    second_account_id = fields.Many2one('account.account', string='Second Account', ondelete='cascade', domain=[('deprecated', '=', False)])
-    second_journal_id = fields.Many2one('account.journal', string='Second Journal', ondelete='cascade', help="This field is ignored in a bank statement reconciliation.")
+    second_account_id = fields.Many2one('account.account', string='Second Account', ondelete='cascade', domain="[('deprecated', '=', False), ('company_id', '=', company_id)]")
+    second_journal_id = fields.Many2one('account.journal', string='Second Journal', ondelete='cascade', help="This field is ignored in a bank statement reconciliation.", domain="[('company_id', '=', company_id)]")
     second_label = fields.Char(string='Second Journal Item Label')
     second_amount_type = fields.Selection([
         ('fixed', 'Fixed'),
@@ -100,7 +99,7 @@ class AccountReconcileModel(models.Model):
     second_amount = fields.Float(string='Second Write-off Amount', digits=0, required=True, default=100.0, help="Fixed amount will count as a debit if it is negative, as a credit if it is positive.")
     second_tax_ids = fields.Many2many('account.tax', relation='account_reconcile_model_account_tax_bis_rel', string='Second Taxes', ondelete='restrict')
     second_analytic_account_id = fields.Many2one('account.analytic.account', string='Second Analytic Account', ondelete='set null')
-    second_analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Second Analytic Tags',
+    second_analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Second Analytic Tags', domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]",
                                                relation='account_reconcile_model_second_analytic_tag_rel')
 
     number_entries = fields.Integer(string='Number of entries related to this model', compute='_compute_number_entries')
@@ -468,7 +467,27 @@ class AccountReconcileModel(models.Model):
 
                 -- if there is a partner, propose all aml of the partner, otherwise propose only the ones
                 -- matching the statement line communication
-                AND
+                -- "case when" used to enforce evaluation order (performance optimization)
+                AND (CASE WHEN
+                (
+                    (
+                    -- blue lines appearance conditions
+                    aml.account_id IN (journal.default_credit_account_id, journal.default_debit_account_id)
+                    AND aml.statement_id IS NULL
+                    AND (
+                        company.account_bank_reconciliation_start IS NULL
+                        OR
+                        aml.date > company.account_bank_reconciliation_start
+                        )
+                    )
+                    OR
+                    (
+                    -- black lines appearance conditions
+                    account.reconcile IS TRUE
+                    AND aml.reconciled IS FALSE
+                    )
+                )
+                THEN ( CASE WHEN
                 (
                     (
                         line_partner.partner_id != 0
@@ -496,25 +515,7 @@ class AccountReconcileModel(models.Model):
                         )
                     )
                 )
-                AND
-                (
-                    (
-                    -- blue lines appearance conditions
-                    aml.account_id IN (journal.default_credit_account_id, journal.default_debit_account_id)
-                    AND aml.statement_id IS NULL
-                    AND (
-                        company.account_bank_reconciliation_start IS NULL
-                        OR
-                        aml.date > company.account_bank_reconciliation_start
-                        )
-                    )
-                    OR
-                    (
-                    -- black lines appearance conditions
-                    account.reconcile IS TRUE
-                    AND aml.reconciled IS FALSE
-                    )
-                )
+                THEN 1 END) END) = 1
             '''
             # Filter on the same currency.
             if rule.match_same_currency:
