@@ -210,7 +210,7 @@ class Website(models.Model):
         addr = partner.address_get(['delivery'])
         if not request.website.is_public_user():
             last_sale_order = self.env['sale.order'].sudo().search([('partner_id', '=', partner.id)], limit=1, order="date_order desc, id desc")
-            if last_sale_order:  # first = me
+            if last_sale_order and last_sale_order.partner_shipping_id.active:  # first = me
                 addr['delivery'] = last_sale_order.partner_shipping_id.id
         default_user_id = partner.parent_id.user_id.id or partner.user_id.id
         values = {
@@ -226,9 +226,6 @@ class Website(models.Model):
         company = self.company_id or pricelist.company_id
         if company:
             values['company_id'] = company.id
-            if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note'):
-                values['note'] = company.sale_note or ""
-
         return values
 
     def sale_get_order(self, force_create=False, code=None, update_pricelist=False, force_pricelist=False):
@@ -258,7 +255,7 @@ class Website(models.Model):
         # Do not reload the cart of this user last visit if the Fiscal Position has changed.
         if check_fpos and sale_order:
             fpos_id = (
-                self.env['account.fiscal.position']
+                self.env['account.fiscal.position'].sudo()
                 .with_context(force_company=sale_order.company_id.id)
                 .get_fiscal_position(sale_order.partner_id.id, delivery_id=sale_order.partner_shipping_id.id)
             )
@@ -301,6 +298,9 @@ class Website(models.Model):
                     sale_order.onchange_partner_shipping_id()
 
             request.session['sale_order_id'] = sale_order.id
+
+            # The order was created with SUPERUSER_ID, revert back to request user.
+            sale_order = sale_order.with_user(self.env.user).sudo()
 
         # case when user emptied the cart
         if not request.session.get('sale_order_id'):

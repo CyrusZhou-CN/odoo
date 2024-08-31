@@ -135,8 +135,9 @@ class SaleCouponProgram(models.Model):
             'name': _('Sales Orders'),
             'view_mode': 'tree,form',
             'res_model': 'sale.order',
+            'search_view_id': [self.env.ref('sale.sale_order_view_search_inherit_quotation').id],
             'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', orders.ids), ('state', 'not in', ('draft', 'sent', 'cancel'))],
+            'domain': [('id', 'in', orders.ids)],
             'context': dict(self._context, create=False)
         }
 
@@ -168,11 +169,11 @@ class SaleCouponProgram(models.Model):
             message = {'error': _('A minimum of %s %s should be purchased to get the reward') % (self.rule_minimum_amount, self.currency_id.name)}
         elif self.promo_code and self.promo_code == order.promo_code:
             message = {'error': _('The promo code is already applied on this order')}
-        elif not self.promo_code and self in order.no_code_promo_program_ids:
+        elif self in order.no_code_promo_program_ids:
             message = {'error': _('The promotional offer is already applied on this order')}
         elif not self.active:
             message = {'error': _('Promo code is invalid')}
-        elif self.rule_date_from and self.rule_date_from > order.date_order or self.rule_date_to and order.date_order > self.rule_date_to:
+        elif self.rule_date_from and self.rule_date_from > fields.Datetime.now() or self.rule_date_to and fields.Datetime.now() > self.rule_date_to:
             message = {'error': _('Promo code is expired')}
         elif order.promo_code and self.promo_code_usage == 'code_needed':
             message = {'error': _('Promotionals codes are not cumulative.')}
@@ -217,7 +218,7 @@ class SaleCouponProgram(models.Model):
             untaxed_amount = order_amount['amount_untaxed'] - sum(line.price_subtotal for line in lines)
             tax_amount = order_amount['amount_tax'] - sum(line.price_tax for line in lines)
             program_amount = program._compute_program_amount('rule_minimum_amount', order.currency_id)
-            if program.rule_minimum_amount_tax_inclusion == 'tax_included' and program_amount <= (untaxed_amount + tax_amount) or program.rule_minimum_amount_tax_inclusion == 'tax_excluded' and program_amount <= untaxed_amount:
+            if program.rule_minimum_amount_tax_inclusion == 'tax_included' and program_amount <= (untaxed_amount + tax_amount) or program_amount <= untaxed_amount:
                 program_ids.append(program.id)
 
         return self.env['sale.coupon.program'].browse(program_ids)
@@ -225,9 +226,9 @@ class SaleCouponProgram(models.Model):
     @api.model
     def _filter_on_validity_dates(self, order):
         return self.filtered(lambda program:
-            (not program.rule_date_from or program.rule_date_from <= order.date_order)
+            (not program.rule_date_from or program.rule_date_from <= fields.Datetime.now())
             and
-            (not program.rule_date_to or program.rule_date_to >= order.date_order)
+            (not program.rule_date_to or program.rule_date_to >= fields.Datetime.now())
         )
 
     @api.model
@@ -236,7 +237,12 @@ class SaleCouponProgram(models.Model):
         return self.filtered(lambda program: program.promo_code_usage == 'code_needed' and program.promo_code != order.promo_code)
 
     def _filter_unexpired_programs(self, order):
-        return self.filtered(lambda program: program.maximum_use_number == 0 or program.order_count <= program.maximum_use_number)
+        return self.filtered(
+            lambda program: program.maximum_use_number == 0
+            or program.order_count < program.maximum_use_number
+            or program
+            in (order.code_promo_program_id + order.no_code_promo_program_ids)
+        )
 
     def _filter_programs_on_partners(self, order):
         return self.filtered(lambda program: program._is_valid_partner(order.partner_id))
@@ -310,7 +316,7 @@ class SaleCouponProgram(models.Model):
         return programs
 
     def _is_valid_partner(self, partner):
-        if self.rule_partners_domain:
+        if self.rule_partners_domain and self.rule_partners_domain != '[]':
             domain = safe_eval(self.rule_partners_domain) + [('id', '=', partner.id)]
             return bool(self.env['res.partner'].search_count(domain))
         else:

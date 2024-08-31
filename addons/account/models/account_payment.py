@@ -132,6 +132,12 @@ class account_payment(models.Model):
             if payment.amount < 0:
                 raise ValidationError(_('The payment amount cannot be negative.'))
 
+    @api.constrains('invoice_ids')
+    def _check_invoices(self):
+        for payment in self:
+            if any(invoice.company_id != payment.company_id for invoice in payment.invoice_ids):
+                raise ValidationError(_('You can only register payments for invoices in the same company'))
+
     @api.model
     def _get_method_codes_using_bank_account(self):
         return []
@@ -206,14 +212,14 @@ class account_payment(models.Model):
             # context for partner_bank_account_id properly when provided with a
             # default partner_id. Without it, the onchange recomputes the bank account
             # uselessly and might assign a different value to it.
-            if self.partner_id and len(self.partner_id.bank_ids) > 0:
-                self.partner_bank_account_id = self.partner_id.bank_ids[0]
-            elif self.partner_id and len(self.partner_id.commercial_partner_id.bank_ids) > 0:
-                self.partner_bank_account_id = self.partner_id.commercial_partner_id.bank_ids[0]
-            else:
-                self.partner_bank_account_id = False
+            filter_company = lambda x: x.company_id is False or x.company_id == self.company_id
+            self.partner_bank_account_id = (
+                self.partner_id.bank_ids.filtered(filter_company)
+                or self.partner_id.commercial_partner_id.bank_ids.filtered(filter_company)
+            )[:1]
         if self.payment_type == 'inbound' and self.invoice_ids:
-            partner_ids = [self.invoice_ids[0].company_id.partner_id.id, self.invoice_ids[0].company_id.partner_id.commercial_partner_id.id]
+            partner_ids = [self.invoice_ids[0].company_id.partner_id.id,
+                           self.invoice_ids[0].company_id.partner_id.commercial_partner_id.id]
         else:
             partner_ids = [self.partner_id.id, self.partner_id.commercial_partner_id.id]
         return {'domain': {'partner_bank_account_id': [('partner_id', 'in', partner_ids)]}}
@@ -763,10 +769,14 @@ class payment_register(models.TransientModel):
             raise UserError(_("You can only register at the same time for payment that are all inbound or all outbound"))
         if any(inv.company_id != invoices[0].company_id for inv in invoices):
             raise UserError(_("You can only register at the same time for payment that are all from the same company"))
-        # Check the destination account is the same
-        destination_account = invoices.line_ids.filtered(lambda line: line.account_internal_type in ('receivable', 'payable')).mapped('account_id')
-        if len(destination_account) > 1:
-            raise UserError(_('There is more than one receivable/payable account in the concerned invoices. You cannot group payments in that case.'))
+        # Check the destination account is the same for each payment group
+        groups_dict = {}
+        for invoice in invoices:
+            key = self._get_payment_group_key(invoice)
+            destination_account = invoice.line_ids.filtered(lambda line: line.account_internal_type in ('receivable', 'payable')).mapped('account_id')
+            if len(destination_account) > 1 or groups_dict.get(key, destination_account) != destination_account:
+                raise UserError(_('There is more than one receivable/payable account in the concerned invoices. You cannot group payments in that case.'))
+            groups_dict[key] = destination_account
         if 'invoice_ids' not in rec:
             rec['invoice_ids'] = [(6, 0, invoices.ids)]
         if 'journal_id' not in rec:

@@ -151,7 +151,7 @@ class AccountMove(models.Model):
             return res
 
         for record in self:
-            if record.name and record.invoice_partner_bank_id and record.invoice_partner_bank_id.l10n_ch_postal:
+            if record.l10n_ch_isr_number:
                 record.l10n_ch_isr_number_spaced = _space_isr_number(record.l10n_ch_isr_number)
             else:
                 record.l10n_ch_isr_number_spaced = False
@@ -247,7 +247,11 @@ class AccountMove(models.Model):
         for inv in self:
             if inv.type == 'in_invoice' and inv.company_id.country_id.code == "CH":
                 partner_bank = inv.invoice_partner_bank_id
-                if partner_bank._is_isr_issuer() and not inv._has_isr_ref():
+                if partner_bank:
+                    needs_isr_ref = partner_bank._is_qr_iban() or partner_bank._is_isr_issuer()
+                else:
+                    needs_isr_ref = False
+                if needs_isr_ref and not inv._has_isr_ref():
                     inv.l10n_ch_isr_needs_fixing = True
                     continue
             inv.l10n_ch_isr_needs_fixing = False
@@ -314,7 +318,8 @@ class AccountMove(models.Model):
         # as the QR report data haven't been loaded.
         # TODO: remove this in master
         return not self.env.ref('l10n_ch.l10n_ch_swissqr_template').inherit_id \
-               and self.invoice_partner_bank_id.validate_swiss_code_arguments(self.invoice_partner_bank_id.currency_id, self.partner_id, self.invoice_payment_ref)
+               and self.invoice_partner_bank_id.validate_swiss_code_arguments(self.invoice_partner_bank_id.currency_id, self.partner_id, self.invoice_payment_ref) \
+               and self.company_id.country_id.code == 'CH'
 
     def print_ch_qr_bill(self):
         """ Triggered by the 'Print QR-bill' button.

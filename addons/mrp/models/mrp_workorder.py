@@ -157,6 +157,9 @@ class MrpWorkorder(models.Model):
             workorder.date_planned_finished = workorder.leave_id.date_to
 
     def _set_dates_planned(self):
+        if not self[0].date_planned_start or not self[0].date_planned_finished:
+            raise UserError(_("It is not possible to unplan one single Work Order. "
+                              "You should unplan the Manufacturing Order instead in order to unplan all the linked operations."))
         date_from = self[0].date_planned_start
         date_to = self[0].date_planned_finished
         self.mapped('leave_id').sudo().write({
@@ -175,15 +178,6 @@ class MrpWorkorder(models.Model):
             line = previous_wo.finished_workorder_line_ids.filtered(lambda line: line.product_id == self.product_id and line.lot_id == self.finished_lot_id)
             if line:
                 self.qty_producing = line.qty_done
-
-    @api.onchange('date_planned_finished')
-    def _onchange_date_planned_finished(self):
-        if self.date_planned_start and self.date_planned_finished:
-            interval = self.workcenter_id.resource_calendar_id.get_work_duration_data(
-                self.date_planned_start, self.date_planned_finished,
-                domain=[('time_type', 'in', ['leave', 'other'])]
-            )
-            self.duration_expected = interval['hours'] * 60
 
     @api.depends('production_id.workorder_ids.finished_workorder_line_ids',
     'production_id.workorder_ids.finished_workorder_line_ids.qty_done',
@@ -242,6 +236,13 @@ class MrpWorkorder(models.Model):
         # Removes references to workorder to avoid Validation Error
         (self.mapped('move_raw_ids') | self.mapped('move_finished_ids')).write({'workorder_id': False})
         self.mapped('leave_id').unlink()
+        previous_wos = self.env['mrp.workorder'].search([
+            ('next_work_order_id', 'in', self.ids),
+            ('id', 'not in', self.ids)
+        ])
+        for pw in previous_wos:
+            while pw.next_work_order_id and pw.next_work_order_id in self:
+                pw.next_work_order_id = pw.next_work_order_id.next_work_order_id
         return super(MrpWorkorder, self).unlink()
 
     def _get_real_uom_qty(self, qty, to_production_uom=False):
@@ -314,13 +315,28 @@ class MrpWorkorder(models.Model):
         for order in (self - late_orders):
             order.color = 2
 
-    @api.onchange('date_planned_start', 'duration_expected')
+    @api.onchange('date_planned_start', 'duration_expected', 'workcenter_id')
     def _onchange_date_planned_start(self):
-        if self.date_planned_start and self.duration_expected:
-            self.date_planned_finished = self.workcenter_id.resource_calendar_id.plan_hours(
-                self.duration_expected / 60.0, self.date_planned_start,
-                compute_leaves=True, domain=[('time_type', 'in', ['leave', 'other'])]
-            )
+        if self.date_planned_start and self.duration_expected and self.workcenter_id:
+            self.date_planned_finished = self._calculate_date_planned_finished()
+
+    def _calculate_date_planned_finished(self, date_planned_start=False):
+        return self.workcenter_id.resource_calendar_id.plan_hours(
+            self.duration_expected / 60.0, date_planned_start or self.date_planned_start,
+            compute_leaves=True, domain=[('time_type', 'in', ['leave', 'other'])]
+        )
+
+    @api.onchange('date_planned_finished')
+    def _onchange_date_planned_finished(self):
+        if self.date_planned_start and self.date_planned_finished:
+            self.duration_expected = self._calculate_duration_expected()
+
+    def _calculate_duration_expected(self, date_planned_start=False, date_planned_finished=False):
+        interval = self.workcenter_id.resource_calendar_id.get_work_duration_data(
+            date_planned_start or self.date_planned_start, date_planned_finished or self.date_planned_finished,
+            domain=[('time_type', 'in', ['leave', 'other'])]
+        )
+        return interval['hours'] * 60
 
     def write(self, values):
         if 'production_id' in values:
@@ -339,6 +355,16 @@ class MrpWorkorder(models.Model):
                 end_date = fields.Datetime.to_datetime(values.get('date_planned_finished')) or workorder.date_planned_finished
                 if start_date and end_date and start_date > end_date:
                     raise UserError(_('The planned end date of the work order cannot be prior to the planned start date, please correct this to save the work order.'))
+                if 'duration_expected' not in values:
+                    if 'date_planned_start' in values and 'date_planned_finished' in values:
+                        computed_finished_time = workorder._calculate_date_planned_finished(start_date)
+                        values['date_planned_finished'] = computed_finished_time
+                    elif 'date_planned_start' in values:
+                        computed_duration = workorder._calculate_duration_expected(date_planned_start=start_date)
+                        values['duration_expected'] = computed_duration
+                    elif 'date_planned_finished' in values:
+                        computed_duration = workorder._calculate_duration_expected(date_planned_finished=end_date)
+                        values['duration_expected'] = computed_duration
                 # Update MO dates if the start date of the first WO or the
                 # finished date of the last WO is update.
                 if workorder == workorder.production_id.workorder_ids[0] and 'date_planned_start' in values:
@@ -433,6 +459,14 @@ class MrpWorkorder(models.Model):
         if float_compare(self.qty_producing, 0, precision_rounding=self.product_uom_id.rounding) <= 0:
             raise UserError(_('Please set the quantity you are currently producing. It should be different from zero.'))
 
+        # Ensure serial numbers are used once
+        if self.product_id.tracking == 'serial' and self.finished_lot_id:
+            line = self.finished_workorder_line_ids.filtered(
+                lambda line: line.lot_id.id == self.finished_lot_id.id
+            )
+            if line:
+                raise UserError(_('You cannot produce the same serial number twice.'))
+
         # If last work order, then post lots used
         if not self.next_work_order_id:
             self._update_finished_move()
@@ -494,8 +528,9 @@ class MrpWorkorder(models.Model):
         self.ensure_one()
         final_lot_quantity = self._get_real_uom_qty(self.qty_production)
         rounding = self.product_uom_id.rounding
-        # Get the max quantity possible for current lot in other workorders
-        for workorder in (self.production_id.workorder_ids - self):
+        # Get the max quantity possible for current lot in other workorders, avoid
+        # considering already completed steps up to the current one
+        for workorder in (self.production_id.workorder_ids.filtered(lambda wo: not (wo.id < self.id and wo.state in ('done','cancel'))) - self):
             # We add the remaining quantity to the produced quantity for the
             # current lot. For 5 finished products: if in the first wo it
             # creates 4 lot A and 1 lot B and in the second it create 3 lot A
@@ -677,6 +712,17 @@ class MrpWorkorder(models.Model):
         for wo in self:
             production_qty = wo._get_real_uom_qty(wo.qty_production)
             wo.qty_remaining = float_round(production_qty - wo.qty_produced, precision_rounding=wo.production_id.product_uom_id.rounding)
+
+    def _update_workorder_lines(self):
+        # OVERRIDE
+        line_values = super(MrpWorkorder, self)._update_workorder_lines()
+        # wo lines without move_id should also be deleted
+        for wo_line in self._workorder_line_ids().filtered(lambda w: not w.move_id and (not w.finished_workorder_id or w.product_id != w.finished_workorder_id.product_id)):
+            if not line_values['to_delete']:
+                line_values['to_delete'] = wo_line
+            elif wo_line not in line_values['to_delete']:
+                line_values['to_delete'] |= wo_line
+        return line_values
 
 
 class MrpWorkorderLine(models.Model):

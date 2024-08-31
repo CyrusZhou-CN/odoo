@@ -203,6 +203,7 @@ class Attendee(models.Model):
                 email_values = {
                     'model': None,  # We don't want to have the mail in the tchatter while in queue!
                     'res_id': None,
+                    'author_id': attendee.event_id.user_id.partner_id.id or self.env.user.partner_id.id,
                 }
                 if ics_file:
                     email_values['attachment_ids'] = [
@@ -210,7 +211,8 @@ class Attendee(models.Model):
                                 'mimetype': 'text/calendar',
                                 'datas': base64.b64encode(ics_file)})
                     ]
-                    mail_ids.append(invitation_template.with_context(no_document=True).send_mail(attendee.id, email_values=email_values, notif_layout='mail.mail_notification_light'))
+                    # sudo is needed when the current user hasn't been added to the loop (i.e. neither in attendees, nor in owner)
+                    mail_ids.append(invitation_template.with_context(no_document=True).sudo().send_mail(attendee.id, email_values=email_values, notif_layout='mail.mail_notification_light'))
                 else:
                     mail_ids.append(invitation_template.send_mail(attendee.id, email_values=email_values, notif_layout='mail.mail_notification_light'))
 
@@ -881,7 +883,7 @@ class Meeting(models.Model):
                 meeting.stop_date = meeting.stop.date()
                 meeting.stop_datetime = False
 
-                meeting.duration = 0.0
+                meeting.duration = self._get_duration(meeting.start, meeting.stop)
             else:
                 meeting.start_date = False
                 meeting.start_datetime = meeting.start
@@ -930,7 +932,7 @@ class Meeting(models.Model):
                 data = self._rrule_default_values()
                 data['recurrency'] = True
                 data.update(self._rrule_parse(meeting.rrule, data, meeting.start))
-                meeting.update(data)
+                meeting.write(data)
 
     @api.model
     def _event_tz_get(self):
@@ -984,8 +986,9 @@ class Meeting(models.Model):
         def ics_datetime(idate, allday=False):
             if idate:
                 if allday:
-                    return idate
+                    return fields.Date.to_date(idate)
                 else:
+                    idate = fields.Datetime.to_datetime(idate)
                     return idate.replace(tzinfo=pytz.timezone('UTC'))
             return False
 
@@ -1122,6 +1125,9 @@ class Meeting(models.Model):
         if 'id' not in order_fields:
             order_fields.append('id')
 
+        # code does not handle '!' operator
+        domain = expression.distribute_not(expression.normalize_domain(domain))
+
         leaf_evaluations = None
         recurrent_ids = [meeting.id for meeting in self if meeting.recurrency and meeting.rrule]
         #compose a query of the type SELECT id, condition1 as domain1, condition2 as domaine2
@@ -1234,10 +1240,10 @@ class Meeting(models.Model):
                 for name, desc in sort_spec
             )
             # then Reverse if the value matches a "desc" column
-            return [
+            return tuple(
                 (tools.Reverse(v) if desc else v)
                 for v, desc in vals_spec
-            ]
+            )
         return [r['id'] for r in sorted(result_data, key=key)]
 
     def _rrule_serialize(self):
@@ -1651,7 +1657,7 @@ class Meeting(models.Model):
             if real_id != calendar_id:
                 calendar = self.browse(calendar_id)
                 real = self.browse(real_id)
-                ls = calendar_id2real_id(calendar_id, with_date=True)
+                ls = calendar_id2real_id(calendar_id, with_date=real.duration or 1)
                 for field in fields:
                     f = self._fields[field]
                     if field in ('start', 'start_date', 'start_datetime'):
@@ -1694,14 +1700,6 @@ class Meeting(models.Model):
             if not isinstance(ls, (str, int)) and len(ls) >= 2:
                 res['start'] = ls[1]
                 res['stop'] = ls[2]
-
-                if res['allday']:
-                    res['start_date'] = ls[1]
-                    res['stop_date'] = ls[2]
-                else:
-                    res['start_datetime'] = ls[1]
-                    res['stop_datetime'] = ls[2]
-
                 if 'display_time' in fields:
                     res['display_time'] = self._get_display_time(ls[1], ls[2], res['duration'], res['allday'])
 
@@ -1731,6 +1729,21 @@ class Meeting(models.Model):
                 if (k in r) and (fields and (k not in fields)):
                     del r[k]
         return result
+
+    def name_get(self):
+        """ Hide private events' name for events which don't belong to the current user
+        """
+        hidden = self.filtered(
+            lambda evt:
+                evt.privacy == 'private' and
+                evt.user_id.id != self.env.uid and
+                self.env.user.partner_id not in evt.partner_ids
+        )
+
+        shown = self - hidden
+        shown_names = super(Meeting, shown).name_get()
+        obfuscated_names = [(eid, _('Busy')) for eid in hidden.ids]
+        return shown_names + obfuscated_names
 
     def unlink(self, can_be_deleted=True):
         # Get concerned attendees to notify them if there is an alarm on the unlinked events,
@@ -1769,7 +1782,7 @@ class Meeting(models.Model):
         new_args = []
         for arg in args:
             new_arg = arg
-            if arg[0] in ('stop_date', 'stop_datetime', 'stop',) and arg[1] == ">=":
+            if arg[0] in ('stop_date', 'stop_datetime', 'stop',) and arg[1] in ('>=', '>', '=',):
                 if self._context.get('virtual_id', True):
                     new_args += ['|', '&', ('recurrency', '=', 1), ('final_date', arg[1], arg[2])]
             elif arg[0] == "id":

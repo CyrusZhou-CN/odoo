@@ -194,7 +194,7 @@ class PosOrder(models.Model):
             .mapped('picking_id.move_lines')\
             .filtered(lambda m: m.product_id.id == product.id)\
             .sorted(lambda x: x.date)
-        price_unit = product._compute_average_price(0, quantity, moves)
+        price_unit = product.with_context(force_company=self.company_id.id)._compute_average_price(0, quantity, moves)
         return - price_unit
 
     name = fields.Char(string='Order Ref', required=True, readonly=True, copy=False, default='/')
@@ -379,6 +379,17 @@ class PosOrder(models.Model):
         }
         return vals
 
+    def _create_invoice(self, move_vals):
+        self.ensure_one()
+        new_move = self.env['account.move'].sudo()\
+                        .with_context(default_type=move_vals['type'], force_company=self.company_id.id)\
+                        .create(move_vals)
+        message = _("This invoice has been created from the point of sale session: <a href=# data-oe-model=pos.order data-oe-id=%d>%s</a>") % (self.id, self.name)
+        new_move.message_post(body=message)
+
+        return new_move
+
+
     def action_pos_order_invoice(self):
         moves = self.env['account.move']
 
@@ -392,11 +403,8 @@ class PosOrder(models.Model):
                 raise UserError(_('Please provide a partner for the sale.'))
 
             move_vals = order._prepare_invoice_vals()
-            new_move = moves.sudo()\
-                            .with_context(default_type=move_vals['type'], force_company=order.company_id.id)\
-                            .create(move_vals)
-            message = _("This invoice has been created from the point of sale session: <a href=# data-oe-model=pos.order data-oe-id=%d>%s</a>") % (order.id, order.name)
-            new_move.message_post(body=message)
+            new_move = order._create_invoice(move_vals)
+
             order.write({'account_move': new_move.id, 'state': 'invoiced'})
             new_move.sudo().with_context(force_company=order.company_id.id).post()
             moves += new_move
@@ -511,6 +519,7 @@ class PosOrder(models.Model):
             for line in order.lines.filtered(lambda l: l.product_id.type in ['product', 'consu'] and not float_is_zero(l.qty, precision_rounding=l.product_id.uom_id.rounding)):
                 moves |= Move.create({
                     'name': line.name,
+                    'company_id': line.company_id.id,
                     'product_uom': line.product_id.uom_id.id,
                     'picking_id': order_picking.id if line.qty >= 0 else return_picking.id,
                     'picking_type_id': picking_type.id if line.qty >= 0 else return_pick_type.id,
@@ -569,7 +578,8 @@ class PosOrder(models.Model):
                             if stock_production_lot.product_id.tracking == 'lot':
                                 qty = abs(pos_pack_lot.pos_order_line_id.qty)
                             qty_done += qty
-                            pack_lots.append({'lot_id': stock_production_lot.id, 'qty': qty})
+                            quant = stock_production_lot.quant_ids.filtered(lambda q: q.quantity > 0.0 and q.location_id.parent_path.startswith(move.location_id.parent_path))[-1:]
+                            pack_lots.append({'lot_id': stock_production_lot.id, 'quant_location_id': quant.location_id.id, 'qty': qty})
                         else:
                             has_wrong_lots = True
                 elif move.product_id.tracking == 'none' or not lots_necessary:
@@ -577,14 +587,14 @@ class PosOrder(models.Model):
                 else:
                     has_wrong_lots = True
                 for pack_lot in pack_lots:
-                    lot_id, qty = pack_lot['lot_id'], pack_lot['qty']
+                    lot_id, quant_location_id, qty = pack_lot['lot_id'], pack_lot['quant_location_id'], pack_lot['qty']
                     self.env['stock.move.line'].create({
                         'picking_id': move.picking_id.id,
                         'move_id': move.id,
                         'product_id': move.product_id.id,
                         'product_uom_id': move.product_uom.id,
                         'qty_done': qty,
-                        'location_id': move.location_id.id,
+                        'location_id': quant_location_id or move.location_id.id,
                         'location_dest_id': move.location_dest_id.id,
                         'lot_id': lot_id,
                     })
@@ -663,7 +673,6 @@ class PosOrder(models.Model):
             'datas': ticket,
             'res_model': 'pos.order',
             'res_id': orders[:1].id,
-            'store_fname': filename,
             'mimetype': 'image/jpeg',
         })
         template_data = {
@@ -682,7 +691,6 @@ class PosOrder(models.Model):
                 'name': filename,
                 'type': 'binary',
                 'datas': base64.b64encode(report[0]),
-                'store_fname': filename,
                 'res_model': 'pos.order',
                 'res_id': orders[:1].id,
                 'mimetype': 'application/x-pdf'
@@ -741,7 +749,7 @@ class PosOrderLine(models.Model):
     price_subtotal_incl = fields.Float(string='Subtotal', digits=0,
         readonly=True, required=True)
     discount = fields.Float(string='Discount (%)', digits=0, default=0.0)
-    order_id = fields.Many2one('pos.order', string='Order Ref', ondelete='cascade', required=True)
+    order_id = fields.Many2one('pos.order', string='Order Ref', ondelete='cascade', required=True, index=True)
     tax_ids = fields.Many2many('account.tax', string='Taxes', readonly=True)
     tax_ids_after_fiscal_position = fields.Many2many('account.tax', compute='_get_tax_ids_after_fiscal_position', string='Taxes to Apply')
     pack_lot_ids = fields.One2many('pos.pack.operation.lot', 'pos_order_line_id', string='Lot/serial Number')
@@ -856,7 +864,7 @@ class PosOrderLineLot(models.Model):
     _description = "Specify product lot/serial number in pos order line"
     _rec_name = "lot_name"
 
-    pos_order_line_id = fields.Many2one('pos.order.line')
+    pos_order_line_id = fields.Many2one('pos.order.line', auto_join=True)
     order_id = fields.Many2one('pos.order', related="pos_order_line_id.order_id", readonly=False)
     lot_name = fields.Char('Lot Name')
     product_id = fields.Many2one('product.product', related='pos_order_line_id.product_id', readonly=False)

@@ -53,7 +53,10 @@ class View(models.Model):
         # We need to consider inactive views when handling multi-website cow
         # feature (to copy inactive children views, to search for specific
         # views, ...)
-        for view in self.with_context(active_test=False):
+        # Website-specific views need to be updated first because they might
+        # be relocated to new ids by the cow if they are involved in the
+        # inheritance tree.
+        for view in self.with_context(active_test=False).sorted(key='website_id', reverse=True):
             # Make sure views which are written in a website context receive
             # a value for their 'key' field
             if not view.key and not vals.get('key'):
@@ -113,6 +116,14 @@ class View(models.Model):
             super(View, website_specific_view).write(vals)
 
         return True
+
+    def _load_records_write_on_cow(self, cow_view, inherit_id, values):
+        inherit_id = self.search([
+            ('key', '=', self.browse(inherit_id).key),
+            ('website_id', 'in', (False, cow_view.website_id.id)),
+        ], order='website_id', limit=1).id
+        values['inherit_id'] = inherit_id
+        cow_view.with_context(no_cow=True).write(values)
 
     def _create_all_specific_views(self, processed_modules):
         """ When creating a generic child view, we should

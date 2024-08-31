@@ -6,6 +6,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
+from odoo.tools.sql import column_exists, create_column
 
 
 class SaleOrder(models.Model):
@@ -179,18 +180,33 @@ class SaleOrderLine(models.Model):
         """ Hook for validated timesheet in addionnal module """
         return [('project_id', '!=', False)]
 
-    @api.depends('product_id')
+    @api.depends('product_id.type')
     def _compute_is_service(self):
         for so_line in self:
             so_line.is_service = so_line.product_id.type == 'service'
 
-    @api.depends('product_id')
+    @api.depends('product_id.type')
     def _compute_product_updatable(self):
         for line in self:
             if line.product_id.type == 'service' and line.state == 'sale':
                 line.product_updatable = False
             else:
                 super(SaleOrderLine, line)._compute_product_updatable()
+
+    def _auto_init(self):
+        """
+        Create column to stop ORM from computing it himself (too slow)
+        """
+        if not column_exists(self.env.cr, 'sale_order_line', 'is_service'):
+            create_column(self.env.cr, 'sale_order_line', 'is_service', 'bool')
+            self.env.cr.execute("""
+                UPDATE sale_order_line line
+                SET is_service = (pt.type = 'service')
+                FROM product_product pp
+                LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                WHERE pp.id = line.product_id
+            """)
+        return super()._auto_init()
 
     @api.model_create_multi
     def create(self, vals_list):

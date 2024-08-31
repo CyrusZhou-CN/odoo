@@ -113,9 +113,10 @@ Finally, to instruct OpenERP to really use the unaccent function, you have to
 start the server specifying the ``--unaccent`` flag.
 
 """
-import collections
+import collections.abc
 
 import logging
+import reprlib
 import traceback
 from functools import partial
 from zlib import crc32
@@ -309,7 +310,10 @@ def distribute_not(domain):
             if negate:
                 left, operator, right = token
                 if operator in TERM_OPERATORS_NEGATION:
-                    result.append((left, TERM_OPERATORS_NEGATION[operator], right))
+                    if token in (TRUE_LEAF, FALSE_LEAF):
+                        result.append(FALSE_LEAF if token == TRUE_LEAF else TRUE_LEAF)
+                    else:
+                        result.append((left, TERM_OPERATORS_NEGATION[operator], right))
                 else:
                     result.append(NOT_OPERATOR)
                     result.append(token)
@@ -757,42 +761,52 @@ class expression(object):
             if not ids:
                 return [FALSE_LEAF]
             if left_model._parent_store:
-                doms = OR([
+                domain = OR([
                     [('parent_path', '=like', rec.parent_path + '%')]
-                    for rec in left_model.browse(ids)
+                    for rec in left_model.sudo().browse(ids)
                 ])
-                if prefix:
-                    return [(left, 'in', left_model.search(doms, order='id').ids)]
-                return doms
             else:
+                # recursively retrieve all children nodes with sudo(); the
+                # filtering of forbidden records is done by the rest of the
+                # domain
                 parent_name = parent or left_model._parent_name
-                child_ids = set(ids)
-                while ids:
-                    ids = left_model.search([(parent_name, 'in', ids)], order='id').ids
-                    child_ids.update(ids)
-                return [(left, 'in', list(child_ids))]
+                child_ids = set()
+                records = left_model.sudo().browse(ids)
+                while records:
+                    child_ids.update(records._ids)
+                    records = records.search([(parent_name, 'in', records.ids)], order='id')
+                domain = [('id', 'in', list(child_ids))]
+            if prefix:
+                return [(left, 'in', left_model._search(domain, order='id'))]
+            return domain
 
         def parent_of_domain(left, ids, left_model, parent=None, prefix=''):
             """ Return a domain implementing the parent_of operator for [(left,parent_of,ids)],
                 either as a range using the parent_path tree lookup field
                 (when available), or as an expanded [(left,in,parent_ids)] """
+            if not ids:
+                return [FALSE_LEAF]
             if left_model._parent_store:
                 parent_ids = [
                     int(label)
-                    for rec in left_model.browse(ids)
+                    for rec in left_model.sudo().browse(ids)
                     for label in rec.parent_path.split('/')[:-1]
                 ]
-                if prefix:
-                    return [(left, 'in', parent_ids)]
-                return [('id', 'in', parent_ids)]
+                domain = [('id', 'in', parent_ids)]
             else:
+                # recursively retrieve all parent nodes with sudo() to avoid
+                # access rights errors; the filtering of forbidden records is
+                # done by the rest of the domain
                 parent_name = parent or left_model._parent_name
                 parent_ids = set()
-                for record in left_model.browse(ids):
-                    while record:
-                        parent_ids.add(record.id)
-                        record = record[parent_name]
-                return [(left, 'in', list(parent_ids))]
+                records = left_model.sudo().browse(ids)
+                while records:
+                    parent_ids.update(records._ids)
+                    records = records[parent_name]
+                domain = [('id', 'in', list(parent_ids))]
+            if prefix:
+                return [(left, 'in', left_model._search(domain, order='id'))]
+            return domain
 
         HIERARCHY_FUNCS = {'child_of': child_of_domain,
                            'parent_of': parent_of_domain}
@@ -962,7 +976,7 @@ class expression(object):
                         op2 = (TERM_OPERATORS_NEGATION[operator]
                                if operator in NEGATIVE_TERM_OPERATORS else operator)
                         ids2 = [x[0] for x in comodel.name_search(right, domain or [], op2, limit=None)]
-                    elif isinstance(right, collections.Iterable):
+                    elif isinstance(right, collections.abc.Iterable):
                         ids2 = right
                     else:
                         ids2 = [right]
@@ -1022,7 +1036,7 @@ class expression(object):
                         op2 = (TERM_OPERATORS_NEGATION[operator]
                                if operator in NEGATIVE_TERM_OPERATORS else operator)
                         ids2 = [x[0] for x in comodel.name_search(right, domain or [], op2, limit=None)]
-                    elif isinstance(right, collections.Iterable):
+                    elif isinstance(right, collections.abc.Iterable):
                         ids2 = right
                     else:
                         ids2 = [right]
@@ -1085,7 +1099,7 @@ class expression(object):
                     push(create_substitution_leaf(leaf, ('id', inselect_operator, (subselect, params)), model, internal=True))
                 else:
                     _logger.error("Binary field '%s' stored in attachment: ignore %s %s %s",
-                                  field.string, left, operator, right)
+                                  field.string, left, operator, reprlib.repr(right))
                     leaf.leaf = TRUE_LEAF
                     push(leaf)
 

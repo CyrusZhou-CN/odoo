@@ -54,7 +54,7 @@ class SaleCoupon(models.Model):
         message = {}
         applicable_programs = order._get_applicable_programs()
         if self.state in ('used', 'expired') or \
-           (self.expiration_date and self.expiration_date < order.date_order.date()):
+           (self.expiration_date and self.expiration_date < fields.Datetime.now().date()):
             message = {'error': _('This coupon %s has been used or is expired.') % (self.code)}
         elif self.state == 'reserved':
             message = {'error': _('This coupon %s exists but the origin sales order is not validated yet.') % (self.code)}
@@ -108,3 +108,14 @@ class SaleCoupon(models.Model):
             'target': 'new',
             'context': ctx,
         }
+
+    def cron_expire_coupon(self):
+        self._cr.execute("""
+            SELECT C.id FROM SALE_COUPON as C
+            INNER JOIN SALE_COUPON_PROGRAM as P ON C.program_id = P.id
+            WHERE C.STATE in ('reserved', 'new')
+                AND P.validity_duration > 0
+                AND C.create_date + interval '1 day' * P.validity_duration < now()""")
+
+        expired_ids = [res[0] for res in self._cr.fetchall()]
+        self.browse(expired_ids).write({'state': 'expired'})

@@ -6,14 +6,18 @@
 # Masayuki Takesue <m_takesue@nifty.com>, 2019
 # SHIMIZU Taku <shimizu.taku@gmail.com>, 2019
 # Manami Hashi <manami@roomsfor.hk>, 2019
-# NOKA Shigekazu <shigekazu.noka@gmail.com>, 2019
+# Shigekazu N. <shigekazu.noka@gmail.com>, 2019
 # 高木正勝 <masakatsu.takagi@pro-spire.co.jp>, 2019
 # 森岡広道 <hiromichi.morioka@pro-spire.co.jp>, 2019
 # Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2019
 # Tim Siu Lai <tl@roomsfor.hk>, 2019
 # Hau Dao <hau@quartile.co>, 2020
 # Martin Trigaux, 2020
-# Yoshi Tashiro <tashiro@roomsfor.hk>, 2020
+# Noma Yuki, 2020
+# Abe Tomohiro <tomohiro@quartile.co>, 2021
+# Yoshi Tashiro (Quartile) <tashiro@roomsfor.hk>, 2022
+# Ryoko Tsuda <ryoko@quartile.co>, 2022
+# Andy Yiu, 2023
 # 
 msgid ""
 msgstr ""
@@ -21,7 +25,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-27 10:17+0000\n"
 "PO-Revision-Date: 2019-08-26 09:15+0000\n"
-"Last-Translator: Yoshi Tashiro <tashiro@roomsfor.hk>, 2020\n"
+"Last-Translator: Andy Yiu, 2023\n"
 "Language-Team: Japanese (https://www.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -333,7 +337,7 @@ msgstr "アセットのデバッグを有効化"
 #: code:addons/web/static/src/xml/debug.xml:0
 #, python-format
 msgid "Activate Tests Assets Debugging"
-msgstr ""
+msgstr "テストアセットのデバッグを有効化"
 
 #. module: web
 #. openerp-web
@@ -463,7 +467,7 @@ msgstr ""
 #: code:addons/web/static/src/js/fields/signature.js:0
 #, python-format
 msgid "Adopt and Sign"
-msgstr ""
+msgstr "承認及び署名"
 
 #. module: web
 #. openerp-web
@@ -567,6 +571,7 @@ msgstr "どれでも"
 
 #. module: web
 #. openerp-web
+#: code:addons/web/static/src/js/fields/basic_fields.js:0
 #: code:addons/web/static/src/xml/base.xml:0
 #: code:addons/web/static/src/xml/base.xml:0
 #: code:addons/web/static/src/xml/base.xml:0
@@ -638,7 +643,7 @@ msgstr "このレコードを本当に削除しますか？"
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "Are you sure you want to perform the following update on those"
-msgstr ""
+msgstr "本当に次の件数のレコードを更新しますか:"
 
 #. module: web
 #. openerp-web
@@ -815,6 +820,7 @@ msgstr "カレンダービューで 'date_start'属性が定義されていま�
 #. openerp-web
 #: code:addons/web/static/src/js/core/dialog.js:0
 #: code:addons/web/static/src/js/core/dialog.js:0
+#: code:addons/web/static/src/js/fields/basic_fields.js:0
 #: code:addons/web/static/src/js/fields/relational_fields.js:0
 #: code:addons/web/static/src/js/fields/signature.js:0
 #: code:addons/web/static/src/js/fields/upgrade_fields.js:0
@@ -872,7 +878,7 @@ msgstr ""
 #: code:addons/web/static/src/js/fields/basic_fields.js:0
 #, python-format
 msgid "Checkbox"
-msgstr ""
+msgstr "チェックボックス"
 
 #. module: web
 #. openerp-web
@@ -1014,7 +1020,7 @@ msgstr "コンテキスト:"
 #: code:addons/web/static/src/xml/menu.xml:0
 #, python-format
 msgid "Control"
-msgstr "後続処理"
+msgstr "CTRL"
 
 #. module: web
 #. openerp-web
@@ -1022,7 +1028,7 @@ msgstr "後続処理"
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "Control panel toolbar"
-msgstr ""
+msgstr "退出させる"
 
 #. module: web
 #. openerp-web
@@ -1253,7 +1259,7 @@ msgstr ""
 #: code:addons/web/static/src/js/fields/basic_fields.js:0
 #, python-format
 msgid "Decimal"
-msgstr ""
+msgstr "10進数"
 
 #. module: web
 #. openerp-web
@@ -1401,7 +1407,7 @@ msgstr "xlsダウンロード"
 #: code:addons/web/static/src/xml/name_and_signature.xml:0
 #, python-format
 msgid "Draw"
-msgstr ""
+msgstr "手書き"
 
 #. module: web
 #. openerp-web
@@ -2199,14 +2205,14 @@ msgstr "フィルタを管理"
 #: code:addons/web/static/src/js/fields/relational_fields.js:0
 #, python-format
 msgid "Many2many"
-msgstr ""
+msgstr "Many2many"
 
 #. module: web
 #. openerp-web
 #: code:addons/web/static/src/js/fields/relational_fields.js:0
 #, python-format
 msgid "Many2one"
-msgstr ""
+msgstr "Many2one"
 
 #. module: web
 #. openerp-web
@@ -2462,7 +2468,7 @@ msgstr "レコードなし"
 #: code:addons/web/static/src/js/views/view_dialogs.js:0
 #, python-format
 msgid "No records found!"
-msgstr ""
+msgstr "レコードがありません！"
 
 #. module: web
 #. openerp-web
@@ -2612,7 +2618,7 @@ msgstr "変更:"
 #: code:addons/web/static/src/js/fields/relational_fields.js:0
 #, python-format
 msgid "One2many"
-msgstr ""
+msgstr "One2many"
 
 #. module: web
 #. openerp-web
@@ -2657,6 +2663,13 @@ msgstr "自分のみ"
 #, python-format
 msgid "Opacity %"
 msgstr "不透過度%"
+
+#. module: web
+#. openerp-web
+#: code:addons/web/static/src/xml/debug.xml:0
+#, python-format
+msgid "Open Developer Tools"
+msgstr "開発者ツールを開く"
 
 #. module: web
 #. openerp-web
@@ -2710,6 +2723,13 @@ msgstr "リストビューを開く"
 #, python-format
 msgid "Open: "
 msgstr "オープン:"
+
+#. module: web
+#. openerp-web
+#: code:addons/web/static/src/js/views/list/list_renderer.js:0
+#, python-format
+msgid "Optional columns"
+msgstr ""
 
 #. module: web
 #. openerp-web
@@ -3023,7 +3043,7 @@ msgstr "クイック追加"
 #: code:addons/web/static/src/js/fields/relational_fields.js:0
 #, python-format
 msgid "Quick search: %s"
-msgstr ""
+msgstr "メールで指示を送信する..。"
 
 #. module: web
 #: model:ir.model,name:web.model_ir_qweb_field_image
@@ -3481,7 +3501,7 @@ msgstr "特別："
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "Stacked"
-msgstr ""
+msgstr "積み上げ棒グラフ"
 
 #. module: web
 #. openerp-web
@@ -3814,7 +3834,7 @@ msgstr "本日"
 #: code:addons/web/static/src/js/fields/basic_fields.js:0
 #, python-format
 msgid "Toggle"
-msgstr ""
+msgstr "切り替える"
 
 #. module: web
 #. openerp-web
@@ -3979,7 +3999,7 @@ msgstr "無題"
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "Update to:"
-msgstr ""
+msgstr "次のとおり更新:"
 
 #. module: web
 #. openerp-web
@@ -4022,7 +4042,7 @@ msgstr "ファイルをアップロード"
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "Uploaded"
-msgstr ""
+msgstr "アップロード済み"
 
 #. module: web
 #. openerp-web
@@ -4095,7 +4115,7 @@ msgstr "変化"
 #: code:addons/web/static/src/xml/debug.xml:0
 #, python-format
 msgid "View Fields"
-msgstr "項目のビュー"
+msgstr "項目を参照"
 
 #. module: web
 #. openerp-web
@@ -4114,7 +4134,7 @@ msgstr "ビュータイプ"
 #: code:addons/web/static/src/xml/base.xml:0
 #, python-format
 msgid "View switcher"
-msgstr ""
+msgstr "サブスクリプションはすでにデータベースにリンクされています。"
 
 #. module: web
 #. openerp-web
@@ -4435,7 +4455,7 @@ msgstr "が次以上"
 #: code:addons/web/static/src/js/widgets/domain_selector.js:0
 #, python-format
 msgid "in"
-msgstr ""
+msgstr "に"
 
 #. module: web
 #. openerp-web
