@@ -68,7 +68,6 @@ PKGS_TO_INSTALL="
     python3-dateutil \
     python3-decorator \
     python3-docutils \
-    python3-feedparser \
     python3-pil \
     python3-jinja2 \
     python3-ldap \
@@ -85,8 +84,8 @@ PKGS_TO_INSTALL="
     python3-reportlab \
     python3-requests \
     python3-simplejson \
+    python3-stdnum \
     python3-tz \
-    python3-vatnumber \
     python3-werkzeug \
     python3-serial \
     python3-pip \

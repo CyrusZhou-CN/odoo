@@ -203,7 +203,7 @@ class IrActionsReport(models.Model):
             return None
         attachment_vals = {
             'name': attachment_name,
-            'datas': base64.encodestring(buffer.getvalue()),
+            'datas': base64.encodebytes(buffer.getvalue()),
             'datas_fname': attachment_name,
             'res_model': self.model,
             'res_id': record.id,
@@ -370,7 +370,7 @@ class IrActionsReport(models.Model):
                 res_ids.append(None)
 
         if not bodies:
-            body = bytearray().join([lxml.html.tostring(c) for c in body_parent.getchildren()])
+            body = bytearray().join([lxml.html.tostring(c) for c in body_parent])
             bodies.append(body)
 
         # Get paperformat arguments set in the root html tag. They are prioritized over
@@ -489,6 +489,9 @@ class IrActionsReport(models.Model):
             barcode_type = 'EAN13'
             if len(value) in (11, 12):
                 value = '0%s' % value
+        elif barcode_type == 'auto':
+            symbology_guess = {8: 'EAN8', 13: 'EAN13'}
+            barcode_type = symbology_guess.get(len(value), 'Code128')
         # add QR_quiet type for QR type with no border (not in 13.0 since there is quiet argument)
         if barcode_type == 'QR_quiet':
             kwargs['quiet'] = 1
@@ -560,7 +563,7 @@ class IrActionsReport(models.Model):
 
         # Check special case having only one record with existing attachment.
         if len(save_in_attachment) == 1 and not pdf_content:
-            return base64.decodestring(list(save_in_attachment.values())[0].datas)
+            return base64.decodebytes(list(save_in_attachment.values())[0].datas)
 
         # Create a list of streams representing all sub-reports part of the final result
         # in order to append the existing attachments and the potentially modified sub-reports
@@ -630,7 +633,7 @@ class IrActionsReport(models.Model):
         # are not been rendered by wkhtmltopdf. So, create a new stream for each of them.
         if self.attachment_use:
             for attachment_id in save_in_attachment.values():
-                content = base64.decodestring(attachment_id.datas)
+                content = base64.decodebytes(attachment_id.datas)
                 streams.append(io.BytesIO(content))
 
         # Build the final pdf.

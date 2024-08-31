@@ -6,7 +6,7 @@ import logging
 import psycopg2
 import werkzeug
 
-from werkzeug import url_encode
+from werkzeug.urls import url_encode
 
 from odoo import api, http, registry, SUPERUSER_ID, _
 from odoo.addons.web.controllers.main import binary_content
@@ -119,6 +119,7 @@ class MailController(http.Controller):
             followers.append({
                 'id': follower.id,
                 'name': follower.partner_id.name or follower.channel_id.name,
+                'display_name': follower.partner_id.display_name or follower.channel_id.display_name,
                 'email': follower.partner_id.email if follower.partner_id else None,
                 'res_model': 'res.partner' if follower.partner_id else 'mail.channel',
                 'res_id': follower.partner_id.id or follower.channel_id.id,

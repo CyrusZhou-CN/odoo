@@ -50,12 +50,8 @@ from odoo.service import db, security
 
 _logger = logging.getLogger(__name__)
 
-if hasattr(sys, 'frozen'):
-    # When running on compiled windows binary, we don't have access to package loader.
-    path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'views'))
-    loader = jinja2.FileSystemLoader(path)
-else:
-    loader = jinja2.PackageLoader('odoo.addons.web', "views")
+path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'views'))
+loader = jinja2.FileSystemLoader(path)
 
 env = jinja2.Environment(loader=loader, autoescape=True)
 env.filters["json"] = json.dumps
@@ -73,6 +69,7 @@ db_list = http.db_list
 
 db_monodb = http.db_monodb
 
+def clean(name): return name.replace('\x3c', '')
 def serialize_exception(f):
     @functools.wraps(f)
     def wrap(*args, **kwargs):
@@ -221,7 +218,7 @@ def concat_xml(file_list):
         #elif root.tag != xml.tag:
         #    raise ValueError("Root tags missmatch: %r != %r" % (root.tag, xml.tag))
 
-        for child in xml.getchildren():
+        for child in list(xml):
             root.append(child)
     return ElementTree.tostring(root, 'utf-8'), checksum.hexdigest()
 
@@ -885,7 +882,7 @@ class Session(http.Controller):
             'state': json.dumps({'d': request.db, 'u': ICP.get_param('web.base.url')}),
             'scope': 'userinfo',
         }
-        return 'https://accounts.odoo.com/oauth2/auth?' + werkzeug.url_encode(params)
+        return 'https://accounts.odoo.com/oauth2/auth?' + werkzeug.urls.url_encode(params)
 
     @http.route('/web/session/destroy', type='json', auth="user")
     def destroy(self):
@@ -1097,7 +1094,10 @@ class Binary(http.Controller):
                     content = getattr(odoo.tools, 'image_resize_image_%s' % suffix)(content)
 
         if crop and (width or height):
-            content = crop_image(content, type='center', size=(width, height), ratio=(1, 1))
+            try:
+                content = crop_image(content, type='center', size=(width, height), ratio=(1, 1))
+            except Exception:
+                return request.not_found()
         elif (width or height):
             if not upper_limit:
                 # resize maximum 500*500
@@ -1105,9 +1105,12 @@ class Binary(http.Controller):
                     width = 500
                 if height > 500:
                     height = 500
-            content = odoo.tools.image_resize_image(base64_source=content, size=(width or None, height or None),
+            try:
+                content = odoo.tools.image_resize_image(base64_source=content, size=(width or None, height or None),
                                                     encoding='base64', upper_limit=upper_limit,
                                                     avoid_if_small=avoid_if_small)
+            except Exception:
+                return request.not_found()
 
         image_base64 = base64.b64decode(content)
         headers.append(('Content-Length', len(image_base64)))
@@ -1139,7 +1142,7 @@ class Binary(http.Controller):
                     ufile.content_type, pycompat.to_text(base64.b64encode(data))]
         except Exception as e:
             args = [False, str(e)]
-        return out % (json.dumps(callback), json.dumps(args))
+        return out % (json.dumps(clean(callback)), json.dumps(args))
 
     @http.route('/web/binary/upload_attachment', type='http', auth="user")
     @serialize_exception
@@ -1162,7 +1165,7 @@ class Binary(http.Controller):
             try:
                 attachment = Model.create({
                     'name': filename,
-                    'datas': base64.encodestring(ufile.read()),
+                    'datas': base64.encodebytes(ufile.read()),
                     'datas_fname': filename,
                     'res_model': model,
                     'res_id': int(id)
@@ -1173,11 +1176,11 @@ class Binary(http.Controller):
                 _logger.exception("Fail to upload attachment %s" % ufile.filename)
             else:
                 args.append({
-                    'filename': filename,
+                    'filename': clean(filename),
                     'mimetype': ufile.content_type,
                     'id': attachment.id
                 })
-        return out % (json.dumps(callback), json.dumps(args))
+        return out % (json.dumps(clean(callback)), json.dumps(args))
 
     @http.route([
         '/web/binary/company_logo',

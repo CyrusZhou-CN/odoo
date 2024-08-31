@@ -25,7 +25,9 @@ import types
 import unicodedata
 import werkzeug.utils
 import zipfile
-from collections import defaultdict, Iterable, Mapping, MutableMapping, MutableSet, OrderedDict
+from collections import defaultdict, OrderedDict
+from collections.abc import Iterable, Mapping, MutableMapping, MutableSet
+
 from itertools import islice, groupby as itergroupby, repeat
 from lxml import etree
 
@@ -42,7 +44,7 @@ except ImportError:
 
 from .config import config
 from .cache import *
-from .parse_version import parse_version 
+from .parse_version import parse_version
 from . import pycompat
 
 import odoo
@@ -769,7 +771,7 @@ class unquote(str):
         return self
 
 class UnquoteEvalContext(defaultdict):
-    """Defaultdict-based evaluation context that returns 
+    """Defaultdict-based evaluation context that returns
        an ``unquote`` string for any missing name used during
        the evaluation.
        Mostly useful for evaluating OpenERP domains/contexts that
@@ -1124,13 +1126,34 @@ def ignore(*exc):
     except exc:
         pass
 
-# Avoid DeprecationWarning while still remaining compatible with werkzeug pre-0.9
-if parse_version(getattr(werkzeug, '__version__', '0.0')) < parse_version('0.9.0'):
-    def html_escape(text):
-        return werkzeug.utils.escape(text, quote=True)
-else:
-    def html_escape(text):
-        return werkzeug.utils.escape(text)
+def html_escape(text):
+    """ Vendored from werkzeug.utils.escape which is deprecated in 2.0
+    Replace special characters "&", "<", ">" and (") to HTML-safe sequences.
+    There is a special handling for `None` which escapes to an empty string.
+    :param s: the string to escape.
+    """
+    if  text is None:
+        return ""
+    elif hasattr(text, "__html__"):
+        return str(text.__html__())
+    elif not isinstance(text, str):
+        text = str(text)
+    text = (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
+    return text
+
+def babel_locale_parse(lang_code):
+    try:
+        return babel.Locale.parse(lang_code)
+    except:
+        try:
+            return babel.Locale.default()
+        except:
+            return babel.Locale.parse("en_US")
 
 def formatLang(env, value, digits=None, grouping=True, monetary=False, dp=False, currency_obj=False):
     """
@@ -1149,9 +1172,9 @@ def formatLang(env, value, digits=None, grouping=True, monetary=False, dp=False,
         elif currency_obj:
             digits = currency_obj.decimal_places
         elif (hasattr(value, '_field') and getattr(value._field, 'digits', None)):
-                digits = value._field.digits[1]
-                if not digits and digits is not 0:
-                    digits = DEFAULT_DIGITS
+            digits = value._field.digits[1]
+            if not digits and digits != 0:
+                digits = DEFAULT_DIGITS
 
     if isinstance(value, pycompat.string_types) and not value:
         return ''
@@ -1194,7 +1217,7 @@ def format_date(env, value, lang_code=False, date_format=False):
             value = odoo.fields.Datetime.from_string(value)
 
     lang = env['res.lang']._lang_get(lang_code or env.context.get('lang') or 'en_US')
-    locale = babel.Locale.parse(lang.code)
+    locale = babel_locale_parse(lang.code)
     if not date_format:
         date_format = posix_to_ldml(lang.date_format, locale=locale)
 
@@ -1228,6 +1251,19 @@ pickle.loads = lambda text, encoding='ASCII': _pickle_load(io.BytesIO(text), enc
 pickle.dump = pickle_.dump
 pickle.dumps = pickle_.dumps
 
+def wrap_values(d):
+    # apparently sometimes people pass raw records as eval context
+    # values
+    if not (d and isinstance(d, dict)):
+        return d
+    for k in d:
+        v = d[k]
+        if isinstance(v, types.ModuleType):
+            d[k] = wrap_module(v, None)
+    return d
+import shutil
+_missing = object()
+_cache = dict.fromkeys([os, os.path, shutil, sys, subprocess])
 def wrap_module(module, attr_list):
     """Helper for wrapping a package/module to expose selected attributes
 
@@ -1236,17 +1272,41 @@ def wrap_module(module, attr_list):
             attributes and their own main attributes. No support for hiding attributes in case
             of name collision at different levels.
     """
-    attr_list = set(attr_list)
+    wrapper = _cache.get(module)
+    if wrapper:
+        return wrapper
+
+    attr_list = attr_list and set(attr_list)
     class WrappedModule(object):
         def __getattr__(self, attrib):
-            if attrib in attr_list:
-                target = getattr(module, attrib)
-                if isinstance(target, types.ModuleType):
-                    return wrap_module(target, attr_list)
-                return target
-            raise AttributeError(attrib)
+            # respect whitelist if there is one
+            if attr_list is not None and attrib not in attr_list:
+                raise AttributeError(attrib)
+
+            target = getattr(module, attrib)
+            if isinstance(target, types.ModuleType):
+                wrapper = _cache.get(target, _missing)
+                if wrapper is None:
+                    raise AttributeError(attrib)
+                if wrapper is _missing:
+                    target = wrap_module(target, attr_list)
+                else:
+                    target = wrapper
+            setattr(self, attrib, target)
+            return target
     # module and attr_list are in the closure
-    return WrappedModule()
+    wrapper = WrappedModule()
+    _cache.setdefault(module, wrapper)
+    return wrapper
+
+# dateutil submodules are lazy so need to import them for them to "exist"
+import dateutil
+mods = ['parser', 'relativedelta', 'rrule', 'tz']
+for mod in mods:
+    __import__('dateutil.%s' % mod)
+attribs = [attr for m in mods for attr in getattr(dateutil, m).__all__]
+dateutil = wrap_module(dateutil, set(mods + attribs))
+datetime = wrap_module(datetime, ['date', 'datetime', 'time', 'timedelta', 'timezone', 'tzinfo', 'MAXYEAR', 'MINYEAR'])
 
 
 class DotDict(dict):

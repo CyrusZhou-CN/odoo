@@ -27,7 +27,6 @@ RUN apt-get update -qq &&  \
         python3-dateutil \
         python3-decorator \
         python3-docutils \
-        python3-feedparser \
         python3-gevent \
         python3-html2text \
         python3-pil \
@@ -46,10 +45,10 @@ RUN apt-get update -qq &&  \
         python3-reportlab \
         python3-requests \
         python3-serial \
+        python3-stdnum \
         python3-suds \
         python3-tz \
         python3-usb \
-        python3-vatnumber \
         python3-vobject \
         python3-werkzeug \
         python3-xlsxwriter \

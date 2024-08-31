@@ -5,7 +5,8 @@ import os.path
 import re
 import traceback
 
-from collections import OrderedDict, Sized, Mapping
+from collections import OrderedDict
+from collections.abc import Sized, Mapping
 from functools import reduce
 from itertools import tee, count
 from textwrap import dedent
@@ -13,10 +14,9 @@ from textwrap import dedent
 import itertools
 from lxml import etree, html
 from psycopg2.extensions import TransactionRollbackError
-import werkzeug
-from werkzeug.utils import escape as _escape
+from odoo.tools.misc import html_escape as escape
 
-from odoo.tools import pycompat, freehash
+from odoo.tools import pycompat, freehash, wrap_values
 
 try:
     import builtins
@@ -178,8 +178,6 @@ class QWebException(Exception):
     def __repr__(self):
         return str(self)
 
-# Avoid DeprecationWarning while still remaining compatible with werkzeug pre-0.9
-escape = (lambda text: _escape(text, quote=True)) if parse_version(getattr(werkzeug, '__version__', '0.0')) < parse_version('0.9.0') else _escape
 
 def foreach_iterator(base_ctx, enum, name):
     ctx = base_ctx.copy()
@@ -343,6 +341,7 @@ class QWeb(object):
             log = {'last_path_node': None}
             new = self.default_values()
             new.update(values)
+            wrap_values(new)
             try:
                 return compiled(self, append, new, options, log)
             except (QWebException, TransactionRollbackError) as e:
@@ -1076,13 +1075,12 @@ class QWeb(object):
         body = []
         if el.text is not None:
             body.append(self._append(ast.Str(pycompat.to_text(el.text))))
-        if el.getchildren():
-            for item in el:
-                # ignore comments & processing instructions
-                if isinstance(item, etree._Comment):
-                    continue
-                body.extend(self._compile_node(item, options))
-                body.extend(self._compile_tail(item))
+        for item in el:
+            # ignore comments & processing instructions
+            if isinstance(item, etree._Comment):
+                continue
+            body.extend(self._compile_node(item, options))
+            body.extend(self._compile_tail(item))
         return body
 
     def _compile_directive_else(self, el, options):
