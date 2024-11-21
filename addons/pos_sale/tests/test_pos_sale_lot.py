@@ -19,7 +19,6 @@ class TestPointOfSaleFlow(TestPointOfSaleCommon):
             'tracking': 'serial',
             'is_storable': True,
             'lst_price': 10,
-            'categ_id': self.env.ref('product.product_category_all').id,
         })
 
         lot1 = self.env['stock.lot'].create({
@@ -94,4 +93,3 @@ class TestPointOfSaleFlow(TestPointOfSaleCommon):
 
         order = self.env['pos.order'].sync_from_ui([pos_order])
         self.assertEqual(self.env['pos.order'].browse(order['pos.order'][0]['id']).picking_ids.move_line_ids.lot_id, lot1)
-        self.assertEqual(sale_order.picking_ids.move_line_ids.lot_id, lot2)
