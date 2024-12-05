@@ -3236,9 +3236,21 @@ export class OdooEditor extends EventTarget {
                     : 'none';
             }
 
+            const selectionText = sel.toString().replace(/\s+/g, "");
             const translateDropdown = this.toolbar.querySelector('#translate');
             if (translateDropdown) {
-                translateDropdown.style.display = sel.isCollapsed ? 'none' : '';
+                const translateDropdownBtn = translateDropdown.querySelector('.btn');
+                if (sel.isCollapsed) {
+                    translateDropdown.style.display = 'none';
+                } else {
+                    translateDropdown.style.display = '';
+                    translateDropdownBtn.classList[!selectionText ? 'add' : 'remove']('disabled');
+                }
+            }
+
+            const chatGptBtn = this.toolbar.querySelector('#open-chatgpt.btn');
+            if (chatGptBtn && !sel.isCollapsed) {
+                chatGptBtn.classList[!selectionText ? 'add' : 'remove']('disabled');
             }
         }
         this.updateColorpickerLabels();
@@ -4000,15 +4012,16 @@ export class OdooEditor extends EventTarget {
             // just its rows.
             rangeContent = tableClone;
         }
-        const table = closestElement(range.startContainer, 'table');
-        if (rangeContent.firstChild.nodeName === 'TABLE' && table) {
+        const startTable = closestElement(range.startContainer, 'table');
+        if (rangeContent.firstChild.nodeName === 'TABLE' && startTable) {
             // Make sure the full leading table is copied.
-            rangeContent.firstChild.after(table.cloneNode(true));
+            rangeContent.firstChild.after(startTable.cloneNode(true));
             rangeContent.firstChild.remove();
         }
-        if (rangeContent.lastChild.nodeName === 'TABLE') {
+        const endTable = closestElement(range.endContainer, 'table');
+        if (rangeContent.lastChild.nodeName === 'TABLE' && endTable) {
             // Make sure the full trailing table is copied.
-            rangeContent.lastChild.before(closestElement(range.endContainer, 'table').cloneNode(true));
+            rangeContent.lastChild.before(endTable.cloneNode(true));
             rangeContent.lastChild.remove();
         }
 
