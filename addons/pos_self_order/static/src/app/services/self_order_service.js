@@ -76,7 +76,7 @@ export class SelfOrder extends Reactive {
 
         this.onNotified = getOnNotified(this.bus, this.access_token);
         this.onNotified("PRODUCT_CHANGED", (payload) => {
-            this.models.loadData(payload);
+            this.models.loadData(this.models, payload);
         });
         if (this.config.self_ordering_mode === "kiosk") {
             this.onNotified("STATUS", ({ status }) => {
@@ -91,7 +91,7 @@ export class SelfOrder extends Reactive {
             });
             this.onNotified("PAYMENT_STATUS", ({ payment_result, data }) => {
                 if (payment_result === "Success") {
-                    this.models.loadData(data);
+                    this.models.loadData(this.models, data);
                     const order = this.models["pos.order"].find(
                         (o) => o.access_token === data["pos.order"][0].access_token
                     );
@@ -148,7 +148,7 @@ export class SelfOrder extends Reactive {
 
         const handleMessage = (data) => {
             let message = "";
-            this.models.loadData(data);
+            this.models.loadData(this.models, data);
             const oUpdated = data["pos.order"].find((o) => o.uuid === this.selectedOrderUuid);
 
             if (["paid", "invoiced", "done"].includes(oUpdated?.state)) {
@@ -188,9 +188,9 @@ export class SelfOrder extends Reactive {
             .sort((a, b) => a.sequence - b.sequence);
 
         this.categoryList = new Set(availableCategories);
-        this.availableCategories = availableCategories.filter((c) => {
-            return now > c.hour_after && now < c.hour_until;
-        });
+        this.availableCategories = availableCategories.filter(
+            (c) => now > c.hour_after && now < c.hour_until
+        );
         this.currentCategory = this.productCategories[0] || null;
     }
 
@@ -293,9 +293,7 @@ export class SelfOrder extends Reactive {
                     ]),
                     custom_attribute_value_ids: Object.entries(
                         comboItem.attribute_custom_values
-                    ).map(([id, cus]) => {
-                        return ["create", cus];
-                    }),
+                    ).map(([id, cus]) => ["create", cus]),
                 },
             ]);
         }
@@ -415,9 +413,9 @@ export class SelfOrder extends Reactive {
             return existingOrder;
         }
 
-        const fiscalPosition = this.models["account.fiscal.position"].find((fp) => {
-            return fp.id === this.config.default_fiscal_position_id?.id;
-        });
+        const fiscalPosition = this.models["account.fiscal.position"].find(
+            (fp) => fp.id === this.config.default_fiscal_position_id?.id
+        );
 
         const newOrder = this.models["pos.order"].create({
             company_id: this.company,
@@ -667,7 +665,7 @@ export class SelfOrder extends Reactive {
                     table_identifier: this.currentOrder?.table_id?.identifier || false,
                 }
             );
-            this.models.loadData(data);
+            this.models.loadData(this.models, data);
             for (const order of data["pos.order"]) {
                 this.subscribeToOrderChannel(order);
             }
@@ -701,7 +699,7 @@ export class SelfOrder extends Reactive {
                 access_token: this.access_token,
                 order_access_tokens: [...accessTokens, ...localAccessToken],
             });
-            this.models.loadData(data);
+            this.models.loadData(this.models, data);
             this.selectedOrderUuid = null;
         } catch (error) {
             this.handleErrorNotification(
