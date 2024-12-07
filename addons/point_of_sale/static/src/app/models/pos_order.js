@@ -409,7 +409,14 @@ export class PosOrder extends Base {
     }
 
     hasSkippedChanges() {
-        return this.lines.find((orderline) => orderline.skip_change) ? true : false;
+        return Boolean(
+            this.lines.find(
+                (orderline) =>
+                    orderline.skip_change &&
+                    !orderline.uiState.hideSkipChangeClass &&
+                    !orderline.origin_order_id
+            )
+        );
     }
 
     isEmpty() {
