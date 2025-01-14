@@ -100,12 +100,12 @@ export class Composer extends Component {
                     .join(" + "),
             })
         );
-        this.store = useState(useService("mail.store"));
+        this.store = useService("mail.store");
         this.attachmentUploader = useAttachmentUploader(
             this.thread ?? this.props.composer.message.thread,
             { composer: this.props.composer }
         );
-        this.ui = useState(useService("ui"));
+        this.ui = useService("ui");
         this.ref = useRef("textarea");
         this.fakeTextarea = useRef("fakeTextarea");
         this.inputContainerRef = useRef("input-container");
@@ -151,10 +151,15 @@ export class Composer extends Component {
             { capture: true }
         );
         if (this.props.dropzoneRef) {
-            useCustomDropzone(this.props.dropzoneRef, MailAttachmentDropzone, {
-                extraClass: "o-mail-Composer-dropzone",
-                onDrop: this.onDropFile,
-            }, () => this.allowUpload);
+            useCustomDropzone(
+                this.props.dropzoneRef,
+                MailAttachmentDropzone,
+                {
+                    extraClass: "o-mail-Composer-dropzone",
+                    onDrop: this.onDropFile,
+                },
+                () => this.allowUpload
+            );
         }
         if (this.props.messageEdition) {
             this.props.messageEdition.composerOfThread = this;
@@ -519,8 +524,9 @@ export class Composer extends Component {
             mentionedPartners: this.props.composer.mentionedPartners,
         });
         const signature = this.store.self.signature;
-        const default_body = await prettifyMessageContent(body, validMentions) +
-            ((this.props.composer.emailAddSignature && signature) ? ("<br>" + signature) : "");
+        const default_body =
+            (await prettifyMessageContent(body, validMentions)) +
+            (this.props.composer.emailAddSignature && signature ? "<br>" + signature : "");
         const context = {
             default_attachment_ids: attachmentIds,
             default_body,
@@ -534,7 +540,7 @@ export class Composer extends Component {
                           .map((recipient) => recipient.persona.id),
             default_res_ids: [this.thread.id],
             default_subtype_xmlid: this.props.type === "note" ? "mail.mt_note" : "mail.mt_comment",
-            mail_post_autofollow: this.thread.hasWriteAccess,
+            // Changed in 18.2+: finally get rid of autofollow, following should be done manually
         };
         const action = {
             name: this.props.type === "note" ? _t("Log note") : _t("Compose Email"),
@@ -730,12 +736,12 @@ export class Composer extends Component {
         if (editable) {
             Object.assign(config, {
                 emailAddSignature: false,
-                text: editable.innerText.replace(/(\t|\n)+/g, "\n")
+                text: editable.innerText.replace(/(\t|\n)+/g, "\n"),
             });
         } else {
             Object.assign(config, {
                 emailAddSignature: true,
-                text: composer.text
+                text: composer.text,
             });
         }
         browser.localStorage.setItem(composer.localId, JSON.stringify(config));
@@ -751,6 +757,6 @@ export class Composer extends Component {
             }
         } catch {
             browser.localStorage.removeItem(composer.localId);
-        };
+        }
     }
 }
