@@ -33,6 +33,7 @@ import logging
 import operator
 import pytz
 import re
+import typing
 import uuid
 import warnings
 from collections import defaultdict, deque
@@ -77,7 +78,6 @@ from .utils import (
     READ_GROUP_ALL_TIME_GRANULARITY, READ_GROUP_TIME_GRANULARITY, READ_GROUP_NUMBER_GRANULARITY,
 )
 
-import typing
 if typing.TYPE_CHECKING:
     from collections.abc import Reversible, Sequence
     from .table_objects import TableObject
@@ -458,7 +458,7 @@ class BaseModel(metaclass=MetaModel):
     env: Environment
     id: IdType | typing.Literal[False]
     display_name: str | typing.Literal[False]
-    pool: Registry
+    pool: Registry  # instances are always registry classes
 
     _fields: dict[str, Field]
     _auto = False
@@ -1008,7 +1008,7 @@ class BaseModel(metaclass=MetaModel):
                         result.append(properties_field._dict_to_list(raw_properties, definition))
 
                 # FIXME: Far from optimal, it will fetch display_name for no reason
-                res_ids_per_model = properties_field._get_res_ids_per_model(self, result)
+                res_ids_per_model = properties_field._get_res_ids_per_model(self.env, result)
 
                 cache_properties[properties_fname] = record_map = {}
                 for properties, rec in zip(result, self):
@@ -5175,7 +5175,7 @@ class BaseModel(metaclass=MetaModel):
             if fname not in self or self._fields[fname].type != 'properties':
                 continue
             field_converter = self._fields[fname].convert_to_cache
-            to_write[fname] = dict(self[fname], **field_converter(values.pop(fname), self))
+            to_write[fname] = dict(self[fname], **field_converter(values.pop(fname), self, validate=False))
 
         self.write(values)
         if to_write:
@@ -6552,7 +6552,7 @@ class BaseModel(metaclass=MetaModel):
             vals_list = []
             try:
                 for id_ in some_ids:
-                    record = model.browse(id_)
+                    record = model.browse((id_,))
                     vals_list.append({
                         f.name: f.convert_to_column_update(dirty_field_cache[f][id_], record)
                         for f, ids in dirty_field_ids.items()
