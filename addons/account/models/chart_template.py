@@ -263,6 +263,8 @@ class AccountChartTemplate(models.AbstractModel):
             if prop.startswith('property_'):
                 template_data.pop(prop)
         data.pop('account.reconcile.model', None)
+        if 'res.company' in data:
+            data['res.company'][company.id].setdefault('anglo_saxon_accounting', company.anglo_saxon_accounting)
 
         for xmlid, journal_data in list(data.get('account.journal', {}).items()):
             if self.ref(xmlid, raise_if_not_found=False):
@@ -494,7 +496,7 @@ class AccountChartTemplate(models.AbstractModel):
 
         return data
 
-    def _load_data(self, data, ignore_duplicates=False):
+    def _load_data(self, data):
         """Load all the data linked to the template into the database.
 
         The data can contain translation values (i.e. `name@fr_FR` to translate the name in French)
@@ -504,8 +506,6 @@ class AccountChartTemplate(models.AbstractModel):
         :param data: Basically all the final data of records to create/update for the chart
                      of accounts. It is a mapping {model: {xml_id: values}}.
         :type data: dict[str, dict[(str, int), dict]]
-
-        :param ignore_duplicates: if true, inputs that match records already in the DB will be ignored
         """
         def deref_values(values, model):
             """Replace xml_id references by database ids in all provided values.
@@ -628,7 +628,7 @@ class AccountChartTemplate(models.AbstractModel):
                     'values': deref_values(record_vals, self.env[model]),
                     'noupdate': True,
                 })
-            created_records[model] = self.with_context(lang='en_US').env[model]._load_records(all_records_vals, ignore_duplicates=ignore_duplicates)
+            created_records[model] = self.with_context(lang='en_US').env[model]._load_records(all_records_vals)
         return created_records
 
     def _post_load_data(self, template_code, company, template_data):
