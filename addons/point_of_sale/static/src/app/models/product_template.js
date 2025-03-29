@@ -210,7 +210,6 @@ export class ProductTemplate extends Base {
         }
 
         const product = variant;
-        const productTmpl = variant.product_tmpl_id || this;
         const standardPrice = variant ? variant.standard_price : this.standard_price;
         const basePrice = variant ? variant.lst_price : this.list_price;
         let price = basePrice + (price_extra || 0);
