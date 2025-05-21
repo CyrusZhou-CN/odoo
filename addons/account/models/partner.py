@@ -154,10 +154,11 @@ class AccountFiscalPosition(models.Model):
             return taxes
         if not self.tax_ids:  # empty fiscal positions (like those created by tax units) remove all taxes
             return self.env['account.tax']
+        shared_taxes = taxes.filtered(lambda t: not t.fiscal_position_ids or self in t.fiscal_position_ids)
         return self.env['account.tax'].browse(unique(
             tax_id
             for tax in taxes
-            for tax_id in (self.tax_map or {}).get(tax.id, [tax.id])
+            for tax_id in (self.tax_map or {}).get(tax.id, [tax.id] if tax in shared_taxes else [])
         ))
 
     def map_account(self, account):
