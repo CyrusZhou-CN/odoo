@@ -1560,6 +1560,7 @@ class AccountMoveLine(models.Model):
 
         line_to_write = self
         vals = self._sanitize_vals(vals)
+        matching2lines = None  # lazy cache
         lines_to_unreconcile = self.env['account.move.line']
         st_lines_to_unreconcile = self.env['account.bank.statement.line']
         for line in self:
@@ -1579,9 +1580,26 @@ class AccountMoveLine(models.Model):
                 line._check_tax_lock_date()
 
             # Break the reconciliation.
-            if any(self.env['account.move']._field_will_change(line, vals, field_name) for field_name in protected_fields['reconciliation']) and (line.matched_debit_ids or line.matched_credit_ids):
-                lines_to_unreconcile += line
-                st_lines_to_unreconcile += (line.matched_debit_ids.debit_move_id + line.matched_credit_ids.credit_move_id).statement_line_id
+            if (
+                line.matching_number
+                and (changing_fields := {
+                    field_name
+                    for field_name in protected_fields['reconciliation']
+                    if self.env['account.move']._field_will_change(line, vals, field_name)
+                })
+            ):
+                matching2lines = dict(self.env['account.move.line'].sudo()._read_group(
+                    domain=[('matching_number', 'in', [n for n in self.mapped('matching_number') if n])],
+                    groupby=['matching_number'],
+                    aggregates=['id:recordset'],
+                )) if matching2lines is None else matching2lines
+                if (
+                    # allow changing the partner or/and the account on all the lines of a reconciliation together
+                    changing_fields - {'partner_id', 'account_id'}
+                    or not all(reconciled_line in self for reconciled_line in matching2lines[line.matching_number])
+                ):
+                    lines_to_unreconcile += line
+                    st_lines_to_unreconcile += (line.matched_debit_ids.debit_move_id + line.matched_credit_ids.credit_move_id).statement_line_id
 
         lines_to_unreconcile.remove_move_reconcile()
         for st_line in st_lines_to_unreconcile:
@@ -3040,17 +3058,24 @@ class AccountMoveLine(models.Model):
         return self._filter_reconciled_by_number(self._reconciled_by_number())
 
     def _get_attachment_domains(self):
-        self.ensure_one()
         domains = [[
             ('res_model', '=', 'account.move'),
-            ('res_id', '=', self.move_id.id),
+            ('res_id', 'in', self.move_id.ids),
             ('res_field', 'in', (False, 'invoice_pdf_report_file')),
         ]]
         if self.statement_id:
-            domains.append([('res_model', '=', 'account.bank.statement'), ('res_id', '=', self.statement_id.id)])
+            domains.append([('res_model', '=', 'account.bank.statement'), ('res_id', 'in', self.statement_id.ids)])
         if self.payment_id:
-            domains.append([('res_model', '=', 'account.payment'), ('res_id', '=', self.payment_id.id)])
+            domains.append([('res_model', '=', 'account.payment'), ('res_id', 'in', self.payment_id.ids)])
         return domains
+
+    @api.model
+    def _get_attachment_by_record(self, id_model2attachments, move_line):
+        return (
+            id_model2attachments.get(('account.move', move_line.move_id.id))
+            or id_model2attachments.get(('account.bank.statement', move_line.statement_id.id))
+            or id_model2attachments.get(('account.payment', move_line.payment_id.id))
+        )
 
     @api.model
     def _get_tax_exigible_domain(self):
