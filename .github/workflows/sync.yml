@@ -58,4 +58,4 @@ jobs:
           git remote update --prune
       - name: Cleanup
         run: |
-          git gc --prune=now
+          git gc --auto
