@@ -55,7 +55,7 @@ registerWebsitePreviewTour("add_and_remove_main_product_image_no_variant", {
     },
     {
         content: "Click on the new image",
-        trigger: ".o_select_media_dialog img[title='s_default_image.jpg']",
+        trigger: ".o_select_media_dialog img[title='green.jpg']",
         run: "click",
     },
     {
