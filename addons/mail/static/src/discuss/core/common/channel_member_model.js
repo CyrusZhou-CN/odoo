@@ -1,5 +1,5 @@
 import { Store } from "@mail/core/common/store_service";
-import { fields, Record } from "@mail/core/common/record";
+import { fields, Record } from "@mail/model/export";
 
 import { browser } from "@web/core/browser/browser";
 import { deserializeDateTime } from "@web/core/l10n/dates";
@@ -46,11 +46,11 @@ export class ChannelMember extends Record {
     get persona() {
         return this.partner_id || this.guest_id;
     }
-    channel_id = fields.One("mail.thread", { inverse: "channel_member_ids" });
+    channel_id = fields.One("discuss.channel", { inverse: "channel_member_ids" });
     threadAsSelf = fields.One("mail.thread", {
         compute() {
             if (this.store.self?.eq(this.persona)) {
-                return this.channel_id;
+                return this.channel_id?.thread;
             }
         },
     });
@@ -101,7 +101,7 @@ export class ChannelMember extends Record {
             }
         },
     });
-    threadAsTyping = fields.One("mail.thread", {
+    channelAsTyping = fields.One("discuss.channel", {
         compute() {
             return this.isTyping ? this.channel_id : undefined;
         },
