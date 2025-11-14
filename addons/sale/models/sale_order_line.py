@@ -305,7 +305,7 @@ class SaleOrderLine(models.Model):
         related='company_id.tax_calculation_rounding_method',
         string='Tax calculation rounding method', readonly=True)
     company_price_include = fields.Selection(related="company_id.account_price_include")
-    sale_line_warn_msg = fields.Text(related='product_id.sale_line_warn_msg')
+    sale_line_warn_msg = fields.Text(compute='_compute_sale_line_warn_msg')
 
     #=== COMPUTE METHODS ===#
 
@@ -499,6 +499,12 @@ class SaleOrderLine(models.Model):
         for line in self:
             if not line.product_uom_id or (line.product_id.uom_id.id != line.product_uom_id.id):
                 line.product_uom_id = line.product_id.uom_id
+
+    @api.depends('product_id.sale_line_warn_msg')
+    def _compute_sale_line_warn_msg(self):
+        has_warning_group = self.env.user.has_group('sale.group_warning_sale')
+        for line in self:
+            line.sale_line_warn_msg = line.product_id.sale_line_warn_msg if has_warning_group else ""
 
     @api.depends('product_id', 'product_id.uom_id', 'product_id.uom_ids')
     def _compute_allowed_uom_ids(self):
@@ -1547,7 +1553,7 @@ class SaleOrderLine(models.Model):
         return self.price_unit * (1 - (self.discount or 0.0) / 100.0)
 
     def has_valued_move_ids(self):
-        return self.move_ids
+        return None  # TODO: remove in master
 
     def _get_linked_line(self):
         """ Return the linked line of this line, if any.
