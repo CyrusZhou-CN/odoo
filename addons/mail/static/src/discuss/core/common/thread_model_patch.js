@@ -254,28 +254,6 @@ const threadPatch = {
         }
         return super.displayName;
     },
-    async fetchChannelMembers() {
-        if (this.fetchMembersState === "pending") {
-            return;
-        }
-        const previousState = this.fetchMembersState;
-        this.fetchMembersState = "pending";
-        const known_member_ids = this.channel.channel_member_ids.map(
-            (channelMember) => channelMember.id
-        );
-        let data;
-        try {
-            data = await rpc("/discuss/channel/members", {
-                channel_id: this.id,
-                known_member_ids: known_member_ids,
-            });
-        } catch (e) {
-            this.fetchMembersState = previousState;
-            throw e;
-        }
-        this.fetchMembersState = "fetched";
-        this.store.insert(data);
-    },
     async fetchMoreAttachments(limit = 30) {
         if (this.isLoadingAttachments || this.areAttachmentsLoaded) {
             return;
@@ -365,15 +343,6 @@ const threadPatch = {
                 }
             });
         }).then(() => (this.markingAsRead = false));
-    },
-    /**
-     * To be overridden.
-     * The purpose is to exclude technical channel_member_ids like bots and avoid
-     * "wrong" seen message indicator
-     * @returns {import("models").ChannelMember[]}
-     */
-    get membersThatCanSeen() {
-        return this.channel.channel_member_ids;
     },
     /** @override */
     get needactionCounter() {
