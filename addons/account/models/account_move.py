@@ -3199,7 +3199,7 @@ class AccountMove(models.Model):
         # Collect data to avoid recomputing value unecessarily
         product_lines_before = {
             move: Counter(
-                (line.name, line.price_subtotal, line.tax_ids, line.deductible_amount)
+                (line.name, line.price_subtotal, line.tax_ids, line.deductible_amount, line.account_id)
                 for line in move.line_ids
                 if line.display_type == 'product'
             )
@@ -3212,7 +3212,7 @@ class AccountMove(models.Model):
         to_create = []
         for move in container['records']:
             product_lines_now = Counter(
-                (line.name, line.price_subtotal, line.tax_ids, line.deductible_amount)
+                (line.name, line.price_subtotal, line.tax_ids, line.deductible_amount, line.account_id)
                 for line in move.line_ids
                 if line.display_type == 'product'
             )
@@ -4600,7 +4600,7 @@ class AccountMove(models.Model):
                         if success or file_data['type'] == 'pdf' or file_data['attachment'].mimetype in ALLOWED_MIMETYPES:
                             (invoice.invoice_line_ids - existing_lines).is_imported = True
                             if not extend_with_existing_lines:
-                                invoice._link_bill_origin_to_purchase_orders(timeout=4)
+                                invoice.with_context(default_move_type=invoice.move_type)._link_bill_origin_to_purchase_orders(timeout=4)
                             invoices |= invoice
                             current_invoice = self.env['account.move']
                             add_file_data_results(file_data, invoice)
