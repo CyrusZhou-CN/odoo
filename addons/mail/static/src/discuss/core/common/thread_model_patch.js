@@ -26,8 +26,6 @@ const threadPatch = {
                 return this.model === "discuss.channel" ? this.id : undefined;
             },
         });
-        /** @type {string} */
-        this.channel_type = undefined;
         this.correspondent = fields.One("discuss.channel.member", {
             /** @this {import("models").Thread} */
             compute() {
@@ -131,8 +129,6 @@ const threadPatch = {
         this.markReadSequential = useSequential();
         this.markedAsUnread = false;
         this.markingAsRead = false;
-        /** @type {number|undefined} */
-        this.member_count = undefined;
         /** @type {string} name: only for channel. For generic thread, @see display_name */
         this.name = undefined;
         this.channel_name_member_ids = fields.Many("discuss.channel.member");
@@ -176,12 +172,9 @@ const threadPatch = {
     /** Equivalent to DiscussChannel._allow_invite_by_email */
     get allow_invite_by_email() {
         return (
-            this.channel_type === "group" ||
-            (this.channel_type === "channel" && !this.group_public_id)
+            this.channel.channel_type === "group" ||
+            (this.channel.channel_type === "channel" && !this.group_public_id)
         );
-    },
-    get areAllMembersLoaded() {
-        return this.member_count === this.channel?.channel_member_ids.length;
     },
     get avatarUrl() {
         if (this.channel?.channel_type === "channel" || this.channel?.channel_type === "group") {
@@ -243,8 +236,8 @@ const threadPatch = {
                 .sort((m1, m2) => m1.id - m2.id)
                 .slice(0, 3)
                 .map((member) => member.name);
-            if (this.member_count > 3) {
-                const remaining = this.member_count - 3;
+            if (this.channel?.member_count > 3) {
+                const remaining = this.channel.member_count - 3;
                 nameParts.push(remaining === 1 ? _t("1 other") : _t("%s others", remaining));
             }
             return formatList(nameParts);
@@ -281,7 +274,7 @@ const threadPatch = {
     },
     /** @override */
     get importantCounter() {
-        if (this.isChatChannel && this.self_member_id?.message_unread_counter_ui) {
+        if (this.channel?.isChatChannel && this.self_member_id?.message_unread_counter_ui) {
             return this.self_member_id.message_unread_counter_ui;
         }
         if (this.discussAppCategory?.id === "channels") {
@@ -346,7 +339,7 @@ const threadPatch = {
     },
     /** @override */
     get needactionCounter() {
-        return this.isChatChannel
+        return this.channel?.isChatChannel
             ? this.self_member_id?.message_unread_counter ?? 0
             : super.needactionCounter;
     },
@@ -395,9 +388,6 @@ const threadPatch = {
     get showUnreadBanner() {
         return this.self_member_id?.message_unread_counter_ui > 0;
     },
-    get unknownMembersCount() {
-        return (this.member_count ?? 0) - (this.channel?.channel_member_ids.length ?? 0);
-    },
     get allowedToLeaveChannelTypes() {
         return ["channel", "group"];
     },
@@ -426,9 +416,6 @@ const threadPatch = {
             this.typesAllowingCalls.includes(this.channel?.channel_type) &&
             !this.correspondent?.persona.eq(this.store.odoobot)
         );
-    },
-    get isChatChannel() {
-        return ["chat", "group"].includes(this.channel?.channel_type);
     },
     get allowDescription() {
         return ["channel", "group"].includes(this.channel?.channel_type);
@@ -492,7 +479,7 @@ const threadPatch = {
         const newName = name.trim();
         if (
             newName !== this.displayName &&
-            ((newName && this.channel?.channel_type === "channel") || this.isChatChannel)
+            ((newName && this.channel?.channel_type === "channel") || this.channel?.isChatChannel)
         ) {
             if (
                 this.channel?.channel_type === "channel" ||

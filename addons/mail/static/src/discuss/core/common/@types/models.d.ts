@@ -48,7 +48,6 @@ declare module "models" {
         canUnpin: Readonly<boolean>;
         channel: DiscussChannel;
         channel_name_member_ids: ChannelMember[];
-        channel_type: string;
         computeCorrespondent: () => ChannelMember;
         correspondent: ChannelMember;
         correspondentCountry: Country;
@@ -57,7 +56,6 @@ declare module "models" {
         executeCommand: (command: unknown, body: string) => unknown;
         fetchChannelInfoDeferred: Deferred<Thread|undefined>;
         fetchChannelInfoState: "not_fetched"|"fetching"|"fetched";
-        fetchChannelMembers: () => Promise<void>;
         fetchMoreAttachments: (limit: number) => Promise<void>;
         firstUnreadMessage: Message;
         group_ids: ResGroups[];
@@ -77,8 +75,6 @@ declare module "models" {
         markedAsUnread: boolean;
         markingAsRead: boolean;
         markReadSequential: () => Promise<any>;
-        member_count: number|undefined;
-        membersThatCanSeen: Readonly<ChannelMember[]>;
         name: string;
         notifyAvatarToServer: (data: string) => Promise<void>;
         notifyDescriptionToServer: (description: unknown) => Promise<unknown>;
@@ -91,7 +87,6 @@ declare module "models" {
         showUnreadBanner: Readonly<boolean>;
         toggleBusSubscription: boolean;
         typesAllowingCalls: Readonly<string[]>;
-        unknownMembersCount: Readonly<number>;
     }
 
     export interface Models {

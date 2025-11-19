@@ -48,14 +48,22 @@ export class DiscussChannel extends Record {
         return def;
     }
 
+    get areAllMembersLoaded() {
+        return this.member_count === this.channel_member_ids.length;
+    }
     channel_member_ids = fields.Many("discuss.channel.member", {
         inverse: "channel_id",
         onDelete: (r) => r?.delete(),
         sort: (m1, m2) => m1.id - m2.id,
     });
+    /** @type {"chat"|"channel"|"group"|"livechat"|"whatsapp"|"ai_chat"|"ai_composer"} */
+    channel_type;
     chatWindow = fields.One("ChatWindow", {
         inverse: "channel",
     });
+    get chatChannelTypes() {
+        return ["chat", "group"];
+    }
     /** @type {"not_fetched"|"pending"|"fetched"} */
     fetchMembersState = "not_fetched";
     hasOtherMembersTyping = fields.Attr(false, {
@@ -82,6 +90,11 @@ export class DiscussChannel extends Record {
     get membersThatCanSeen() {
         return this.channel_member_ids;
     }
+    /** @type {Number|undefined} */
+    member_count;
+    get isChatChannel() {
+        return this.chatChannelTypes.includes(this.channel?.channel_type);
+    }
     otherTypingMembers = fields.Many("discuss.channel.member", {
         /** @this {import("models").Thread} */
         compute() {
@@ -96,6 +109,9 @@ export class DiscussChannel extends Record {
         onDelete: (r) => r?.delete(),
     });
     typingMembers = fields.Many("discuss.channel.member", { inverse: "channelAsTyping" });
+    get unknownMembersCount() {
+        return (this.member_count ?? 0) - (this.channel_member_ids.length ?? 0);
+    }
 
     delete() {
         this.chatWindow?.close();
