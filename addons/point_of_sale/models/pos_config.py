@@ -376,7 +376,7 @@ class PosConfig(models.Model):
             },
         }
 
-        all_paid_orders = session.order_ids.filtered(lambda o: o.state == 'paid')
+        all_paid_orders = session.order_ids.filtered(lambda o: o.state in ['paid', 'done'])
         refund_orders = all_paid_orders.filtered(lambda o: o.is_refund)
         draft_orders = session.order_ids.filtered(lambda o: o.state == 'draft')
         non_refund_orders = all_paid_orders - refund_orders
@@ -649,7 +649,7 @@ class PosConfig(models.Model):
         result = super(PosConfig, self).write(vals)
 
         for config in self:
-            if config.use_presets and config.default_preset_id.id not in config.available_preset_ids.ids:
+            if config.use_presets and config.default_preset_id and config.default_preset_id.id not in config.available_preset_ids.ids:
                 config.available_preset_ids |= config.default_preset_id
 
         self.sudo()._set_fiscal_position()

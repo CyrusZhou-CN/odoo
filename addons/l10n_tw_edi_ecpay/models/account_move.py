@@ -376,6 +376,7 @@ class AccountMove(models.Model):
             return amount
         return self.currency_id._convert(amount, self.env.ref("base.TWD"), self.company_id, self.invoice_date or self.date, round=False)
 
+    @api.model
     def _reformat_phone_number(self, phone):
         """
         Cleans and reformats a phone number string by handling different input formats.
@@ -574,14 +575,15 @@ class AccountMove(models.Model):
             "MerchantID": self.company_id.sudo().l10n_tw_edi_ecpay_merchant_id,
             "RelateNumber": self.l10n_tw_edi_related_number,
             "CustomerIdentifier": self.partner_id.vat if self.l10n_tw_edi_is_b2b and self.partner_id.vat else "",
-            "CustomerAddr": self.partner_id.contact_address,
+            "CustomerAddr": self.partner_id._l10n_tw_edi_formatted_address(),
             "CustomerEmail": self.partner_id.email or "",
             "CustomerPhone": formatted_phone,
             "InvType": self.l10n_tw_edi_invoice_type,
             "TaxType": tax_type,
-            "InvoiceRemark": self.ref,
         }
 
+        if self.ref:
+            json_data["InvoiceRemark"] = self.ref
         if special_tax_type:
             json_data["SpecialTaxType"] = special_tax_type
 
@@ -650,11 +652,33 @@ class AccountMove(models.Model):
             })
         else:
             json_data.update({
-                "AllowanceDate": self.l10n_tw_edi_invoice_create_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "CustomerEmail": self.partner_id.email,
             })
 
         return json_data
+
+    def _l10n_tw_edi_send_create_buyer(self):
+        """
+        Create a buyer before issuing B2B invoices
+        """
+        buyer_json_data = {
+            "MerchantID": self.company_id.sudo().l10n_tw_edi_ecpay_merchant_id,
+            "Action": "Add",
+            "Type": "1",
+            "Identifier": self.partner_id.commercial_partner_id.vat,
+            "CompanyName": self.partner_id.commercial_partner_id.name,
+            "TradingSlang": self.partner_id.commercial_partner_id.vat,
+            "ExchangeMode": "0",
+            "EmailAddress": self.partner_id.commercial_partner_id.email,
+        }
+
+        if partner := self.partner_id.commercial_partner_id:
+            buyer_json_data["Address"] = partner._l10n_tw_edi_formatted_address()
+        if number := self.partner_id.commercial_partner_id.phone:
+            buyer_json_data["TelephoneNumber"] = self._reformat_phone_number(number)
+
+        return call_ecpay_api("/MaintainMerchantCustomerData", buyer_json_data, self.company_id,
+                              self.l10n_tw_edi_is_b2b)
 
     def _l10n_tw_edi_send(self, json_content):
         """
@@ -663,6 +687,14 @@ class AccountMove(models.Model):
         self.ensure_one()
         # Ensure to lock the records that will be sent, to avoid risking sending them twice.
         self.env["res.company"]._with_locked_records(self)
+
+        if self.l10n_tw_edi_is_b2b:
+            response_data = self._l10n_tw_edi_send_create_buyer()
+            # 1: New buyer successfully created - can continue with invoicing
+            # 6160052: Buyer already exists - can continue with invoicing
+            # Other codes: Indicate error - don't proceed with invoicing
+            if int(response_data.get("RtnCode")) not in (1, 6160052):
+                return response_data.get("RtnMsg").split("\r\n")
 
         response_data = call_ecpay_api("/Issue", json_content, self.company_id, self.l10n_tw_edi_is_b2b)
         if int(response_data.get("RtnCode")) != 1:

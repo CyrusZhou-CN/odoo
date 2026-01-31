@@ -78,6 +78,7 @@ import { OptionsContainer } from "@html_builder/sidebar/option_container";
  *      editableOnly?: boolean;
  * }[]} has_overlay_options
  * @typedef {CSSSelector[]} no_parent_containers
+ * @typedef {((el: HTMLElement) => boolean)[]} keep_overlay_options
  */
 /**
  * @typedef {((arg: { el: HTMLElement, reasons: [] }) => void)[]} clone_disabled_reason_providers
@@ -240,6 +241,9 @@ export class BuilderOptionsPlugin extends Plugin {
         }
 
         const newContainers = this.computeContainers(this.target);
+        if (newContainers.length === 0 && this.lastContainers.length === 0) {
+            return;
+        }
         // Do not update the containers if they did not change and are not
         // forced to update.
         if (
@@ -466,7 +470,8 @@ export class BuilderOptionsPlugin extends Plugin {
                 this.updateContainers(targetEl, { forceUpdate: true });
                 // Scroll to the target if not visible.
                 if (!isElementInViewport(targetEl)) {
-                    targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                    // Firefox mis-scrolls with block "center" on tall snippets; keep "start".
+                    targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
                 }
             } else {
                 this.deactivateContainers();

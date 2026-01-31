@@ -457,7 +457,7 @@ class HrEmployee(models.Model):
 
     def _get_first_version_date(self, no_gap=True):
         self.ensure_one()
-        if not self.env.user.has_group("hr.group_hr_user"):
+        if not self.env.su and not self.env.user.has_group("hr.group_hr_user"):
             raise AccessError(_("Only HR users can access first version date on an employee."))
 
         def remove_gap(versions):
@@ -549,11 +549,9 @@ class HrEmployee(models.Model):
         Return the version that should be used for the given date.
         If no valid version is found, we return the very first version of the employee.
         """
-        version = self.env['hr.version'].search([
-            ('employee_id', '=', self.id),
-            ('date_version', '<=', date)],
-            order='date_version desc', limit=1)
-        return version or self.version_ids[0]
+        self.ensure_one()
+        versions = self.version_ids.filtered_domain([('date_version', '<=', date)])
+        return max(versions, key=lambda v: v.date_version) if versions else self.version_ids[0]
 
     def create_version(self, values):
         self.ensure_one()
@@ -807,7 +805,7 @@ class HrEmployee(models.Model):
     def _compute_work_contact_details(self):
         for employee in self:
             if employee.work_contact_id:
-                if len(employee.work_contact_id.employee_ids) == 1:
+                if len(employee.work_contact_id.employee_ids) <= 1:
                     employee.work_phone = employee.work_contact_id.phone
                     employee.work_email = employee.work_contact_id.email
 
@@ -817,7 +815,7 @@ class HrEmployee(models.Model):
             if not employee.work_contact_id:
                 employees_without_work_contact += employee
             else:
-                if len(employee.work_contact_id.employee_ids) == 1:
+                if len(employee.work_contact_id.employee_ids) <= 1:
                     employee.work_contact_id.sudo().write({
                         'email': employee.work_email,
                         'phone': employee.work_phone,
@@ -1396,7 +1394,7 @@ We can redirect you to the public employee list."""
             self._remove_work_contact_id(user, vals.get('company_id'))
         if 'work_permit_expiration_date' in vals:
             vals['work_permit_scheduled_activity'] = False
-        if 'tz' in vals:
+        if vals.get('tz'):
             users_to_update = self.env['res.users']
             for employee in self:
                 if employee.user_id and employee.company_id == employee.user_id.company_id and vals['tz'] != employee.user_id.tz:
@@ -1564,30 +1562,44 @@ We can redirect you to the public employee list."""
                 res[employee.id] = employee_versions_sudo[0].resource_calendar_id.sudo(False)
         return res
 
-    def _get_calendar_periods(self, start, stop):
+    def _get_version_periods(self, start, stop, field=None, check_contract=False):
+        if field and field not in self:
+            raise UserError(self.env._(
+                "This field %(field_name)s doesn't exist on this model (hr.version).",
+                field_name=field
+            ))
+        version_periods_by_employee = defaultdict(list)
+        if check_contract:
+            versions = self._get_versions_with_contract_overlap_with_period(start.date(), stop.date())
+        else:
+            versions = self.version_ids.filtered_domain([
+                ('date_start', '<=', stop),
+                '|',
+                    ('date_end', '=', False),
+                    ('date_end', '>=', start)
+            ])
+        for version in versions:
+            # if employee is under fully flexible contract, use timezone of the employee
+            calendar_tz = timezone(version.resource_calendar_id.tz) if version.resource_calendar_id else timezone(version.employee_id.resource_id.tz)
+            date_start = datetime.combine(version.date_start, time.min).replace(tzinfo=calendar_tz).astimezone(utc)
+            end_date = version.date_end
+            if end_date:
+                date_end = datetime.combine(
+                    end_date + relativedelta(days=1),
+                    time.min,
+                ).replace(tzinfo=calendar_tz).astimezone(utc)
+            else:
+                date_end = stop
+            version_periods_by_employee[version.employee_id].append(
+                (max(date_start, start), min(date_end, stop), version[field] if field else version))
+        return version_periods_by_employee
+
+    def _get_calendar_periods(self, start, stop, check_contract=True):
         """
         :param datetime start: the start of the period
         :param datetime stop: the stop of the period
         """
-        calendar_periods_by_employee = defaultdict(list)
-        for employee in self.sudo():
-            for version in employee._get_versions_with_contract_overlap_with_period(start.date(), stop.date()):
-                # if employee is under fully flexible contract, use timezone of the employee
-                calendar_tz = timezone(version.resource_calendar_id.tz) if version.resource_calendar_id else timezone(employee.resource_id.tz)
-                date_start = datetime.combine(
-                    version.contract_date_start,
-                    time(0, 0, 0)
-                ).replace(tzinfo=calendar_tz).astimezone(utc)
-                if version.date_end:
-                    date_end = datetime.combine(
-                        version.date_end + relativedelta(days=1),
-                        time(0, 0, 0)
-                    ).replace(tzinfo=calendar_tz).astimezone(utc)
-                else:
-                    date_end = stop
-                calendar_periods_by_employee[employee].append(
-                    (max(date_start, start), min(date_end, stop), version.resource_calendar_id))
-        return calendar_periods_by_employee
+        return self.sudo()._get_version_periods(start, stop, 'resource_calendar_id', check_contract)
 
     @api.model
     def _get_all_versions_with_contract_overlap_with_period(self, date_from, date_to):
@@ -1673,7 +1685,7 @@ We can redirect you to the public employee list."""
                                     tz=employee_tz,
                                     resources=self.resource_id,
                                     compute_leaves=True,
-                                    domain=[('company_id', 'in', [False, self.company_id.id])])[self.resource_id.id]
+                                    domain=[('company_id', 'in', [False, self.company_id.id]), ('time_type', '=', 'leave')])[self.resource_id.id]
             duration_data = duration_data | version_intervals
         return duration_data
 
@@ -1728,8 +1740,8 @@ We can redirect you to the public employee list."""
         Returns the versions of the employee between date_from and date_to
         that have at least 1 day in contract during that period
         """
-        return self.env['hr.version'].search([
-            ('employee_id', 'in', self.ids), ('contract_date_start', '!=', False), ('contract_date_start', '<=', date_to),
+        return self.version_ids.filtered_domain([
+            ('contract_date_start', '!=', False), ('contract_date_start', '<=', date_to),
             '|', ('contract_date_end', '>=', date_from), ('contract_date_end', '=', False),
         ])
 

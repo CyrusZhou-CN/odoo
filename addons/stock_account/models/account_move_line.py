@@ -49,10 +49,9 @@ class AccountMoveLine(models.Model):
         return -price_unit if self.move_id.move_type == 'in_refund' else price_unit
 
     def _get_cogs_value(self):
+        """ Get the COGS price unit in the product's default unit of measure.
+        """
         self.ensure_one()
-
-        if not self.product_id:
-            return self.price_unit
 
         original_line = self.move_id.reversed_entry_id.line_ids.filtered(
             lambda l: l.display_type == 'cogs' and l.product_id == self.product_id and
@@ -61,14 +60,26 @@ class AccountMoveLine(models.Model):
         if original_line:
             return original_line.price_unit
 
-        if self.product_id.cost_method in ['standard', 'average']:
-            return self.product_id.standard_price
+        if not self.product_id:
+            return self.price_unit
 
-        # FIFO
-        moves = self._get_stock_moves()
-        if not moves:
-            return self.product_id._run_fifo(self.quantity)
-        return moves._get_price_unit()
+        cogs_qty = self._get_cogs_qty()
+        if moves := self._get_stock_moves().filtered(lambda m: m.state == 'done'):
+            price_unit = moves._get_cogs_price_unit(cogs_qty)
+        else:
+            if self.product_id.cost_method in ['standard', 'average']:
+                price_unit = self.product_id.standard_price
+            else:
+                price_unit = self.product_id._run_fifo(cogs_qty) / cogs_qty if cogs_qty else 0
+        return (price_unit * cogs_qty - self._get_posted_cogs_value()) / self.quantity
 
     def _get_stock_moves(self):
         return self.env['stock.move']
+
+    def _get_cogs_qty(self):
+        self.ensure_one()
+        return self.quantity
+
+    def _get_posted_cogs_value(self):
+        self.ensure_one()
+        return 0

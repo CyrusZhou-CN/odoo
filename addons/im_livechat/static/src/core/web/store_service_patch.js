@@ -9,7 +9,7 @@ const storePatch = {
     setup() {
         super.setup(...arguments);
         this.livechatChannels = this.makeCachedFetchData("im_livechat.channel");
-        this.livechatLookingForHelp = this.makeCachedFetchData("/im_livechat/looking_for_help");
+        this.livechatSelfExpertises = this.makeCachedFetchData("/im_livechat/fetch_self_expertise");
         this.has_access_livechat = false;
     },
     /**
@@ -19,9 +19,7 @@ const storePatch = {
         super.onStarted(...arguments);
         if (this.discuss.isActive && this.has_access_livechat) {
             this.livechatChannels.fetch();
-        }
-        if (this.has_access_livechat && !this.discuss.livechatLookingForHelpCategory.hidden) {
-            this.livechatLookingForHelp.fetch();
+            this.livechatSelfExpertises.fetch();
         }
     },
     /** @returns {boolean} Whether the livechat thread changed. */

@@ -183,7 +183,7 @@ export class Composer extends Component {
                 },
                 () =>
                     this.props.allowUpload &&
-                    (!this.store.meetingViewOpened || this.env.inMeetingView)
+                    (!this.store.rtc.state.isFullscreen || this.env.inMeetingView)
             );
         }
         useChildSubEnv({ inComposer: true });
@@ -357,7 +357,7 @@ export class Composer extends Component {
     }
 
     get thread() {
-        return this.props.composer.replyToMessage?.thread ?? this.props.composer.thread ?? null;
+        return this.props.composer.targetThread;
     }
 
     get allowUpload() {
@@ -423,7 +423,8 @@ export class Composer extends Component {
                             };
                         } else {
                             return {
-                                label: suggestion.name,
+                                label: this.thread?.getPersonaName(suggestion) ?? suggestion.name,
+                                thread: this.thread,
                                 partner: suggestion,
                                 classList: "o-mail-Composer-suggestion",
                             };
@@ -456,8 +457,9 @@ export class Composer extends Component {
                     optionTemplate: "mail.Composer.suggestionCannedResponse",
                     options: suggestions.map((suggestion) => ({
                         cannedResponse: suggestion,
-                        source: suggestion.source,
                         label: suggestion.substitution,
+                        source: suggestion.source,
+                        title: suggestion.substitution,
                         classList: "o-mail-Composer-suggestion",
                     })),
                 };

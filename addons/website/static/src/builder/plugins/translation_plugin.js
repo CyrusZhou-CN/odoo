@@ -1,13 +1,9 @@
 import { Plugin } from "@html_editor/plugin";
-import { browser } from "@web/core/browser/browser";
 import { _t } from "@web/core/l10n/translation";
 import { AttributeTranslateDialog } from "../translation_components/attributeTranslateDialog";
 import { SelectTranslateDialog } from "../translation_components/selectTranslateDialog";
-import {
-    localStorageNoDialogKey,
-    TranslatorInfoDialog,
-} from "../translation_components/translatorInfoDialog";
 import { withSequence } from "@html_editor/utils/resource";
+import { makeContentsInline, unwrapContents } from "@html_editor/utils/dom";
 
 /**
  * @typedef {((editableEls: HTMLElement[]) => void)[]} mark_translatable_nodes
@@ -74,6 +70,7 @@ export class TranslationPlugin extends Plugin {
             for (const editableEl of editableEls) {
                 if (editableEl.querySelectorAll(editableElSelector).length) {
                     editableEl.setAttribute("data-oe-readonly", "true");
+                    editableEl.classList.remove("o_editable", "o_editable_attribute");
                 }
             }
             return true;
@@ -82,12 +79,21 @@ export class TranslationPlugin extends Plugin {
             this.prepareTranslation();
         }),
         system_classes: ["o_editable_attribute"],
+        before_insert_processors: withSequence(20, (container) => {
+            makeContentsInline(container);
+            for (const el of container.querySelectorAll(this.nonTranslatedSelector)) {
+                unwrapContents(el);
+            }
+            return container;
+        }),
     };
 
     setup() {
         this.websiteService = this.services.website;
         this.notificationService = this.services.notification;
         this.dialogService = this.services.dialog;
+        this.nonTranslatedSelector =
+            `:not(${this.config.translatedElements.join(", ")})` + `:not(.o_translate_inline)`;
     }
 
     prepareTranslation() {
@@ -112,10 +118,6 @@ export class TranslationPlugin extends Plugin {
                     ev.preventDefault();
                 }
             });
-        }
-
-        if (!browser.localStorage.getItem(localStorageNoDialogKey)) {
-            this.dialogService.add(TranslatorInfoDialog);
         }
 
         const showNotification = (ev) => {

@@ -589,6 +589,16 @@ def load_modules(
         # STEP 10: check that we can trust nullable columns
         registry.check_null_constraints(cr)
 
+        if update_module:
+            cr.execute(
+                """
+                INSERT INTO ir_config_parameter(key, value)
+                SELECT 'base.partially_updated_database', '1'
+                WHERE EXISTS(SELECT FROM ir_module_module WHERE state IN ('to upgrade', 'to install', 'to remove'))
+                ON CONFLICT DO NOTHING
+                """
+            )
+
 
 def reset_modules_state(db_name: str) -> None:
     """
@@ -602,8 +612,7 @@ def reset_modules_state(db_name: str) -> None:
     # of time
     db = odoo.sql_db.db_connect(db_name)
     with db.cursor() as cr:
-        cr.execute("SELECT 1 FROM information_schema.tables WHERE table_name='ir_module_module'")
-        if not cr.fetchall():
+        if not odoo.tools.sql.table_exists(cr, 'ir_module_module'):
             _logger.info('skipping reset_modules_state, ir_module_module table does not exists')
             return
         cr.execute(

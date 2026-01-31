@@ -1,6 +1,12 @@
 import { Store as BaseStore, fields, makeStore, storeInsertFns } from "@mail/core/common/record";
 import { threadCompareRegistry } from "@mail/core/common/thread_compare";
-import { cleanTerm, generateEmojisOnHtml, prettifyMessageText } from "@mail/utils/common/format";
+import {
+    attClassObjectToString,
+    cleanTerm,
+    generateEmojisOnHtml,
+    prettifyMessageText,
+} from "@mail/utils/common/format";
+import { compareDatetime } from "@mail/utils/common/misc";
 
 import { reactive } from "@odoo/owl";
 
@@ -210,12 +216,22 @@ export class Store extends BaseStore {
     }
 
     discussDropdownMenuClass(ctx) {
-        const res = ["o-discuss-dropdownMenu", "d-flex", "flex-column", "border-secondary"];
-        if (this.shouldSimulateDarkTheme(ctx)) {
-            res.push("o-simulateDarkTheme");
-        }
-        return res.join(" ");
+        const simulateDarkTheme = this.shouldSimulateDarkTheme(ctx);
+        return attClassObjectToString({
+            "o-discuss-dropdownMenu d-flex flex-column border-secondary": true,
+            "o-simulateDarkTheme": simulateDarkTheme,
+            "bg-view": !simulateDarkTheme,
+        });
     }
+
+    standaloneInboxMessages = fields.Many("mail.message", {
+        compute() {
+            const messages = (this.store.inbox?.messages ?? []).filter((m) => !m.thread);
+            return messages.sort(
+                (m1, m2) => compareDatetime(m2.datetime, m1.datetime) || m2.id - m1.id
+            );
+        },
+    });
 
     /**
      * @param {Object} params post message data
@@ -355,13 +371,9 @@ export class Store extends BaseStore {
     }
 
     _fetchStoreDataRpc(fetchParams) {
-        const context = {
-            ...user.context,
-            allowed_company_ids: user.allowedCompanies.map((c) => c.id),
-        };
         return rpc(
             this.fetchReadonly ? "/mail/data" : "/mail/action",
-            { fetch_params: fetchParams, context },
+            { fetch_params: fetchParams, context: user.context },
             { silent: this.fetchSilent }
         );
     }
@@ -442,6 +454,25 @@ export class Store extends BaseStore {
                 showAccessError();
                 ev.preventDefault();
                 return true;
+            }
+        } else if (
+            this.env.services.ui.isSmall &&
+            ev.target.closest(".o-mail-ChatWindow") &&
+            link.href &&
+            !link.href.startsWith("#")
+        ) {
+            let url;
+            try {
+                url = new URL(link.href);
+            } catch {
+                // Ignore invalid URLs
+                return false;
+            }
+            if (
+                browser.location.host === url.host &&
+                browser.location.pathname.startsWith("/odoo")
+            ) {
+                this.ChatWindow.get({ thread })?.fold();
             }
         }
         return false;
@@ -554,7 +585,7 @@ export class Store extends BaseStore {
 
     getMentionsFromText(
         body,
-        { mentionedChannels = [], mentionedPartners = [], mentionedRoles = [] } = {}
+        { mentionedChannels = [], mentionedPartners = [], mentionedRoles = [], thread } = {}
     ) {
         const validMentions = {};
         validMentions.threads = mentionedChannels.filter((thread) => {
@@ -566,7 +597,7 @@ export class Store extends BaseStore {
             return body.includes(`#${thread.displayName}`);
         });
         validMentions.partners = mentionedPartners.filter((partner) =>
-            body.includes(`@${partner.name}`)
+            body.includes(`@${thread?.getPersonaName(partner) ?? partner.name}`)
         );
         validMentions.roles = mentionedRoles.filter((role) => body.includes(`@${role.name}`));
         validMentions.specialMentions = this.specialMentions
@@ -593,6 +624,7 @@ export class Store extends BaseStore {
             mentionedChannels,
             mentionedPartners,
             mentionedRoles,
+            thread,
         });
         const partner_ids = validMentions?.partners.map((partner) => partner.id) ?? [];
         const role_ids = validMentions?.roles.map((role) => role.id) ?? [];

@@ -138,7 +138,7 @@
                 <t t-call="portal.portal_record_sidebar">
                     <t t-set="classes" t-value="'col-lg-4 col-xxl-3 d-print-none'"/>
                     <t t-set="title">
-                        <t t-if="sale_order.state in 'draft,sent' and sale_order.prepayment_percent != 1.0">
+                        <t t-if="sale_order._has_to_be_paid() and sale_order.prepayment_percent != 1.0">
                             <h4>Down payment</h4>
                             <h2>
                                 <t
@@ -601,6 +601,10 @@
                                 <th t-if="sale_order.state in ['sale', 'cancel']" class="ps-0 pb-0">Order Date:</th>
                                 <th t-else="" class="ps-0 pb-0">Date:</th>
                                 <td class="w-100 pb-0 text-wrap"><span t-field="sale_order.date_order" t-options='{"widget": "date"}'/></td>
+                            </tr>
+                            <tr t-if="sale_order.commitment_date and sale_order.state in ['sent', 'sale']">
+                                <th class="ps-0 pb-0">Delivery Date:</th>
+                                <td class="w-100 pb-0 text-wrap"><span t-field="sale_order.commitment_date" t-options='{"widget": "date"}'/></td>
                             </tr>
                             <tr t-if="sale_order.validity_date and sale_order.state in ['draft', 'sent']">
                                 <th class="ps-0 pb-0">Expiration Date:</th>

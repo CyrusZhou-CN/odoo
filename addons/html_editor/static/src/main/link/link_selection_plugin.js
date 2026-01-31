@@ -49,6 +49,16 @@ export class LinkSelectionPlugin extends Plugin {
         normalize_handlers: () => this.resetLinkInSelection(),
         feff_providers: this.addFeffsToLinks.bind(this),
         system_classes: ["o_link_in_selection"],
+        selection_placeholder_container_predicates: (container) => {
+            if (container.nodeName === "BUTTON" || container.nodeName === "A") {
+                // We sometimes have buttons or links that are blocks with
+                // contenteditable=true but we never want to insert a paragraph
+                // in them.
+                // Note: this can be removed if `allowsParagraphRelatedElements`
+                // is adapted to return false in these cases.
+                return false;
+            }
+        },
     };
 
     addFeffsToLinks(root, cursors) {
@@ -70,7 +80,14 @@ export class LinkSelectionPlugin extends Plugin {
     }
 
     isLinkEligibleForZwnbsp(link) {
+        const { anchorNode, focusNode } = this.dependencies.selection.getEditableSelection();
+        // we can't rely on `o_link_in_selection` class because it can be
+        // added to siblings while splitting link element.
+        const isLinkSelected = link.contains(anchorNode) || link.contains(focusNode);
+        const linkHasContentOrSelected =
+            isLinkSelected || link.textContent.replaceAll("\ufeff", "");
         return (
+            linkHasContentOrSelected &&
             link.isContentEditable &&
             link.parentElement.isContentEditable &&
             this.editable.contains(link) &&
@@ -106,7 +123,8 @@ export class LinkSelectionPlugin extends Plugin {
 
         if (
             singleLinkInSelection &&
-            this.isLinkEligibleForVisualIndication(singleLinkInSelection)
+            this.isLinkEligibleForVisualIndication(singleLinkInSelection) &&
+            this.document.activeElement === this.editable
         ) {
             singleLinkInSelection.classList.add("o_link_in_selection");
         }

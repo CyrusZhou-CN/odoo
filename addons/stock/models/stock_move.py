@@ -40,6 +40,9 @@ class StockMove(models.Model):
         'product.product', 'Product',
         check_company=True,
         domain="[('type', '=', 'consu')]", index=True, required=True)
+    product_category_id = fields.Many2one(
+        'product.category', 'Product Category',
+        related='product_id.categ_id')
     never_product_template_attribute_value_ids = fields.Many2many(
         'product.template.attribute.value',
         'template_attribute_value_stock_move_rel',
@@ -587,7 +590,7 @@ Please change the quantity done or the rounding precision in your settings.""",
                     continue
                 if move_update.date_deadline and delta:
                     move_update.date_deadline -= delta
-                else:
+                elif not move_update.date_deadline or move_update.date_deadline != new_deadline:
                     move_update.date_deadline = new_deadline
 
     @api.depends('move_line_ids.lot_id', 'move_line_ids.quantity')
@@ -603,7 +606,7 @@ Please change the quantity done or the rounding precision in your settings.""",
 
     def _set_lot_ids(self):
         for move in self:
-            if move.state == 'assigned' and all(ml.lot_id for ml in move.move_line_ids):
+            if move.state == 'assigned' and all(ml.lot_id in move.lot_ids for ml in move.move_line_ids):
                 continue
             move_lines_commands = []
             mls = move.move_line_ids
@@ -905,6 +908,7 @@ Please change the quantity done or the rounding precision in your settings.""",
             'res_id': self.id,
             'context': dict(
                 self.env.context,
+                allow_parent_move_picked_reset=True,
             ),
         }
 
@@ -1101,6 +1105,9 @@ Please change the quantity done or the rounding precision in your settings.""",
                         'id': value,
                         'display_name': self.env['stock.move.line'][key].browse(value).display_name
                     }
+        first_number = product.lot_sequence_id.number_next_actual - product.lot_sequence_id.number_increment
+        if (first_lot and first_lot == product.lot_sequence_id.get_next_char(first_number)):
+            product.lot_sequence_id.sudo().write({'number_next_actual': first_number + len(lot_qties)})
         return vals_list
 
     def _push_apply(self):
@@ -1207,7 +1214,7 @@ Please change the quantity done or the rounding precision in your settings.""",
         float_precision = {f_name: (self.env['stock.move']._fields[f_name].get_digits(self.env) or (False, 2))[1] for f_name in float_fields}
         if 'price_unit' in float_fields:
             price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
-            currency_precision = self.company_id.currency_id.decimal_places
+            currency_precision = min(self.company_id.mapped('currency_id.decimal_places')) if self.company_id else False
             float_precision['price_unit'] = min(currency_precision, price_unit_prec) if currency_precision else price_unit_prec
 
         def _get_formatted_float_fields(move, f_name, precision):
@@ -1428,14 +1435,11 @@ Please change the quantity done or the rounding precision in your settings.""",
         if any(picking.partner_id != m.partner_id for m in self):
             vals['partner_id'] = False
         if any(picking.origin != m.origin for m in self):
-            current_origins = set(picking.origin.split(',') + [False]) if picking.origin else {False}
-            vals['origin'] = picking.origin
-            for move in self:
-                if move.origin not in current_origins:
-                    if not vals['origin']:
-                        vals['origin'] = move.origin
-                    else:
-                        vals['origin'] += f',{move.origin}'
+            current_origins = picking.origin.split(',') if picking.origin else []
+            new_moves_origins = [move.origin for move in self if move.origin]
+            new_origin = ','.join(OrderedSet(current_origins + new_moves_origins))
+            if picking.origin != new_origin:
+                vals['origin'] = new_origin
         return vals
 
     def _assign_picking_post_process(self, new=False):
@@ -1662,6 +1666,11 @@ Please change the quantity done or the rounding precision in your settings.""",
 
         return quantities
 
+    def _get_partner_id(self):
+        if self.location_id == self.env.company.internal_transit_location_id:
+            return False
+        return self.partner_id.id
+
     def _prepare_procurement_values(self):
         """ Prepare specific key for moves or other componenets that will be created from a stock rule
         comming from a stock move. This method could be override in order to add other custom key that could
@@ -1671,16 +1680,16 @@ Please change the quantity done or the rounding precision in your settings.""",
 
         product_id = self.product_id.with_context(lang=self._get_lang())
         dates_info = {'date_planned': self._get_mto_procurement_date()}
-        route = []
+        route = self.route_ids
+        if not route:
+            related_packages = self.env['stock.package'].search_fetch([('id', 'parent_of', self.move_line_ids.result_package_id.ids)], ['package_type_id'])
+            route = related_packages.package_type_id.route_ids
         if self.location_id.warehouse_id and self.location_id.warehouse_id.lot_stock_id.parent_path in self.location_id.parent_path:
-            dates_info = self.product_id._get_dates_info(self.date, self.location_id, route_ids=self.route_ids)
+            dates_info = self.product_id._get_dates_info(self.date, self.location_id, route_ids=route)
         warehouse = self.warehouse_id or self.picking_type_id.warehouse_id
         if not self.location_id.warehouse_id:
-            warehouse = self.env['stock.warehouse']
-            route = self.route_ids
-            if not route:
-                related_packages = self.env['stock.package'].search_fetch([('id', 'parent_of', self.move_line_ids.result_package_id.ids)], ['package_type_id'])
-                route = related_packages.package_type_id.route_ids
+            warehouse = self.rule_id.route_id.supplier_wh_id
+
         move_dest_ids = False
         if self.procure_method == "make_to_order":
             move_dest_ids = self
@@ -1692,6 +1701,7 @@ Please change the quantity done or the rounding precision in your settings.""",
             'date_order': dates_info.get('date_order'),
             'date_deadline': self.date_deadline,
             'move_dest_ids': move_dest_ids,
+            'partner_id': move_dest_ids._get_partner_id() if move_dest_ids else False,
             'route_ids': route,
             'warehouse_id': warehouse,
             'priority': self.priority,
@@ -2035,7 +2045,13 @@ Please change the quantity done or the rounding precision in your settings.""",
             if move.propagate_cancel:
                 # only cancel the next move if all my siblings are also cancelled
                 if all(state == 'cancel' for state in siblings_states):
-                    move.move_dest_ids.filtered(lambda m: m.state != 'done' and move.location_dest_id == m.location_id)._action_cancel()
+                    move_dest_to_cancel = move.move_dest_ids.filtered(lambda m: m.state != 'done' and move.location_dest_id == m.location_id)
+                    move_dest_to_cancel._action_cancel()
+                    # Unlink from dest if dest is not in the chain
+                    (move.move_dest_ids - move_dest_to_cancel).write({
+                        'procure_method': 'make_to_stock',
+                        'move_orig_ids': [Command.unlink(move.id)]
+                    })
                     if cancel_moves_origin:
                         move.move_orig_ids.sudo().filtered(lambda m: m.state != 'done')._action_cancel()
             else:

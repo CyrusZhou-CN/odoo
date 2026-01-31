@@ -31,6 +31,7 @@ import { trackOccurrences, trackOccurrencesPair } from "../utils/tracking";
  * @property { SerializedSelection } selection
  * @property { HistoryMutation[] } mutations
  * @property { string } previousStepId
+ * @property { Object } extraStepInfos
  *
  * @typedef { Object } HistoryMutationCharacterData
  * @property { "characterData" } type
@@ -150,9 +151,10 @@ import { trackOccurrences, trackOccurrencesPair } from "../utils/tracking";
  * @typedef {((revertedStep: HistoryStep) => void)[]} post_redo_handlers
  * @typedef {((revertedStep: HistoryStep) => void)[]} post_undo_handlers
  * @typedef {(() => void)[]} restore_savepoint_handlers
- * @typedef {((arg: { stepCommonAncestor: HTMLElement }) => void)[]} step_added_handlers
+ * @typedef {((arg: { step: HistoryStep, stepCommonAncestor: HTMLElement, isPreviewing: boolean }) => void)[]} step_added_handlers
  *
  * @typedef {((record: HistoryMutationRecord) => boolean)[]} savable_mutation_record_predicates
+ * @typedef {((step: HistoryStep) => boolean)[]} unreversible_step_predicates
  *
  * @typedef {((
  *    arg: {
@@ -164,7 +166,9 @@ import { trackOccurrences, trackOccurrencesPair } from "../utils/tracking";
  *    },
  *    options: { forNewStep: boolean }
  *  ) => void)[]} attribute_change_processors
+ * @typedef {((step: HistoryStep) => HistoryStep)[]} history_step_processors
  * @typedef {((node: Node, childTreesToSerialize: Tree[]) => Tree[])[]} serializable_descendants_processors
+ * @typedef {((node: Node, attributeName: string, attributeValue: string) => boolean)[]} set_attribute_overrides
  */
 
 export class HistoryPlugin extends Plugin {
@@ -1138,10 +1142,10 @@ export class HistoryPlugin extends Plugin {
             revertedStep = this.steps[pos];
             this.revertedSteps.add(revertedStep.id);
             this.revertMutations(revertedStep.mutations, { forNewStep: true });
-            this.setSerializedSelection(revertedStep.selection);
-            this.currentStep.selection = revertedStep.selectionAfter;
             this.setSerializedFocus(revertedStep.activeElementId);
             this.stageFocus();
+            this.setSerializedSelection(revertedStep.selection);
+            this.currentStep.selection = revertedStep.selectionAfter;
             this.addStep({ type: "undo", extraStepInfos: revertedStep.extraStepInfos });
             // Consider the last position of the history as an undo.
         }
@@ -1164,10 +1168,10 @@ export class HistoryPlugin extends Plugin {
             revertedStep = this.steps[pos];
             this.revertedSteps.add(revertedStep.id);
             this.revertMutations(revertedStep.mutations, { forNewStep: true });
-            this.setSerializedSelection(revertedStep.selection);
-            this.currentStep.selection = revertedStep.selectionAfter;
             this.setSerializedFocus(revertedStep.activeElementId);
             this.stageFocus();
+            this.setSerializedSelection(revertedStep.selection);
+            this.currentStep.selection = revertedStep.selectionAfter;
             this.addStep({ type: "redo", extraStepInfos: revertedStep.extraStepInfos });
         }
         this.dispatchTo("post_redo_handlers", revertedStep);
@@ -1203,10 +1207,10 @@ export class HistoryPlugin extends Plugin {
     setSerializedFocus(activeElementId) {
         const elementToFocus =
             activeElementId === "root"
-                ? this.document.body
+                ? this.editable
                 : activeElementId && this.nodeMap.getNode(activeElementId);
-        if (elementToFocus !== this.document.activeElement) {
-            elementToFocus?.focus();
+        if (elementToFocus?.isConnected && elementToFocus !== this.document.activeElement) {
+            elementToFocus.focus();
         }
     }
     /**
@@ -1513,7 +1517,20 @@ export class HistoryPlugin extends Plugin {
             }
             applied = true;
             const stepIndex = this.steps.findLastIndex((item) => item === step);
-            this.restoreToStep(stepIndex);
+            const lastRevertedStep = this.restoreToStep(stepIndex);
+            if (lastRevertedStep?.selection && !draftMutations.length) {
+                selectionToRestore.setCursor((cursor) => {
+                    const anchorNode = this.nodeMap.getNode(
+                        lastRevertedStep.selection.anchorNodeId
+                    );
+                    const focusNode = this.nodeMap.getNode(lastRevertedStep.selection.focusNodeId);
+                    cursor.anchor.node = anchorNode;
+                    cursor.anchor.offset = lastRevertedStep.selection.anchorOffset;
+
+                    cursor.focus.node = focusNode;
+                    cursor.focus.offset = lastRevertedStep.selection.focusOffset;
+                });
+            }
             // Apply draft mutations to recover the same currentStep state
             // as before.
             this.applyMutations(draftMutations, { forNewStep: true });
@@ -1631,6 +1648,7 @@ export class HistoryPlugin extends Plugin {
      * steps's state to "discarded".
      *
      * @param {Number} stepIndex
+     * @returns {HistoryStep}
      */
     restoreToStep(stepIndex) {
         // Discard current draft.
@@ -1672,6 +1690,7 @@ export class HistoryPlugin extends Plugin {
         // Register resulting mutations as a new "restore" step (prevent undo).
         this.dispatchContentUpdated();
         this.addStep({ type: "restore" });
+        return lastRevertedStep;
     }
 
     setStepExtra(key, value) {
