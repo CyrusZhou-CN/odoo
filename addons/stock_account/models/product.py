@@ -191,10 +191,11 @@ class ProductProduct(models.Model):
     # -------------------------------------------------------------------------
 
     def _change_standard_price(self, old_price):
+        product_values = []
         for product in self:
             if product.cost_method == 'fifo' or product.standard_price == old_price.get(product):
                 continue
-            self.env['product.value'].sudo().create({
+            product_values.append({
                 'product_id': product.id,
                 'value': product.standard_price,
                 'company_id': product.company_id.id or self.env.company.id,
@@ -202,6 +203,7 @@ class ProductProduct(models.Model):
                 'description': _('Price update from %(old_price)s to %(new_price)s by %(user)s',
                     old_price=old_price.get(product), new_price=product.standard_price, user=self.env.user.name)
             })
+        self.env['product.value'].sudo().create(product_values)
         return
 
     def _get_standard_price_at_date(self, date=None):
@@ -463,6 +465,9 @@ class ProductProduct(models.Model):
         # TODO: Add extra value and extra quantity kwargs to avoid total recomputation
         for product in self:
             if product.cost_method == 'standard':
+                continue
+            if product.lot_valuated:
+                product.sudo().with_context(disable_auto_revaluation=True).standard_price = product.avg_cost
                 continue
             if product.cost_method == 'fifo':
                 qty_available = product._with_valuation_context().qty_available
