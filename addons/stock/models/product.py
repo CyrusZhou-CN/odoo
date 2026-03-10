@@ -5,6 +5,7 @@ from ast import literal_eval
 from collections import defaultdict
 from collections.abc import Iterable
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -166,6 +167,8 @@ class ProductProduct(models.Model):
         dates_in_the_past = False
         # only to_date as to_date will correspond to qty_available
         to_date = fields.Datetime.to_datetime(to_date)
+        if to_date and to_date.time() == datetime.min.time():
+            to_date = datetime.combine(to_date, datetime.max.time())
         if to_date and to_date < fields.Datetime.now():
             dates_in_the_past = True
 
@@ -173,6 +176,8 @@ class ProductProduct(models.Model):
         domain_move_out = [('product_id', 'in', self.ids)] + domain_move_out_loc
         if lot_id is not None:
             domain_quant += [('lot_id', '=', lot_id)]
+            domain_move_in += [('move_line_ids.lot_id', '=', lot_id)]
+            domain_move_out += [('move_line_ids.lot_id', '=', lot_id)]
         if owner_id is not None:
             domain_quant += [('owner_id', '=', owner_id)]
             domain_move_in += [('restrict_partner_id', '=', owner_id)]
@@ -214,7 +219,6 @@ class ProductProduct(models.Model):
             # Calculate the moves that were done before now to calculate back in time (as most questions will be recent ones)
             domain_move_in_done = [('state', '=', 'done'), ('date', '>', to_date)] + domain_move_in_done
             domain_move_out_done = [('state', '=', 'done'), ('date', '>', to_date)] + domain_move_out_done
-
             groupby = ['product_id', 'product_uom']
             for product, uom, quantity in Move._read_group(domain_move_in_done, groupby, ['quantity:sum']):
                 moves_in_res_past[product.id] += uom._compute_quantity(quantity, product.uom_id)
@@ -424,6 +428,12 @@ class ProductProduct(models.Model):
                     '&', ('state', '=', 'done'), ~dest_loc_domain_done,
                     '&', ('state', '!=', 'done'), ~dest_loc_domain_in_progress,
             ])
+            if self.env.context.get('skip_in_progress'):
+                return (
+                    loc_domain,
+                    dest_loc_domain_done & ~loc_domain,
+                    loc_domain & ~dest_loc_domain_done
+                )
 
         # returns: (domain_quant_loc, domain_move_in_loc, domain_move_out_loc)
         return (
