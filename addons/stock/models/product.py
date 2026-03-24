@@ -4,8 +4,8 @@ import operator as py_operator
 from ast import literal_eval
 from collections import defaultdict
 from collections.abc import Iterable
+from datetime import date, datetime, time
 from dateutil.relativedelta import relativedelta
-from datetime import datetime
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -166,9 +166,12 @@ class ProductProduct(models.Model):
         domain_quant = [('product_id', 'in', self.ids)] + domain_quant_loc
         dates_in_the_past = False
         # only to_date as to_date will correspond to qty_available
+        original_value = to_date
         to_date = fields.Datetime.to_datetime(to_date)
-        if to_date and to_date.time() == datetime.min.time():
-            to_date = datetime.combine(to_date, datetime.max.time())
+        if (isinstance(original_value, date) and not isinstance(original_value, datetime)) or \
+            (isinstance(original_value, str) and len(original_value) == 10):
+            to_date = datetime.combine(to_date.date(), time.max)
+
         if to_date and to_date < fields.Datetime.now():
             dates_in_the_past = True
 
@@ -397,26 +400,38 @@ class ProductProduct(models.Model):
             dest_loc_domain = Domain('location_dest_id', 'in', locations.ids)
             dest_loc_domain_out = Domain('location_dest_id', 'not in', locations.ids)
         elif locations:
-            alias = locations._table + '_inner'
-            paths_query = Query(locations.env, alias, SQL.identifier(locations._table))
-            paths_query.add_where(SQL(
-                """EXISTS (
-                    SELECT 1
-                      FROM stock_location parent
-                     WHERE parent.id IN %s
-                       AND %s LIKE parent.parent_path || '%%'
-                )""",
-                tuple(locations.ids),
-                SQL.identifier(alias, 'parent_path'),
-            ))
-            loc_domain = Domain('location_id', 'in', paths_query)
+            descendants_query = Query(
+                locations.env,
+                'descendants',
+                SQL(
+                    """
+                    (
+                        WITH RECURSIVE descendants AS (
+                            SELECT id
+                            FROM stock_location
+                            WHERE id IN %s
+
+                            UNION
+
+                            SELECT sl.id
+                            FROM stock_location sl
+                            JOIN descendants d
+                                ON sl.location_id = d.id
+                        )
+                        SELECT id FROM descendants
+                    )
+                    """,
+                    tuple(locations.ids),
+                ),
+            )
+            loc_domain = Domain('location_id', 'in', descendants_query)
             # The condition should be split for done and not-done moves as the final_dest_id only make sense
             # for the part of the move chain that is not done yet.
-            dest_loc_domain_done = Domain('location_dest_id', 'in', paths_query)
+            dest_loc_domain_done = Domain('location_dest_id', 'in', descendants_query)
             dest_loc_domain_in_progress = Domain([
                 '|',
-                    '&', ('location_final_id', '!=', False), ('location_final_id', 'in', paths_query),
-                    '&', ('location_final_id', '=', False), ('location_dest_id', 'in', paths_query),
+                    '&', ('location_final_id', '!=', False), ('location_final_id', 'in', descendants_query),
+                    '&', ('location_final_id', '=', False), ('location_dest_id', 'in', descendants_query),
             ])
             dest_loc_domain = Domain([
                 '|',
