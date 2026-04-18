@@ -81,6 +81,7 @@ _ref_vat = {
     'tr': _lt('11111111111 (NIN) or 2222222222 (VKN)'),
     'ua': _lt('12345678 or UA12345678 (EDRPOU), 1234567890 (RNOPP) or 123456789012 (IPN)'),
     'uy': _lt("Example: '219999830019' (format: 12 digits, all numbers, valid check digit)"),
+    'uz': _lt('XXXXXXXXX [9 digits]'),
     've': 'V-12345678-1, V123456781, V-12.345.678-1',
     'xi': 'XI123456782',
     'sa': _lt('310175397400003 [Fifteen digits, first and last digits should be "3"]'),
@@ -213,6 +214,10 @@ class ResPartner(models.Model):
         If they exist, we simply return them. If they don't, we create them in another cursor to
         avoid the current transaction to be rolled back after the record has been created on IAP.
         """
+        # No existing cron = no way for db to pull updates, thus no need to bother IAP
+        if not self.env.ref('base_vat.vies_iap_check_update', raise_if_not_found=False):
+            return "dummy_identifier", "dummy_token"  # ignored by IAP, same as neutralized
+
         IrConfigParam = self.env['ir.config_parameter'].sudo()
         identifier = IrConfigParam.get_param('iap_vies.client_identifier')
         token = IrConfigParam.get_param('iap_vies.client_token')
@@ -319,7 +324,7 @@ class ResPartner(models.Model):
             company = self.env.company
 
         vat_label = _("VAT")
-        if country_code and company.country_id and country_code == company.country_id.code.lower() and company.country_id.vat_label:
+        if country_code and company.country_id and country_code == company.country_id.code and company.country_id.vat_label:
             vat_label = company.country_id.vat_label
 
         expected_format = _ref_vat.get(country_code.lower())
@@ -650,6 +655,9 @@ class ResPartner(models.Model):
             and vat[8:11] == '001'
             and vat[-1] == calc_check_digit(vat)  # Invalid Check Digit
         )
+
+    def check_vat_uz(self, vat):
+        return len(vat) == 9 and vat.isdigit()
 
     def check_vat_ve(self, vat):
         # https://tin-check.com/en/venezuela/
