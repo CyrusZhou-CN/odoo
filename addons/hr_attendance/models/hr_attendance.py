@@ -270,7 +270,7 @@ class HrAttendance(models.Model):
             return Domain.FALSE
         domain_list = []
         for employee, attendances in self.filtered(lambda att: att.check_out).grouped('employee_id').items():
-            tz = timezone(employee.sudo()._get_tz())
+            tz = timezone(employee.tz)
             local_check_in = utc.localize(min(attendances.mapped('check_in'))).astimezone(tz)
             local_check_out = utc.localize(max(attendances.mapped('check_out'))).astimezone(tz)
             rulesets = attendances.mapped(lambda att: att.employee_id.sudo()._get_version(att.date)).ruleset_id
@@ -570,7 +570,7 @@ class HrAttendance(models.Model):
     def _cron_auto_check_out(self):
         def check_in_tz(attendance):
             """Returns check-in time in calendar's timezone."""
-            return attendance.check_in.astimezone(pytz.timezone(attendance.employee_id._get_tz()))
+            return attendance.check_in.astimezone(pytz.timezone(attendance.employee_id._get_version(attendance.date)._get_tz()))
 
         to_verify = self.env['hr.attendance'].search(
             [('check_out', '=', False),
@@ -600,22 +600,23 @@ class HrAttendance(models.Model):
 
             for att in to_verify_company:
 
-                employee_timezone = pytz.timezone(att.employee_id._get_tz())
+                employee_timezone = pytz.timezone(att.employee_id._get_version(att.date)._get_tz())
                 check_in_datetime = check_in_tz(att)
                 now_datetime = fields.Datetime.now().astimezone(employee_timezone)
                 current_attendance_duration = (now_datetime - check_in_datetime).total_seconds() / 3600
                 previous_attendances_duration = mapped_previous_duration[att.employee_id][check_in_datetime.date()]
 
-                expected_worked_hours = sum(
-                    att.employee_id.resource_calendar_id.attendance_ids.filtered(
-                        lambda a: a.dayofweek == str(check_in_datetime.weekday())
-                            and (not a.two_weeks_calendar or a.week_type == str(a.get_week_type(check_in_datetime.date())))
-                    ).mapped("duration_hours")
+                check_in_day_start = check_in_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+                expected_worked_hours = sum_intervals(
+                    att.employee_id._get_expected_attendances(
+                        check_in_day_start,
+                        check_in_day_start + timedelta(days=1),
+                    )
                 )
 
                 # Attendances where Last open attendance time + previously worked time on that day + tolerance greater than the attendances hours (including lunch) in his calendar
                 if (current_attendance_duration + previous_attendances_duration - max_tol) > expected_worked_hours:
-                    att.check_out = att.check_in.replace(hour=23, minute=59, second=59)
+                    att.check_out = check_in_datetime.replace(hour=23, minute=59, second=59).astimezone(utc).replace(tzinfo=None)
                     excess_hours = att.worked_hours - (expected_worked_hours + max_tol - previous_attendances_duration)
                     att.write({
                         "check_out": max(att.check_out - relativedelta(hours=excess_hours), att.check_in + relativedelta(seconds=1)),
@@ -696,8 +697,12 @@ class HrAttendance(models.Model):
                 week_interval = Intervals([(start_datetime, stop_datetime_for_week, self.env['resource.calendar'])])
 
                 attendance_interval = Intervals([(check_in, check_out, attendance)])
-                attendance_by_employee_by_day[employee][day] |= attendance_interval & day_interval
-                attendance_by_employee_by_week[employee][week_date] |= attendance_interval & week_interval
+                intersected_day_interval = attendance_interval & day_interval
+                intersected_week_interval = attendance_interval & week_interval
+                if intersected_day_interval:
+                    attendance_by_employee_by_day[employee][day] |= intersected_day_interval
+                if intersected_week_interval:
+                    attendance_by_employee_by_week[employee][week_date] |= intersected_week_interval
 
         return {
             'day': attendance_by_employee_by_day,

@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:37+0000\n"
+"POT-Creation-Date: 2026-05-29 17:35+0000\n"
 "PO-Revision-Date: 2026-04-13 20:52+0000\n"
 "Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
 "Language-Team: Estonian <https://translate.odoo.com/projects/odoo-19/website/"
@@ -2411,8 +2411,8 @@ msgstr "<u>Teisipäev</u><br/>8.00am-6.00pm"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_opening_hours
-msgid "<u>Wednesday</u><br/>8.00am-12.00am"
-msgstr "<u>Kolmapäev</u><br/>8.00am-12.00am"
+msgid "<u>Wednesday</u><br/>8.00am-12.00pm"
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_opening_hours
@@ -3005,6 +3005,12 @@ msgstr "Lisage selle välja järele uus väli"
 #: code:addons/website/static/src/builder/plugins/form/form_option_plugin.js:0
 msgid "Add a new field at the end"
 msgstr "Lisage lõppu uus väli"
+
+#. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/builder/plugins/options/media_list_item_option.xml:0
+msgid "Add an image"
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -9272,6 +9278,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website/static/src/builder/plugins/layout_option/add_element_option.xml:0
 #: code:addons/website/static/src/builder/plugins/options/cover_properties_option.xml:0
+#: code:addons/website/static/src/builder/plugins/options/media_list_item_option.xml:0
 #: code:addons/website/static/src/builder/plugins/options/navbar_logo_option.xml:0
 #: code:addons/website/static/src/builder/plugins/options/searchbar_option_plugin.js:0
 #: code:addons/website/static/src/builder/plugins/theme/theme_tab.xml:0
@@ -16916,13 +16923,13 @@ msgstr "Tõlgi tekstis pealkiri. Menüü luuakse automaatselt."
 #. module: website
 #. odoo-javascript
 #: code:addons/website/static/src/builder/plugins/translation_tab/translate_webpage_option.xml:0
-msgid "Translate the whole content with AI"
+msgid "Translate to"
 msgstr ""
 
 #. module: website
 #. odoo-javascript
 #: code:addons/website/static/src/builder/plugins/translation_tab/translate_webpage_option.xml:0
-msgid "Translate to"
+msgid "Translate your content (yellow part) with AI"
 msgstr ""
 
 #. module: website
@@ -17457,7 +17464,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website/static/src/builder/plugins/options/background_option.xml:0
 #: code:addons/website/static/src/builder/plugins/options/background_video_option.xml:0
-#: model_terms:ir.ui.view,arch_db:website.s_video
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Video"
 msgstr "Video"
@@ -20108,6 +20114,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.s_key_benefits
 msgid "✽  What We Offer"
 msgstr ""
+
+#~ msgid "<u>Wednesday</u><br/>8.00am-12.00am"
+#~ msgstr "<u>Kolmapäev</u><br/>8.00am-12.00am"
 
 #~ msgid "$1.50"
 #~ msgstr "$1.50"

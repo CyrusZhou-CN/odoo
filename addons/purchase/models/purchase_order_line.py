@@ -270,7 +270,7 @@ class PurchaseOrderLine(models.Model):
                 seller = line.product_id._select_seller(
                     partner_id=line.partner_id,
                     quantity=abs(line.product_qty),
-                    date=line.order_id.date_order and line.order_id.date_order.date() or fields.Date.context_today(line),
+                    date=fields.Date.context_today(line, timestamp=line.order_id.date_order),
                     uom_id=line.product_uom_id,
                     params=params)
                 line.selected_seller_id = seller.id if seller else False
@@ -395,7 +395,10 @@ class PurchaseOrderLine(models.Model):
     @api.depends('product_id', 'product_id.uom_id', 'product_id.uom_ids', 'product_id.seller_ids', 'product_id.seller_ids.product_uom_id')
     def _compute_allowed_uom_ids(self):
         for line in self:
-            line.allowed_uom_ids = line.product_id.uom_id | line.product_id.uom_ids | line.product_id.seller_ids.product_uom_id
+            seller_uom = line.product_id.seller_ids.filtered(
+                lambda s: s.product_id.id in {False, line.product_id.id},
+            ).product_uom_id
+            line.allowed_uom_ids = line.product_id.uom_id | line.product_id.uom_ids | seller_uom
 
     @api.depends('product_qty', 'product_uom_id', 'company_id', 'order_id.partner_id')
     def _compute_price_unit_and_date_planned_and_name(self):
@@ -636,11 +639,11 @@ class PurchaseOrderLine(models.Model):
         uom_po_qty = product_uom._compute_quantity(product_qty, product_id.uom_id, rounding_method='HALF-UP')
         # _select_seller is used if the supplier have different price depending
         # the quantities ordered.
-        today = fields.Date.today()
+        today = fields.Date.context_today(self)
         seller = product_id.with_company(company_id)._select_seller(
             partner_id=partner_id,
             quantity=product_qty if values.get('force_uom') else uom_po_qty,
-            date=po.date_order and max(po.date_order.date(), today) or today,
+            date=max(fields.Date.context_today(self, timestamp=po.date_order), today),
             uom_id=product_uom if values.get('force_uom') else product_id.uom_id,
             params={'force_uom': values.get('force_uom')}
         )
