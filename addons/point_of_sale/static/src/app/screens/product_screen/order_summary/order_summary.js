@@ -96,6 +96,7 @@ export class OrderSummary extends Component {
         };
 
         // Configurable product
+        const beforeValues = { ...values };
         let keepGoing = await this.pos.handleConfigurableProduct(
             values,
             productTemplate,
@@ -113,6 +114,10 @@ export class OrderSummary extends Component {
             line: orderline,
         });
         if (keepGoing === false) {
+            return false;
+        }
+
+        if (JSON.stringify(values) === JSON.stringify(beforeValues)) {
             return false;
         }
 
@@ -267,12 +272,21 @@ export class OrderSummary extends Component {
         line.setUnitPrice(price);
     }
 
-    async _showDecreaseQuantityPopup() {
+    /**
+     * @param {Object} [options={}]
+     * @param {(value: string) => string} [options.formatDisplayedValue]
+     * @param {(value: string) => string} [options.parseQuantityValue]
+     */
+    async _showDecreaseQuantityPopup(options = {}) {
         this.numberBuffer.reset();
-        const inputNumber = await makeAwaitable(this.dialog, NumberPopup, {
+        let inputNumber = await makeAwaitable(this.dialog, NumberPopup, {
             title: _t("Set the new quantity"),
+            formatDisplayedValue: options.formatDisplayedValue,
         });
         if (inputNumber) {
+            inputNumber = options.parseQuantityValue
+                ? options.parseQuantityValue(inputNumber)
+                : inputNumber;
             const newQuantity = inputNumber && inputNumber !== "" ? parseFloat(inputNumber) : null;
             return await this.updateQuantityNumber(newQuantity);
         }

@@ -28,10 +28,12 @@
         'wizard/pdp_registration_views.xml',
         'wizard/pdp_response_wizard_views.xml',
     ],
-    'demo': [
-        'demo/demo.xml',
-    ],
     'author': 'Odoo S.A.',
+    'assets': {
+        'web.assets_backend': [
+            'l10n_fr_pdp/static/src/js/**',
+        ],
+    },
     'license': 'LGPL-3',
     'pre_init_hook': '_pre_init_pdp',
     'post_init_hook': '_post_init_pdp',

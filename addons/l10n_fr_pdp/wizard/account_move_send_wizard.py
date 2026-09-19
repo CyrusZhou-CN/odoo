@@ -1,5 +1,4 @@
 from odoo import models
-from odoo.exceptions import RedirectWarning
 
 
 class AccountMoveSendWizard(models.TransientModel):
@@ -25,7 +24,7 @@ class AccountMoveSendWizard(models.TransientModel):
         verification_display_state_map = dict(pdp_partner._fields['pdp_verification_display_state']._description_selection(self.env))
         reason = None
         if pdp_partner._l10n_fr_pdp_is_b2c():
-            reason = self.env._("no VAT")
+            reason = self.env._("No Siren/Siret")
         if not partner_is_valid:
             reason = verification_display_state_map[pdp_partner.pdp_verification_display_state]
         if self.move_id.peppol_is_sent:
@@ -34,19 +33,43 @@ class AccountMoveSendWizard(models.TransientModel):
             return f" ({reason})"
         return ""
 
-    def action_send_and_print(self, allow_fallback_pdf=False):
-        auth_totp_disabled = (
-            not self.env.user.totp_enabled
-            and not bool(self.env['ir.config_parameter'].sudo().get_param('auth_totp.policy'))
-            and self.env.company._get_peppol_edi_mode() != 'demo'
-        )
-        if self.company_id._get_peppol_proxy_type() == 'pdp' and auth_totp_disabled:
-            raise RedirectWarning(
-                message=self.env._("To use the French e-invoicing, you need to enable the two-factor authentication."),
-                action=self.env.user._get_records_action(
-                    target='new',
-                    views=[(self.env.ref('base.view_users_form_simple_modif').id, "form")],
-                ),
-                button_text=self.env._("Go to the Preferences panel"),
-            )
-        return super().action_send_and_print(allow_fallback_pdf=allow_fallback_pdf)
+    # -------------------------------------------------------------------------
+    # COMPUTES
+    # -------------------------------------------------------------------------
+
+    def _compute_sending_method_checkboxes(self):
+        # EXTENDS 'account'
+        for wizard in self:
+            move = wizard.move_id
+            partner = move.partner_id.commercial_partner_id
+
+            if (
+                not move or move.company_id._get_peppol_proxy_type() != 'pdp'
+                or (partner.peppol_eas == '0225' and partner.peppol_endpoint)
+                or not (siren := partner._l10n_fr_pdp_get_siren())
+            ):
+                continue
+
+            lookup_result = self.env['res.partner']._fetch_active_annuaire_lines(siren)
+
+            if identifiers := lookup_result.get('identifiers', []):
+                if len(identifiers) == 1:
+                    updated_identifier = identifiers[0]
+                else:
+                    id_type, id_value = partner._l10n_fr_pdp_get_base_identifier()
+                    siren_siret = f"{siren}_{id_value}" if id_type == 'siret' else None
+
+                    if siren_siret and (siren_siret_identifiers := [identifier for identifier in identifiers if identifier.startswith(siren_siret)]):
+                        updated_identifier = min(siren_siret_identifiers, key=len)
+                    elif siren in identifiers:
+                        updated_identifier = siren
+                    else:
+                        updated_identifier = min(identifiers, key=len)
+
+                partner.write({
+                    'peppol_eas': '0225',
+                    'peppol_endpoint': updated_identifier,
+                    'invoice_edi_format': 'ubl_21_fr',
+                })
+
+        super()._compute_sending_method_checkboxes()

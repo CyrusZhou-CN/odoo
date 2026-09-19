@@ -34,7 +34,6 @@ class TestL10nFrPdpCommon(TestUblCiiCommon, TestAccountMoveSendCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.env.user.totp_secret = 'test'
         cls.fakenow = datetime.datetime(2024, 12, 5)
         cls.startClassPatcher(freeze_time(cls.fakenow))
 
@@ -123,12 +122,13 @@ class TestL10nFrPdpCommon(TestUblCiiCommon, TestAccountMoveSendCommon):
         return response
 
     @classmethod
-    def _get_annuaire_lookup_response(cls, peppol_identifier, expected_peppol_identifier):
+    def _get_annuaire_lookup_response(cls, peppol_identifier, expected_peppol_identifier, **extra_result_kwargs):
         response = requests.Response()
         response.status_code = 200
         response.json = lambda: {
             "result": {
                 "in_annuaire": peppol_identifier == expected_peppol_identifier,
+                **extra_result_kwargs,
             }
         }
         return response
