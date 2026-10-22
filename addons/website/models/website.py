@@ -707,6 +707,8 @@ class Website(models.Model):
     @api.model
     def configurator_skip(self):
         website = self.get_current_website()
+        if website.configurator_done:
+            return website.button_go_website()
         theme = self.env["ir.module.module"].search([("name", "=", "theme_default")])
         website.configurator_done = True
         return theme.button_choose_theme()
@@ -1409,10 +1411,11 @@ class Website(models.Model):
         # We will now try to find a website matching the request host/domain (if
         # there is one on request) or return a random one.
 
-        # The format of `httprequest.host` is `domain:port`
+        # The format of `httprequest.host` is `domain:port`, while the url set
+        # on the thread is a full url: only keep its `domain:port` part.
         domain_name = (
             request and request.httprequest.host
-            or hasattr(threading.current_thread(), 'url') and threading.current_thread().url
+            or hasattr(threading.current_thread(), 'url') and get_base_domain(threading.current_thread().url)
             or '')
         website_id = self.sudo()._get_current_website_id(domain_name, fallback=fallback)
         return self.browse(website_id)
@@ -2069,13 +2072,13 @@ class Website(models.Model):
         fuzzy_term = False
         search_details = self._search_get_details(search_type, order, options)
         if search and options.get('allowFuzzy', True):
-            fuzzy_term = self._search_find_fuzzy_term(search_details, search)
-            if fuzzy_term:
-                count, results = self._search_exact(search_details, fuzzy_term, limit, order)
-                if fuzzy_term.lower() == search.lower():
+            count, results = self._search_exact(search_details, search, limit, order)
+            if not count:
+                fuzzy_term = self._search_find_fuzzy_term(search_details, search)
+                if fuzzy_term and fuzzy_term.lower() != search.lower():
+                    count, results = self._search_exact(search_details, fuzzy_term, limit, order)
+                else:
                     fuzzy_term = False
-            else:
-                count, results = self._search_exact(search_details, search, limit, order)
         else:
             count, results = self._search_exact(search_details, search, limit, order)
         return count, results, fuzzy_term

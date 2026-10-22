@@ -46,7 +46,7 @@ class AccountEdiXmlUbl21Fr(models.AbstractModel):
             partner = vals[partner_type]
             commercial_partner = partner.commercial_partner_id
             if commercial_partner.peppol_eas != '0225' or not commercial_partner.peppol_endpoint:
-                constraints[f"ubl_21_fr_{partner_type}_pdp_identifier_required"] = self.env._("The following partner's PDP identifier is missing: %s", commercial_partner.display_name)
+                constraints[f"ubl_21_fr_{partner_type}_pdp_identifier_required"] = self.env._("The following partner's French e-invoicing identifier is missing: %s", commercial_partner.display_name)
             id_type, id_value = commercial_partner._l10n_fr_pdp_get_base_identifier()
             if not id_type or not id_value:
                 constraints[f"ubl_21_fr_{partner_type}_identifier_required"] = self.env._("The following partner's SIREN or SIRET is missing: %s", commercial_partner.display_name)
@@ -85,6 +85,11 @@ class AccountEdiXmlUbl21Fr(models.AbstractModel):
             document_node['cbc:Note'].append({
                 '_text': f"#{code}#{default_content}",
             })
+
+        # [BR-FR-MAP-18] EN16931 caps the Note (BT-22) to 1024 characters.
+        for note in document_node['cbc:Note']:
+            if isinstance(note['_text'], str):
+                note['_text'] = note['_text'][:1024]
 
         # Règles de gestion G1.52
         if vals['document_type'] == 'credit_note':
@@ -187,21 +192,6 @@ class AccountEdiXmlUbl21Fr(models.AbstractModel):
                 'schemeID': '0002',
             },
         }
-
-        # B2G
-        customer = vals['customer'].commercial_partner_id
-        if not self._pdp_needs_b2g_fields(customer):
-            return
-
-        id_type, party_id = commercial_partner._l10n_fr_pdp_get_base_identifier()
-        if id_type == 'siret':
-            vals['party_node']['cac:PartyLegalEntity'] = [{
-                'cbc:RegistrationName': {'_text': commercial_partner.name},
-                'cbc:CompanyID': {
-                    '_text': party_id,
-                    'schemeID': '0009',
-                },
-            }]
 
     def _ubl_add_line_price_node(self, vals, in_foreign_currency=True):
         # OVERRIDE
