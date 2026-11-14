@@ -7,6 +7,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
+# TODO: remove in master, along with `ProductProduct._search_qty_available_new` below.
 PY_OPERATORS = {
     '<': py_operator.lt,
     '>': py_operator.gt,
@@ -279,6 +280,8 @@ class ProductProduct(models.Model):
         This override is used to get the correct quantities of products
         with 'phantom' as BoM type.
         """
+        if self.env.context.get('skip_kit_qty_available'):
+            return super()._compute_quantities_dict(lot_id, owner_id, package_id, from_date=from_date, to_date=to_date)
         bom_kits = self.env['mrp.bom']._bom_find(self, bom_type='phantom', company_id=self.env.company.id)
         kits = self.filtered(lambda p: bom_kits.get(p))
         regular_products = self - kits
@@ -289,16 +292,35 @@ class ProductProduct(models.Model):
         )
         qties = self.env.context.get("mrp_compute_quantities", {})
         qties.update(res)
+
+        # preload product phantom boms to avoid individual calls to _bom_find in explode method
+        phantom_boms_cache = {}
+        grouped_bom_ids = collections.defaultdict(set)
+        for bom in bom_kits.values():
+            grouped_bom_ids[bom.picking_type_id, bom.company_id.id].add(bom.id)
+        for (picking_type, company_id), bom_ids in grouped_bom_ids.items():
+            boms = self.env['mrp.bom'].browse(bom_ids)
+            phantom_boms_cache.update(self.env['mrp.bom'].preload_phantom_boms(
+                products=boms.bom_line_ids.product_id,
+                picking_type=picking_type,
+                company_id=company_id,
+            ))
+        self.env.cr.cache['phantom_boms_cache'] = phantom_boms_cache
+        explode_env = self.with_context(bom_cost_share_cache={}).env
+
         # pre-compute bom lines and identify missing kit components to prefetch
         bom_sub_lines_per_kit = {}
         prefetch_component_ids = set()
         for product in bom_kits:
-            __, bom_sub_lines = bom_kits[product].explode(product, 1)
+            __, bom_sub_lines = bom_kits[product].with_env(explode_env).explode(product, 1)
             bom_sub_lines_per_kit[product] = bom_sub_lines
             for bom_line, __ in bom_sub_lines:
                 if bom_line.product_id.id not in qties:
                     prefetch_component_ids.add(bom_line.product_id.id)
+        # invalidate the cache to keep it localized to this compute method
+        self.env.cr.cache.pop('phantom_boms_cache', None)
         # compute kit quantities
+        compute_env = self.with_context(mrp_compute_quantities=qties).with_prefetch(prefetch_component_ids).env
         for product in bom_kits:
             bom_sub_lines = bom_sub_lines_per_kit[product]
             # group lines by component
@@ -312,7 +334,7 @@ class ProductProduct(models.Model):
             ratios_free_qty = []
 
             for component, bom_sub_lines in bom_sub_lines_grouped.items():
-                component = component.with_context(mrp_compute_quantities=qties).with_prefetch(prefetch_component_ids)
+                component = component.with_env(compute_env)
                 qty_per_kit = 0
                 for bom_line, bom_line_data in bom_sub_lines:
                     if not component.is_storable or bom_line.product_uom_id.is_zero(bom_line_data['qty']):
@@ -410,6 +432,8 @@ class ProductProduct(models.Model):
         ])
         return super()._count_returned_sn_products_domain(sn_lot, or_domains)
 
+    # TODO: remove in master. `stock.product.product._search_qty_available_new` is no longer
+    # called, so this override is dead; kept only to minimize this stable-branch fix's diff.
     def _search_qty_available_new(self, operator, value, lot_id=False, owner_id=False, package_id=False):
         '''extending the method in stock.product to take into account kits'''
         op = PY_OPERATORS.get(operator)
